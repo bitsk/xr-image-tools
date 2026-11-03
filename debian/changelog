@@ -1,3 +1,10 @@
+xr-image-tools (0.1.7) unstable; urgency=medium
+
+  * Limit private WirePlumber to virtual-node routing policy.
+  * Disable ALSA, Bluetooth and video hardware monitors in the private profile.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 01:55:25 +0800
+
 xr-image-tools (0.1.6) unstable; urgency=medium
 
   * Share owned development-session lifecycle across QEMU and native entries.

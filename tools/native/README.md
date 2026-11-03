@@ -42,7 +42,10 @@ contract or occupied port fails startup and cleans up owned children.
 Component sessions use a fresh D-Bus, 0700 private runtime/config/state/cache,
 private Wayland socket, IME and optional PipeWire/Pulse/WirePlumber. The private
 PipeWire configuration creates a null sink before startup, and readiness requires
-actual sink/default readback. `--no-audio`/`--no-ime` skip those capabilities and
+actual sink/default readback. WirePlumber uses the explicit private `xr-development`
+profile, inherits only the installed policy profile, and disables ALSA/MIDI,
+BlueZ/MIDI, V4L2 and libcamera monitors; original hardware is not enumerated
+by the development audio policy. `--no-audio`/`--no-ime` skip those capabilities and
 do not certify them. The native desktop, existing Fcitx and existing audio daemons
 are not managed by this profile. Original display endpoints remain available only
 to the Monado presentation process; component activation receives private Wayland,

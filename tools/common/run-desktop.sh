@@ -298,11 +298,37 @@ context.objects = [
 ]
 EOF
  cp "$private/config/pipewire/pipewire.conf.d/20-xr-development-audio.conf" "$logs/pipewire-null-sink.conf"
+ # Keep routing policy for our virtual sink, without acquiring any hardware
+ # that belongs to the original desktop. WirePlumber 0.5 profiles support
+ # explicit disabled features and inherit the installed policy-only profile.
+ mkdir -p "$private/config/wireplumber/wireplumber.conf.d"
+ cat > "$private/config/wireplumber/wireplumber.conf.d/20-xr-development.conf" <<'EOF'
+wireplumber.profiles = {
+    xr-development = {
+        inherits = [ policy ]
+        hardware.audio = disabled
+        hardware.bluetooth = disabled
+        hardware.video-capture = disabled
+        monitor.alsa = disabled
+        monitor.alsa-midi = disabled
+        monitor.bluez = disabled
+        monitor.bluez-midi = disabled
+        monitor.v4l2 = disabled
+        monitor.libcamera = disabled
+        monitor.alsa.reserve-device = disabled
+        monitor.bluez.seat-monitoring = disabled
+        support.reserve-device = disabled
+        support.logind = disabled
+    }
+}
+EOF
+ cp "$private/config/wireplumber/wireplumber.conf.d/20-xr-development.conf" "$logs/wireplumber-private.conf"
  start pipewire "${component_env[@]}" pipewire
  wait_socket "$component_runtime/pipewire-0" pipewire
  start pulse "${component_env[@]}" pipewire-pulse
  wait_socket "$component_runtime/pulse/native" pulse
- start wireplumber "${component_env[@]}" wireplumber
+ start wireplumber "${component_env[@]}" wireplumber --profile xr-development
+ record 'XR_DESKTOP_WIREPLUMBER_PROFILE=xr-development XR_DESKTOP_AUDIO_HARDWARE_MONITORS=disabled'
  sink_ready=false
  deadline=$((SECONDS+15))
  while ((SECONDS < deadline)); do
