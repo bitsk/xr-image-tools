@@ -65,8 +65,9 @@ client-before-runtime cleanup implementation rather than a second session API.
 The simulator atomically publishes a draining marker in this session's private
 directory before signaling its client. The desktop validates wrapper/client
 PID birth identities: only successful Shell-dependent component exits during
-that matching drain are orderly. Unexpected exits, failed drains and early
-IME/audio exits still fail; the simulator's final status remains authoritative.
+that matching drain are orderly. Fcitx may also exit zero when the private
+Wayland server closes during that same verified drain. Unexpected exits, failed
+drains and early audio exits still fail; the simulator's final status remains authoritative.
 PID birth tokens restrict signals to children created by this session. Runtime
 exit, bounded termination and component cleanup are recorded in the user state
 logs; no global process kill or native user-service restart is performed.
@@ -88,3 +89,10 @@ monitor loop before stopping the Shell and collecting its runtime. Do not use
 the Rust Shell client PID as the session stop API. Signaling the simulator
 wrapper directly retains its Unix signal exit status; a direct client exit has
 no advance draining marker and is not silently accepted as a successful session.
+
+IME startup writes only a generated private XR profile, with Fcitx's actual
+`Default Layout=us` key. Readiness checks the controller's loaded current group
+is XR and that its real group contents contain keyboard-us and pinyin; owning
+the bus name alone is insufficient. The query replies remain in the session
+logs. Group readiness is separate from actual preedit/candidate/Chinese commit
+acceptance in a real application.

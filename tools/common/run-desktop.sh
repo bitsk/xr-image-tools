@@ -287,11 +287,11 @@ wait_socket "$component_runtime/xr-wayland-0" window-server
 if $ime; then
  command -v fcitx5 >/dev/null
  mkdir -p "$private/config/fcitx5"
- if [[ -f /usr/share/fcitx5/inputmethod/pinyin.conf ]]; then
-  cat > "$private/config/fcitx5/profile" <<'EOF'
+ [[ -f /usr/share/fcitx5/inputmethod/pinyin.conf ]] || { record 'XR_DESKTOP_IME_PINYIN_UNAVAILABLE=1'; exit 1; }
+ cat > "$private/config/fcitx5/profile" <<'EOF'
 [Groups/0]
 Name=XR
-DefaultLayout=us
+Default Layout=us
 DefaultIM=pinyin
 [Groups/0/Items/0]
 Name=keyboard-us
@@ -302,16 +302,24 @@ Layout=
 [GroupOrder]
 0=XR
 EOF
- fi
  start ime "${component_env[@]}" fcitx5 --replace -D
  ime_ready=false
  for ((attempt=0;attempt<100;attempt++)); do
   alive "${pids[ime]}" || break
   if gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus \
-      --method org.freedesktop.DBus.NameHasOwner org.fcitx.Fcitx5 2>/dev/null | grep -q true; then ime_ready=true; break; fi
+      --method org.freedesktop.DBus.NameHasOwner org.fcitx.Fcitx5 2>/dev/null | grep -q true \
+      && timeout 2 "${component_env[@]}" gdbus call --session --dest org.fcitx.Fcitx5 --object-path /controller \
+          --method org.fcitx.Fcitx.Controller1.CurrentInputMethodGroup > "$logs/ime-current-group.log" \
+      && timeout 2 "${component_env[@]}" gdbus call --session --dest org.fcitx.Fcitx5 --object-path /controller \
+          --method org.fcitx.Fcitx.Controller1.InputMethodGroupInfo XR > "$logs/ime-group-info.log" \
+      && python3 -c 'import ast,sys; group=ast.literal_eval(open(sys.argv[1]).read()); info=ast.literal_eval(open(sys.argv[2]).read()); sys.exit(not (group==("XR",) and info[0]=="us" and {"keyboard-us","pinyin"}.issubset({item[0] for item in info[1]})))' \
+          "$logs/ime-current-group.log" "$logs/ime-group-info.log"; then
+   ime_ready=true; break
+  fi
   sleep .1
  done
  $ime_ready || { record 'XR_DESKTOP_IME_FAILED=1'; exit 1; }
+ record 'XR_DESKTOP_IME_GROUP=XR XR_DESKTOP_IME_LAYOUT=us XR_DESKTOP_IME_METHODS=keyboard-us,pinyin'
 fi
 if $audio; then
  for command in pipewire pipewire-pulse wireplumber pactl pw-dump python3 timeout; do command -v "$command" >/dev/null; done
@@ -407,7 +415,7 @@ while alive "${pids[shell-session]}"; do
  for role in window-server dock system-ui ime pipewire pulse wireplumber; do
   [[ -z ${pids[$role]:-} ]] || alive "${pids[$role]}" || {
    # Re-read after observing an exit to close the polling/marker boundary race.
-   if [[ $role == window-server || $role == dock || $role == system-ui ]] && session_draining; then
+   if [[ $role == window-server || $role == dock || $role == system-ui || $role == ime ]] && session_draining; then
     if reap "$role"; then
      record "XR_DESKTOP_COMPONENT_DRAINED=$role"
     else

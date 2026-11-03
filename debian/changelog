@@ -1,3 +1,11 @@
+xr-image-tools (0.1.11) unstable; urgency=medium
+
+  * Accept IME exit zero only during the identity-checked session drain.
+  * Generate Fcitx Default Layout correctly and verify the loaded XR group.
+  * Require actual keyboard-us and pinyin entries before reporting IME ready.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 03:38:36 +0800
+
 xr-image-tools (0.1.10) unstable; urgency=medium
 
   * Wait for actual default metadata before the private audio set/get round trip.
