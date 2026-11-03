@@ -3,7 +3,7 @@
 set -euo pipefail
 usage() {
  cat <<'EOF'
-Usage: run-simulator.sh [--seconds N] [--qwerty|--sliders]
+Usage: run-simulator.sh [--seconds N] [--qwerty|--sliders|--remote]
        [--remote-port PORT] [--wsi-copy] [--renderer venus|lavapipe]
        [--runtime-prefix DIR] [--scale 1-200]
        [--client PATH [--client-arg ARG ...]]
@@ -11,10 +11,12 @@ Usage: run-simulator.sh [--seconds N] [--qwerty|--sliders]
 The default client is hello_xr -g Vulkan2 -v. Custom clients receive only the
 explicit --client-arg arguments and must handle SIGTERM for graceful shutdown.
 The timer or closing the sliders stops the client before this session's runtime.
+--remote enables the remote devices without starting the sliders GUI.
 EOF
 }
 seconds=0
 mode=simulated
+controls_gui=false
 renderer=venus
 prefix=/opt/xr-dev
 scale=30
@@ -26,8 +28,9 @@ while (($#)); do
  case "$1" in
   --help|-h) usage; exit 0 ;;
   --seconds) seconds=${2:?Missing duration}; shift 2 ;;
-  --qwerty) mode=qwerty; shift ;;
-  --sliders) mode=remote; shift ;;
+  --qwerty) mode=qwerty; controls_gui=false; shift ;;
+  --sliders) mode=remote; controls_gui=true; shift ;;
+  --remote) mode=remote; controls_gui=false; shift ;;
   --remote-port) remote_port=${2:?Missing remote input port}; shift 2 ;;
   --wsi-copy) wsi_copy=true; shift ;;
   --renderer) renderer=${2:?Missing renderer}; shift 2 ;;
@@ -197,9 +200,10 @@ record "XR_RENDERER=$renderer XR_RUNTIME_PREFIX=$prefix"
 record "XR_RUNTIME_JSON=$XR_RUNTIME_JSON XR_VK_DRIVER_FILES=$VK_DRIVER_FILES"
 record "XR_LOG_DIRECTORY=$out XR_RUNTIME_DIRECTORY=$XDG_RUNTIME_DIR"
 record "XR_WSI_CPU_COPY=$wsi_copy XR_DISPLAY=$DISPLAY XR_CLIENT_LOG=$client_log"
+record "XR_INPUT_MODE=$mode XR_REMOTE_PORT=$remote_port XR_CONTROLS_GUI=$controls_gui"
 printf -v client_description '%q ' "${client[@]}"
 record "XR_CLIENT_COMMAND=$client_description"
-if [[ $mode == remote ]]; then
+if [[ $mode == remote ]] && $controls_gui; then
  "$prefix/bin/monado-gui" remote "127.0.0.1:$remote_port" 9>&- > "$out/controls.log" 2>&1 & gui_pid=$!
  remember_child controls "$gui_pid"
  if command -v xdotool >/dev/null && command -v wmctrl >/dev/null; then

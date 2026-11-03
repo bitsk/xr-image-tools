@@ -145,7 +145,7 @@ Kasm 桌面的入口同时使用 `--wsi-copy`：仅给 Monado service 设置 `ME
 
 `run-simulator.sh --client PATH --client-arg ARG ...` 保留既有 Monado、renderer 与滑块配置，仅替换默认的 `hello_xr -g Vulkan2 -v`。参数以 argv 数组传递，不经过 shell 求值。自定义客户端必须处理 SIGTERM；`--seconds` 到期或关闭滑块时，入口先通知客户端，等待其 OpenXR/GPU 清理，再停止本次启动的 GUI 和 Monado。15 秒仍未退出会记录 `XR_CLIENT_GRACE_TIMEOUT`，终止自己的客户端并报告失败，不能视为优雅清理通过。
 
-`run-shell.sh` 是薄 profile，可在原位置通过 `bash` 运行，或安装为 `xr-shell-simulator`。它总是启动现有视角/手柄滑块，并将 `--environment`、`--capture-dir`、`--validation` 传入 Rust Shell。默认 compositor scale 为 100，可显式调整；`DISPLAY=:1` 默认使用端口 4243 和 WSI CPU copy，其他显示使用 4242。需要显式指定未加入 PATH 的 Shell 二进制：
+`run-shell.sh` 是薄 profile，可在原位置通过 `bash` 运行，或安装为 `xr-shell-simulator`。它默认启动现有视角/手柄滑块，并将 `--environment`、`--capture-dir`、`--validation` 传入 Rust Shell。默认 compositor scale 为 100，可显式调整；`DISPLAY=:1` 默认使用端口 4243 和 WSI CPU copy，其他显示使用 4242。需要显式指定未加入 PATH 的 Shell 二进制：
 
 ```sh
 xr-shell-simulator --shell-binary /opt/xr-shell/bin/xr-shell \
@@ -158,6 +158,8 @@ bash tools/qemu/run-shell.sh --simulator /usr/local/bin/xr-simulator \
 ```
 
 扩展的 Rust CLI 参数可以用重复的 `--shell-arg ARG` 原样传递。`--seconds` 由模拟会话计时，退出通过 SIGTERM 进入 Rust 的正常会话结束流程，不要求客户端读取 stdin。
+
+参数化姿态验收可使用 `xr-shell-simulator --headless-input`：它选择 `xr-simulator --remote`，只启动 remote 模拟设备，不启动或操作 GUI。姿态由对应固定版本的 Monado remote 客户端直接输入；`--seconds`、客户端退出和本会话 runtime 清理仍采用同一条路径。默认交互入口继续使用 `--sliders`；日志中的 `XR_CONTROLS_GUI=false` 标明无 GUI 模式。
 
 入口记录每个直接子进程的 PID 和 `/proc` 启动标识，只向身份仍匹配的本次子进程发信号；不使用全局 `pkill`。当前用户 runtime 锁与已有 IPC socket 检查阻止覆盖活动会话。客户端、runtime、GUI 均不继承锁 FD；计时器是可独立回收的直接子进程。
 
