@@ -1,0 +1,95 @@
+{
+  "schema": 1,
+  "profile": "openkylin-amd64-qemu-xr-shell-m1",
+  "scope": "x86_64 QEMU panorama and lifecycle acceptance only",
+  "components": {
+    "xr-shell": {
+      "source_commit": "db60536d4fcd8420728ac541074bc08d06ebb0c3",
+      "version": "0.1.0",
+      "package": "xr-shell_0.1.0_amd64.deb",
+      "package_sha256": "3a3e79b3efc0173284263c87b25831a9d21b1cef83b4f1f5f4e3b2aeec556ecd",
+      "binary_sha256": "a11972d2ae1137fe24e16320293ad5cadefd308da706d7658296d0434d8860ee",
+      "cargo_lock_sha256": "de1253d5576feaeea1c82442c7cb092752b2683bb9a8853be7b3ef929931da12"
+    },
+    "xr-environments": {
+      "source_commit": "76a0c7c195972f7552186bd4874a260c25336844",
+      "package": "xr-environment-qingkong_0.1.0_all.deb",
+      "package_sha256": "ea3ab3da8e409a08f71f9ec2a97c0611bc8ac569b08b5550c363c87b505bac7d",
+      "texture_sha256": "b3a398fe703e6c74cd61cfea7587060094738695eb8c9b6e5e52e9e239254f63"
+    },
+    "monado": {
+      "source_commit": "0f271b3c5613b025b414fc6f9498cf6d170f40ec",
+      "runtime_binary_base_commit": "3dfb97ef330121368adab4fb509944e8cfeea246",
+      "service_sha256": "6386e3e7cf72697f30803a56f20efd990849f2bd1b14a80fc853efe443cb06e2",
+      "client_sha256": "bb66efe2df2043a8784ee3d05d5489bae056678df9d6ff355bdaf2aa66607edd",
+      "gui_sha256": "dffa4c7f7ae8ed1f328c64a40d5e585a14483863ec92462a98efee636869f94b"
+    },
+    "openxr-loader": {
+      "source_commit": "c15d38cb4bb10a5b7e075f74493ff13896e2597a",
+      "version": "1.1.54",
+      "binary_sha256": "5037b939fb468ad8e48be6d314fe2f9123a4a31b1b27bcfd7be9d3ede9e131a4"
+    },
+    "xr-image-tools": {
+      "profile_code_commit": "5b983225e8a53f9d3dd7de7f4dd8482074abe291"
+    },
+    "contracts": {
+      "repository": "openkylin-xr-docs",
+      "definition_commit": "b29e4b2e19aecac32dd06c14b648fe30dbc8d3a8",
+      "id": "xr-desktop/1.0-draft",
+      "catalog_sha256": "fd06ebe18fe3ef3b51ee62dc32192a25e4a9efdab0a31fc7bbb717bd4a4d4db2",
+      "implementation_status": "not implemented; M2 scope"
+    }
+  },
+  "build": {
+    "rustc": "1.95.0",
+    "cargo": "1.95.0",
+    "glslang": "16.2.0",
+    "shader_compiler_sha256": "b202bebb2d9a5cb84d184190daecb5b3350961882dd4e6fb591fdb9f7f2fedf6",
+    "cargo_vendor_sha256": "fba2b435ddbd04f7d4885f15e758f32966b893f222c37c2f6ca4cb5087bc71c9",
+    "dependency_network": "offline locked build",
+    "package_build_context": "host amd64 with isolated compiler inputs; not clean distribution Build-Depends closure"
+  },
+  "runtime": {
+    "mesa": "26.0.3-ok3",
+    "vulkan_device": "Virtio-GPU Venus Intel UHD Graphics 770",
+    "required_xr_extension": "XR_KHR_vulkan_enable2",
+    "composition": "PRIMARY_STEREO projection",
+    "per_eye_pixels": [
+      960,
+      1080
+    ],
+    "wsi": "CPU copy only for Kasm compositor presentation profile",
+    "steady_state_shell_readback": false,
+    "capture": "on demand GPU readback"
+  },
+  "validation": {
+    "input": "direct pinned native Monado remote protocol, no GUI automation",
+    "parameter_cases": [
+      "front",
+      "yaw90",
+      "yaw-minus90",
+      "rear",
+      "pitch20",
+      "roll15",
+      "translated-x",
+      "reset"
+    ],
+    "validation_layer": "VK_LAYER_KHRONOS_validation",
+    "frames": 1843,
+    "eye_submissions": [
+      1843,
+      1843
+    ],
+    "validation_errors": 0,
+    "validation_warnings": 0,
+    "client_and_runtime_exit": 0,
+    "ipc_removed": true,
+    "physical_headset_acceptance": false
+  },
+  "limitations": [
+    "component IPC and SDK not implemented",
+    "Dock, Wayland windows and system UI remain future milestones",
+    "no hardware video encoding or whole-path zero-copy claim",
+    "clean distribution build and dependency closure pending"
+  ]
+}
