@@ -1,3 +1,9 @@
+xr-image-tools (0.1.1) unstable; urgency=medium
+
+  * Prepare pinned openKylin 3.0 ARM64 ISOs and select optional osstore roots.
+
+ -- openKylin XR SIG <xr@lists.openkylin.top>  Tue, 03 Nov 2026 16:54:55 +0800
+
 xr-image-tools (0.1.0) unstable; urgency=medium
 
   * Import independently maintained XR component and packaging.

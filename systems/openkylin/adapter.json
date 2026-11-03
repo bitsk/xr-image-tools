@@ -12,5 +12,5 @@
     ]
   },
   "base_archive": "rootfs.tar",
-  "status": "verified official base archive input; no device write"
+  "status": "pinned openKylin 3.0 ARM64 ISO or tar input; board configuration and device acceptance separate"
 }

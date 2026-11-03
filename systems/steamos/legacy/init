@@ -1,5 +1,5 @@
 #!/bin/sh
-# PID 1: retain Debian as the default; SteamOS is selected for one recovery boot.
+# PID 1: retain Debian as the default; select optional roots for one boot.
 export PATH=/bin
 mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
@@ -50,6 +50,7 @@ mount -t ext4 -o noatime /dev/sda16 /osstore || fail 'osstore mount failed'
 
 debian_root=/osstore/systems/debian/rootfs
 steamos_root=/osstore/systems/steamos/rootfs
+openkylin_root=/osstore/systems/openkylin/rootfs
 selector=/osstore/boot/next-system
 selected=debian
 requested=debian
@@ -79,6 +80,17 @@ if [ -e "$selector" ] || [ -L "$selector" ]; then
                     echo 'A081: SteamOS installation unavailable; using Debian' > /dev/kmsg
                 fi
                 ;;
+            openkylin)
+                if [ "$(cat "$openkylin_root/etc/a081-rootfs-id" 2>/dev/null)" = a081-openkylin-3.0-arm64 ] &&
+                   [ -x "$openkylin_root/sbin/init" ]; then
+                    selected=openkylin
+                    root="$openkylin_root"
+                    reason=one-shot
+                else
+                    reason=invalid-openkylin-root
+                    echo 'A081: openKylin installation unavailable; using Debian' > /dev/kmsg
+                fi
+                ;;
             debian) reason=explicit-debian ;;
             *) reason=invalid-selector ;;
         esac
@@ -88,7 +100,7 @@ if [ -e "$selector" ] || [ -L "$selector" ]; then
     fi
 fi
 if ! mount --bind "$root" /newroot; then
-    [ "$selected" = steamos ] || fail 'Debian root bind failed'
+    [ "$selected" != debian ] || fail 'Debian root bind failed'
     selected=debian
     root="$debian_root"
     reason=steamos-bind-failed

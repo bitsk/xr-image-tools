@@ -39,3 +39,16 @@ python3 tools/rootfs.py assemble --system steamos --base-archive /prepared/rootf
 本仓库包含独立的 `debian/` 配方。使用目标发行线的干净构建环境运行 `dpkg-buildpackage -us -uc -b`，预先准备 Build-Depends 和离线构建输入。包构建、目标系统安装和设备验收分别记录。
 
 当前迁移不自动启用竞争采集、切换活动运行时或写设备启动分区；已有验证基线继续保留。
+
+## openKylin 3.0 ARM64 基础系统
+
+`systems/openkylin/source.lock.json` 固定官方桌面 ISO、长度和摘要。下载后核对官方 MD5 及锁定的 SHA-256，并把 SHA-256 写入 ISO 同名的 `.sha256` 文件：
+
+```sh
+python3 tools/rootfs.py prepare --system openkylin --profile maintenance --source /archives/openkylin-arm64.iso --output /new/prepared
+python3 tools/rootfs.py assemble --system openkylin --profile maintenance --base-archive /new/prepared/rootfs.tar --output /new/bundle
+```
+
+主机需要 `xorriso` 与 `squashfs-tools-ng` 的 `sqfs2tar`。直接转换保留数值所有权、硬链接、权限和扩展属性，无需 root 或 fakeroot，也不会漏掉普通用户不可读取的源文件。官方 ARM64 ISO 的 ISO9660 大文件长度有 4 GiB 截断；适配器检查 squashfs 头和边界，恢复连续数据区后强制校验 ISO 内 SHA-256，任何不一致均停止。
+
+产物是官方 live 文件系统。设备安装另需板级固件、与启动内核一致的模块、公开 `huanghe` 软件源及原生系统配置；镜像中的工厂构建代理源不能当作公开更新源。A081 原生配置入口属于相邻 `openkylin-xr-integration/devices/a081/openkylin/`。共用 `systems/steamos/legacy/init` 支持一次性 `next-system=openkylin`，消费选择器后回退默认 Debian。私有 osstore UUID 从 `xr-device.conf` 或启动参数注入。包构建、原生安装、系统启动、桌面输出与佩戴验收分别记录。
