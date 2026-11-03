@@ -47,5 +47,5 @@ for q,dest,_ in validated:
 with tarfile.open(a.output/'overlay.tar','w',format=tarfile.PAX_FORMAT) as tf:
  for dest,q in sorted(members.items()):
   data=q.read_bytes();ti=tarfile.TarInfo(dest);ti.mode=q.stat().st_mode&0o777;ti.size=len(data);ti.uid=ti.gid=0;ti.mtime=0;tf.addfile(ti,io.BytesIO(data))
-manifest.update(base_archive={'name':base.name,'sha256':digest(base),'metadata_preservation':'input archive copied byte-for-byte'},overlay={'name':'overlay.tar','sha256':digest(a.output/'overlay.tar')},artifacts=[{'destination':d,'sha256':h} for _,d,h in validated],status='composition bundle; native Debian second-stage, vendor assets, kernel image and device acceptance are separate gates')
+manifest.update(base_archive={'name':base.name,'sha256':digest(base),'metadata_preservation':'input archive copied byte-for-byte'},overlay={'name':'overlay.tar','sha256':digest(a.output/'overlay.tar')},artifacts=[{'destination':d,'sha256':h} for _,d,h in validated],status='composition bundle; system-specific preparation, native board packages, kernel image and device acceptance are separate gates')
 (a.output/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'bundle':str(a.output),'hardware_validated':False}))
