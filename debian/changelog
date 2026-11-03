@@ -1,3 +1,11 @@
+xr-image-tools (0.1.10) unstable; urgency=medium
+
+  * Wait for actual default metadata before the private audio set/get round trip.
+  * Retire private activated portal/GVfs processes using namespace and PID birth.
+  * Unmount only verified owned portal/GVfs FUSE mounts before directory removal.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 02:29:58 +0800
+
 xr-image-tools (0.1.9) unstable; urgency=medium
 
   * Publish owned private draining state before client shutdown.

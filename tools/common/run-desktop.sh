@@ -106,7 +106,17 @@ if [[ -z $private ]]; then
    if alive "$outer_child"; then signal_owned KILL "$outer_child"; result=124; fi
    wait "$outer_child" 2>/dev/null || true
   fi
-  rm -rf -- "$private"
+  local activation_cleanup cleanup_report
+  activation_cleanup=$(dirname -- "$(readlink -f -- "$0")")/cleanup-private-activation.py
+  cleanup_report="$private/activation-cleanup.json"
+  if [[ -r $private/log-directory ]]; then cleanup_report="$(<"$private/log-directory")/private-activation-cleanup.json"; fi
+  if ! python3 "$activation_cleanup" --private "$private" --runtime-root "$original_runtime" > "$cleanup_report"; then
+   printf 'XR_DESKTOP_PRIVATE_CLEANUP_FAILED=1 directory=%s report=%s\n' "$private" "$cleanup_report" >&2
+   ((result)) || result=1
+   exit "$result"
+  fi
+  # The helper refuses unknown mounts/processes; never traverse a live FUSE mount.
+  if ! rm -rf --one-file-system -- "$private"; then ((result)) || result=1; fi
   exit "$result"
  }
  trap outer_cleanup EXIT
@@ -138,6 +148,7 @@ logs_root=${XDG_STATE_HOME:-$HOME/.local/state}/xr-desktop-dev
 mkdir -p "$logs_root"
 logs=$(mktemp -d "$logs_root/run-XXXXXX")
 printf '%s\n' "$logs" > "$logs_root/latest"
+printf '%s\n' "$logs" > "$private/log-directory"
 if [[ -z $capture_dir ]]; then capture_dir="$logs/captures"; fi
 mkdir -p "$capture_dir"
 record() { printf '%s\n' "$*" | tee -a "$logs/lifecycle.log"; }
@@ -156,6 +167,7 @@ original_bus_id=$(<"$private/original-bus-id")
 [[ -n $private_bus_id && $private_bus_id != "$original_bus_id" ]] || {
  record 'XR_DESKTOP_PRIVATE_BUS_CHECK_FAILED=1'; exit 1;
 }
+printf '%s\n' "$DBUS_SESSION_BUS_ADDRESS" > "$private/session-bus-address"
 gtk_im_module=${XR_DESKTOP_GTK_IM_MODULE:-wayland}
 qt_im_module=${XR_DESKTOP_QT_IM_MODULE-}
 mkdir -p "$private/config/pulse"
@@ -302,7 +314,7 @@ EOF
  $ime_ready || { record 'XR_DESKTOP_IME_FAILED=1'; exit 1; }
 fi
 if $audio; then
- for command in pipewire pipewire-pulse wireplumber pactl timeout; do command -v "$command" >/dev/null; done
+ for command in pipewire pipewire-pulse wireplumber pactl pw-dump python3 timeout; do command -v "$command" >/dev/null; done
  # Create the device in this private core's configuration before startup.
  # Pulse compatibility servers may reject dynamic module-null-sink loading.
  mkdir -p "$private/config/pipewire/pipewire.conf.d"
@@ -365,11 +377,24 @@ EOF
   sleep .1
  done
  $sink_ready || { record 'XR_DESKTOP_AUDIO_SINK_MISSING=xr_desktop_null'; exit 1; }
- timeout 2 "${component_env[@]}" pactl set-default-sink xr_desktop_null > "$logs/audio-set-default.log" 2>&1
- timeout 2 "${component_env[@]}" pactl get-default-sink > "$logs/audio-default-sink.log"
- [[ $(<"$logs/audio-default-sink.log") == xr_desktop_null ]] || {
-  record 'XR_DESKTOP_AUDIO_DEFAULT_SINK_MISMATCH=1'; exit 1;
- }
+ # The core-owned sink can appear before WirePlumber's default metadata.
+ # Wait for the actual metadata provider and successful set/get round trip.
+ default_ready=false
+ deadline=$((SECONDS+15))
+ while ((SECONDS < deadline)); do
+  for role in pipewire pulse wireplumber; do
+   alive "${pids[$role]}" || { record "XR_DESKTOP_AUDIO_FAILED role=$role"; exit 1; }
+  done
+  if timeout 2 "${component_env[@]}" pw-dump > "$logs/audio-graph.json" 2> "$logs/audio-graph-error.log" \
+      && python3 -c 'import json,sys; g=json.load(open(sys.argv[1])); sys.exit(not any(o.get("type")=="PipeWire:Interface:Metadata" and o.get("props",o.get("info",{}).get("props",{})).get("metadata.name")=="default" for o in g))' "$logs/audio-graph.json" \
+      && timeout 2 "${component_env[@]}" pactl set-default-sink xr_desktop_null > "$logs/audio-set-default.log" 2>&1 \
+      && timeout 2 "${component_env[@]}" pactl get-default-sink > "$logs/audio-default-sink.log" \
+      && [[ $(<"$logs/audio-default-sink.log") == xr_desktop_null ]]; then
+   default_ready=true; break
+  fi
+  sleep .1
+ done
+ $default_ready || { record 'XR_DESKTOP_AUDIO_DEFAULT_METADATA_TIMEOUT=15'; exit 1; }
  timeout 2 "${component_env[@]}" pactl list sinks > "$logs/audio-sinks.log"
  record 'XR_DESKTOP_AUDIO_SINK=xr_desktop_null XR_DESKTOP_AUDIO_DEFAULT_VERIFIED=1'
 fi

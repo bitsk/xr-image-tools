@@ -47,7 +47,9 @@ contract or occupied port fails startup and cleans up owned children.
 Component sessions use a fresh D-Bus, 0700 private runtime/config/state/cache,
 private Wayland socket, IME and optional PipeWire/Pulse/WirePlumber. The private
 PipeWire configuration creates a null sink before startup, and readiness requires
-actual sink/default readback. WirePlumber uses the explicit private `xr-development`
+actual sink/default readback. The sink can predate WirePlumber metadata; startup
+also waits for a real `default` metadata object and a successful bounded
+set/get-default round trip. WirePlumber uses the explicit private `xr-development`
 profile, inherits only the installed policy profile, and disables ALSA/MIDI,
 BlueZ/MIDI, V4L2 and libcamera monitors; original hardware is not enumerated
 by the development audio policy. `--no-audio`/`--no-ime` skip those capabilities and
@@ -68,6 +70,11 @@ IME/audio exits still fail; the simulator's final status remains authoritative.
 PID birth tokens restrict signals to children created by this session. Runtime
 exit, bounded termination and component cleanup are recorded in the user state
 logs; no global process kill or native user-service restart is performed.
+After the private bus exits, activated portal/GVfs daemons are selected only by
+matching private runtime/config/bus and PID birth. Only verified current-user
+portal/GVfs FUSE mounts under that same private runtime may be unmounted. Unknown
+processes/mounts are preserved and make cleanup fail; removal never traverses a
+live FUSE filesystem. The cleanup report remains with the lifecycle logs.
 
 Install updates via a complete versioned directory and an atomic symlink/rename.
 Do not overwrite a Bash script while it is executing. Script/package checks,
