@@ -159,7 +159,7 @@ activation_env=(
  "PULSE_RUNTIME_PATH=$component_runtime/pulse" "PULSE_SERVER=unix:$component_runtime/pulse/native" PULSE_COOKIE=
  "PULSE_CLIENTCONFIG=$private/config/pulse/client.conf" XR_SYSTEM_UI_ISOLATED_BUS=1)
 dbus-update-activation-environment "${activation_env[@]}"
-record "XR_DESKTOP_ACTIVATION_ENV_PRIVATE=1 XR_DESKTOP_GTK_IM_MODULE=$gtk_im_module"
+record "XR_DESKTOP_ACTIVATION_ENV_PRIVATE=1 XR_DESKTOP_GTK_IM_MODULE=$gtk_im_module QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland"
 
 for binary in xr-shell xr-window-server xr-dock xr-system-ui; do
  [[ -x $prefix/bin/$binary ]] || { record "Missing component: $prefix/bin/$binary"; exit 1; }
@@ -267,16 +267,50 @@ EOF
  $ime_ready || { record 'XR_DESKTOP_IME_FAILED=1'; exit 1; }
 fi
 if $audio; then
- for command in pipewire pipewire-pulse wireplumber pactl; do command -v "$command" >/dev/null; done
+ for command in pipewire pipewire-pulse wireplumber pactl timeout; do command -v "$command" >/dev/null; done
+ # Create the device in this private core's configuration before startup.
+ # Pulse compatibility servers may reject dynamic module-null-sink loading.
+ mkdir -p "$private/config/pipewire/pipewire.conf.d"
+ cat > "$private/config/pipewire/pipewire.conf.d/20-xr-development-audio.conf" <<'EOF'
+context.objects = [
+    { factory = adapter
+        args = {
+            factory.name = support.null-audio-sink
+            node.name = xr_desktop_null
+            node.description = "XR Development Audio"
+            media.class = "Audio/Sink"
+            node.virtual = true
+            audio.position = [ FL FR ]
+        }
+    }
+]
+EOF
+ cp "$private/config/pipewire/pipewire.conf.d/20-xr-development-audio.conf" "$logs/pipewire-null-sink.conf"
  start pipewire "${component_env[@]}" pipewire
  wait_socket "$component_runtime/pipewire-0" pipewire
  start pulse "${component_env[@]}" pipewire-pulse
  wait_socket "$component_runtime/pulse/native" pulse
  start wireplumber "${component_env[@]}" wireplumber
- "${component_env[@]}" pactl load-module module-null-sink sink_name=xr_desktop_null \
-   sink_properties=device.description=XR_Development_Audio > "$logs/null-sink.log"
- "${component_env[@]}" pactl set-default-sink xr_desktop_null
- record 'XR_DESKTOP_AUDIO_SINK=xr_desktop_null'
+ sink_ready=false
+ deadline=$((SECONDS+15))
+ while ((SECONDS < deadline)); do
+  for role in pipewire pulse wireplumber; do
+   alive "${pids[$role]}" || { record "XR_DESKTOP_AUDIO_FAILED role=$role"; exit 1; }
+  done
+  if timeout 2 "${component_env[@]}" pactl list short sinks > "$logs/audio-sinks-short.log" 2> "$logs/audio-control-error.log" \
+      && awk '$2 == "xr_desktop_null" { found = 1 } END { exit !found }' "$logs/audio-sinks-short.log"; then
+   sink_ready=true; break
+  fi
+  sleep .1
+ done
+ $sink_ready || { record 'XR_DESKTOP_AUDIO_SINK_MISSING=xr_desktop_null'; exit 1; }
+ timeout 2 "${component_env[@]}" pactl set-default-sink xr_desktop_null > "$logs/audio-set-default.log" 2>&1
+ timeout 2 "${component_env[@]}" pactl get-default-sink > "$logs/audio-default-sink.log"
+ [[ $(<"$logs/audio-default-sink.log") == xr_desktop_null ]] || {
+  record 'XR_DESKTOP_AUDIO_DEFAULT_SINK_MISMATCH=1'; exit 1;
+ }
+ timeout 2 "${component_env[@]}" pactl list sinks > "$logs/audio-sinks.log"
+ record 'XR_DESKTOP_AUDIO_SINK=xr_desktop_null XR_DESKTOP_AUDIO_DEFAULT_VERIFIED=1'
 fi
 start dock "${component_env[@]}" "$prefix/bin/xr-dock" --socket "$shell_socket"
 start system-ui "${component_env[@]}" "$prefix/bin/xr-system-ui" run --socket "$shell_socket" \

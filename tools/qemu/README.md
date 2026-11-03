@@ -185,6 +185,8 @@ GTK 默认 `GTK_IM_MODULE=wayland`，通过真实的 Wayland text-input/input-me
 
 启动顺序为 Shell/socket → 私有 Wayland/socket → Fcitx/服务名 → 私有 PipeWire、Pulse、WirePlumber 与显式 `xr_desktop_null` sink → Dock → System UI。所有 socket 查询和 pactl 均使用私有 runtime/明确的 server；没有原用户音频 socket 的硬编码。无声卡也可以验证音量、静音与路由控制，但 null sink 不代表物理音频输出通过。若已安装 Fcitx 拼音方法，profile 在私有配置中选择该方法；预编辑、候选和提交仍需真实应用验收。
 
+私有音频在 core 启动前通过 `pipewire.conf.d` 的 `context.objects` 配置 `adapter`/`support.null-audio-sink`，不依赖 Pulse 动态加载模块。必须实际列出 `xr_desktop_null` 并将默认 sink 读回为该名字后才记录就绪；失败会结束 profile 并按原有路径清理。`pipewire-null-sink.conf`、`audio-sinks.log` 和 `audio-default-sink.log` 保存运行证据。
+
 profile 记录每个自己启动进程的 PID/启动标识。SIGTERM 先通知本次 Shell；随后终止并等待自己的组件和 daemon，最后等待既有模拟器完成客户端/Monado回收。超时只向身份仍匹配的自有 PID 发信号；不调用全局 pkill 或删除原 runtime。外层等待私有 D-Bus 会话退出后删除本次临时子目录。日志和抓帧保留在用户 state/capture 目录，`xr-desktop-dev/latest` 指向最近日志；异常退出状态应结合各 child exit 与实际端点/进程结果判断，不能仅靠 READY 判断整套能力通过。
 
 验收使用的 Khronos Vulkan validation layer 由官方 Ubuntu `vulkan-validationlayers` 包隔离解包到 `/opt/xr-validation`，未安装进来宾 dpkg；它仅用于诊断。Vulkan loader 的实际 instance/device layer 插入日志与零 VUID 计数一起保存。原生 Monado metrics 中应用帧、合成帧、GPU 时间分别记录，不将合成节奏或 GPU 时间等同物理帧率、延迟或 MIX 性能。
