@@ -185,7 +185,7 @@ trap cleanup EXIT
 trap 'exit 0' INT TERM
 
 shell_args=(--headless-input --shell-binary "$prefix/bin/xr-shell" --capture-dir "$capture_dir"
- --seconds "$seconds" "${runtime_args[@]}")
+ --seconds "$seconds" --shell-arg --components "${runtime_args[@]}")
 [[ -z $environment ]] || shell_args+=(--environment "$environment")
 [[ -z $simulator ]] || shell_args+=(--simulator "$simulator")
 if $validation; then shell_args+=(--validation); fi
