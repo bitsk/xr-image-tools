@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Manage an isolated openKylin x86_64 XR development VM; no physical devices."""
 import argparse
+import getpass
 import hashlib
 import importlib.util
 import json
@@ -121,6 +122,17 @@ def start(a):
         except (ConnectionRefusedError, FileNotFoundError):
             (work / 'qmp.sock').unlink(missing_ok=True)
     env = os.environ.copy()
+    access_file = work / 'access.json'
+    access = json.loads(access_file.read_text()) if access_file.exists() else {}
+    listen = a.vnc_listen or access.get('vnc_listen', '127.0.0.1')
+    backend = a.vnc_backend or access.get('vnc_backend', 'qemu')
+    guest_vnc = backend == 'guest'
+    console_display = a.vnc_display + (1 if guest_vnc else 0)
+    socket.inet_pton(socket.AF_INET, listen)
+    authenticated = a.vnc_auth or access.get('vnc_auth', False) or listen != '127.0.0.1'
+    password = getpass.getpass('VNC password (8 ASCII characters): ') if authenticated else None
+    if password is not None and (len(password) != 8 or not password.isascii()):
+        raise ValueError('VNC authentication requires exactly 8 ASCII characters')
     gpu = 'virtio-vga,xres=1600,yres=1000'
     display = 'none'
     if a.graphics != 'software':
@@ -149,11 +161,12 @@ def start(a):
                '-kernel', str(work / 'vmlinuz'), '-initrd', str(work / 'initrd'),
                '-append', 'root=LABEL=ukui-xr-dev rw console=ttyS0 quiet',
                '-drive', f'file={work}/desktop.qcow2,if=virtio,format=qcow2,discard=unmap',
-               '-netdev', f'user,id=n0,hostfwd=tcp:127.0.0.1:{a.ssh_port}-:22',
+               '-netdev', f'user,id=n0,hostfwd=tcp:127.0.0.1:{a.ssh_port}-:22' +
+               (f',hostfwd=tcp:{listen}:{5900 + a.vnc_display}-:5900' if guest_vnc else ''),
                '-device', 'virtio-net-pci,netdev=n0', '-device', gpu,
                '-virtfs', f'local,path={work}/source,mount_tag=devsrc,security_model=none,readonly=on,id=devsrc',
                '-device', 'qemu-xhci', '-device', 'usb-tablet',
-               '-display', display, '-vnc', f'127.0.0.1:{a.vnc_display}',
+               '-display', display, '-vnc', f'127.0.0.1:{console_display}' + (',password=on' if authenticated else ''),
                '-serial', f'file:{work}/serial.log',
                '-qmp', f'unix:{work}/qmp.sock,server=on,wait=off',
                '-pidfile', str(work / 'qemu.pid'), '-daemonize',
@@ -161,10 +174,20 @@ def start(a):
     receipt = {'qemu_version': version, 'graphics_requested': a.graphics, 'accelerator': a.accelerator,
                'rendernode': a.rendernode, 'ssh_port': a.ssh_port,
                'vnc_port': 5900 + a.vnc_display, 'command': command,
+               'vnc_listen': listen, 'vnc_auth': authenticated,
+               'vnc_backend': backend, 'console_vnc_port': 5900 + console_display,
                'hardware_acceleration_validated': False}
     (work / 'launch.json').write_text(json.dumps(receipt, indent=2) + '\n')
     with (work / 'qemu-stderr.log').open('ab') as log:
         run(command, env=env, stdout=log, stderr=log)
+    if authenticated:
+        qmp(work, 'set_password', {'protocol': 'vnc', 'password': password})
+    if listen != '127.0.0.1' and not guest_vnc:
+        qmp(work, 'display-update', {'type': 'vnc', 'addresses': [
+            {'type': 'inet', 'host': host, 'port': str(5900 + a.vnc_display)}
+            for host in ['127.0.0.1', listen]]})
+    access_file.write_text(json.dumps({'vnc_listen': listen, 'vnc_auth': authenticated,
+                                     'vnc_backend': backend}, indent=2) + '\n')
     print(json.dumps(qmp(work, 'query-status')))
 
 
@@ -207,6 +230,9 @@ def main():
     launch.add_argument('--cpus', type=int, default=6)
     launch.add_argument('--memory', type=int, default=8192)
     launch.add_argument('--vnc-display', type=int, default=94)
+    launch.add_argument('--vnc-listen', help='IPv4 listen address; LAN requires VNC authentication')
+    launch.add_argument('--vnc-auth', action='store_true', help='Prompt for VNC password; never write it to disk')
+    launch.add_argument('--vnc-backend', choices=['qemu', 'guest'], help='Guest TigerVNC shares the real UKUI X11 desktop')
     launch.add_argument('--qemu-binary', help='Explicit QEMU executable; private workspace build preferred when present')
     remote = sub.add_parser('ssh')
     remote.add_argument('--user', default='xr')

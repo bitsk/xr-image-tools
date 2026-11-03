@@ -72,7 +72,18 @@ python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" stop
 
 私有 QEMU 安装到 workspace，构建依赖仅从宿主软件源下载并在 workspace 解包；不安装宿主软件包。QEMU 归档长度/摘要及二进制摘要应与交付镜像一起记录。默认 6 vCPU、8 GiB RAM、4 GiB GPU hostmem。`--graphics virgl` 和 `--graphics software` 是显式选择，不会自动替换失败的 Venus 配置。
 
-VNC `127.0.0.1:5994`，SSH `127.0.0.1:22244`；端口只监听回环。SSH 使用 workspace 的独立密钥和 known_hosts，默认用户 `xr`。这是空密码自动登录的本地开发账户，SSH 禁用密码登录。共享源码只读；没有宿主 GPU PCI 直通、USB 直通或头显维护通道。
+默认 VNC `127.0.0.1:5994`，SSH `127.0.0.1:22244`。SSH 使用 workspace 的独立密钥和 known_hosts，默认用户 `xr`，禁用密码登录。共享源码只读；没有宿主 GPU PCI 直通、USB 直通或头显维护通道。
+
+局域网访问使用来宾 TigerVNC 分享实际 UKUI `:0`。先以桌面用户运行 `passwd` 和 `tigervncpasswd` 设置独立密码，将 `keep-awake.sh` 安装为 `/usr/local/bin/xr-dev-awake`，将 `configure-desktop.sh` 安装为 `/usr/local/bin/xr-configure-desktop` 并在该用户的桌面会话运行。该配置启用 `xr-desktop-vnc.service` 和防空闲服务，创建 OpenXR 桌面入口。
+
+```sh
+python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" run --graphics venus \
+  --vnc-backend guest --vnc-listen HOST_LAN_IP --vnc-auth
+```
+
+管理器交互读取 8 字节 ASCII 的 QEMU 控制台密码，仅保存在进程内存；来宾 TigerVNC 密码由 `tigervncpasswd` 管理。主入口仍为 5994，原 QEMU 控制台移到回环 5995，SSH 继续只在回环监听。`access.json` 只保存地址、后端和认证开关，不保存密码；后续启动复用这些非敏感配置。认证测试覆盖错误密码拒绝和 ZRLE 8/16/32 bpp。RealVNC Viewer 可设置 `Quality=CUSTOM`、`ColorLevel=full`、`PreferredEncoding=ZRLE`，避免自动低色彩模式；桌面根窗口深度为 24 位。
+
+可选的独立浏览器 GPU 桌面见 [KasmVNC 说明](../../docs/kasmvnc-qemu.md)。它使用独立用户和 `:1`，通过浏览器访问；3D 渲染加速与视频硬件编码分别验证。
 
 `stop` 优先通过来宾 systemd 正常关机，避免 UKUI 消费 ACPI 电源键后只显示确认框。命令返回 `shutdown-requested` 表示已请求；用 `status` 确认 `stopped` 后才能离线操作磁盘。可选 `stop --wait-seconds 30`，超时不会强制退出 QEMU。原系统关机服务可能需要超过 30 秒。
 
@@ -121,6 +132,14 @@ python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" ssh --tty \
 ```
 
 qwerty 的键鼠操作说明在 Monado debug GUI 的 Help 中。不带 `--seconds` 时按终端任意键结束示例；入口清理自身服务和客户端。日志与原生 `metrics.pb` 位于用户 `.local/state/xr-simulator/`，`latest` 指向最近运行目录。`--runtime-prefix DIR` 可选择独立构建或回退版本；当前 VM 的原软件运行时及摘要保留在 `/opt/xr-dev/rollback/monado-8d4e76`。IPC 布局有变化，服务与客户端必须来自同一次构建。
+
+滑块调试使用 `xr-simulator --sliders --scale 100`，或桌面上的 **OpenXR Debug**。面板的 Head / view、Left controller、Right controller 分别提供 XYZ 位置和 Yaw/Pitch/Roll 角度；手柄同时提供握力、扳机、摇杆和按键。可以拖动滑块，或 Ctrl+点击输入数值，Reset pose / Reset all devices 恢复初值。握力 `Squeeze Force` 对应 hello_xr 示例的抓握动作。关闭控制面板会结束本次示例并清理其 Monado 服务。
+
+同机的第二个独立桌面用户可使用 `--remote-port 4243`，保留默认会话的 4242；IPC、配置和日志按用户隔离。`configure-kasm-xr.sh` 应在 Kasm 桌面账户内运行，创建使用第二端口的入口。远程输入端口不加入宿主转发。
+
+Kasm 桌面的入口同时使用 `--wsi-copy`：仅给 Monado service 设置 `MESA_VK_WSI_DEBUG=sw,linear`，修复 Venus Vulkan 的原生 WSI 在该 X server 中黑屏的问题。应用与合成器仍选择 Venus GPU，最后的虚拟显示传输使用 CPU 拷贝；原 `:0` 会话保留原生 WSI 路径。浏览器使用 `?resize=scale` 可以保持 1600×1000 调试桌面的布局。
+
+开发桌面通过 GSettings 关闭自动休眠、变暗和屏保，X11 屏保 timeout 为 0、DPMS 关闭；`xr-dev-awake --hold` 持续持有 UKUI 标准 idle/suspend inhibitor，处理当前会话缓存的空闲定时器。原桌面由用户服务启动，独立 Kasm 会话由用户自启动项启动。停止防空闲服务或移除对应自启动项可以撤销持续抑制；持久化设置需按需恢复。
 
 验收使用的 Khronos Vulkan validation layer 由官方 Ubuntu `vulkan-validationlayers` 包隔离解包到 `/opt/xr-validation`，未安装进来宾 dpkg；它仅用于诊断。Vulkan loader 的实际 instance/device layer 插入日志与零 VUID 计数一起保存。原生 Monado metrics 中应用帧、合成帧、GPU 时间分别记录，不将合成节奏或 GPU 时间等同物理帧率、延迟或 MIX 性能。
 

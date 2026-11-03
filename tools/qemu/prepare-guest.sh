@@ -51,6 +51,7 @@ export DEBIAN_FRONTEND=noninteractive SYSTEMD_OFFLINE=1
 chroot "$r" apt-get update
 chroot "$r" apt-get install -y --no-install-recommends openssh-server openssh-sftp-server sudo mesa-utils mesa-vulkan-drivers x11-utils x11-xserver-utils xdotool dbus-x11 build-essential cmake ninja-build pkgconf pkgconf-bin libpkgconf7 libvulkan-dev libeigen3-dev glslang-tools spirv-tools libjsoncpp-dev libvncclient1 libvncserver1 git curl ca-certificates
 chroot "$r" apt-cache policy monado-service libopenxr1-monado openxr-utils > "$share/package-candidates.txt"
+chroot "$r" apt-get install -y --no-install-recommends scrot wmctrl tigervnc-scraping-server tigervnc-tools python3-dbus python3-gi
 chroot "$r" id xr >/dev/null 2>&1 || chroot "$r" useradd -m -s /bin/bash xr
 chroot "$r" usermod -aG sudo,video,render xr
 chroot "$r" passwd -d xr
