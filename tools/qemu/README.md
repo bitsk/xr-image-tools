@@ -6,8 +6,8 @@
 
 - KVM、Intel UHD 770、VirGL OpenGL 4.6、Venus Vulkan 1.4；1600×1000 UKUI X11 桌面及本地 VNC 像素传输。
 - 私有 QEMU 11.1.3，开启 `honor-guest-pat=on`。发行版 QEMU 10.2.1 在 blob/hostmem 释放时出现 `cpr_delete_fd` 崩溃，保留系统程序并使用独立构建。
-- Monado 模拟 HMD/双手柄、qwerty 键鼠设备及 Khronos `hello_xr -g Vulkan2`；通过的模拟会话明确使用 **lavapipe 软件渲染**。默认不自动从 Venus 回退。
-- **Venus 直接运行 Monado 尚未通过**：外部图像的 optimal tiling 查询返回 `VK_ERROR_FORMAT_NOT_SUPPORTED`，Monado 没有可用交换链格式。Mesa Venus 的此路径要求 DRM format modifier；扩展枚举成功不能代替图像共享验收。
+- Monado 模拟 HMD/双手柄、qwerty 键鼠设备及 Khronos `hello_xr -g Vulkan2`；**Venus 硬件渲染**通过，单眼 1280×1440 的颜色/深度交换链、可见双眼画面、FOCUSED、有界退出及 Khronos 验证层零 VUID 错误。lavapipe 软件模式单独回测通过，不自动回退。
+- Venus 的共享图像使用 DRM modifier：分配端查询实际导入/导出能力，IPC 传递逐图像 modifier，客户端按同一 modifier 重建 OPAQUE_FD 图像。入口显式设置 `XRT_VK_DRM_MODIFIERS=1`；分配支持限制为单内存平面，验证范围为原生 `XR_KHR_vulkan_enable2` 客户端。GL/EGL 和旧 Vulkan 设备创建路径未验收。
 - 模拟器帧记录与虚拟显示节奏不代表 MIX 的性能、真实跟踪或物理呈现。UKUI Wayland 会话未在本开发镜像验收。
 
 ## 软件源与 SDK
@@ -99,7 +99,14 @@ VK_DRIVER_FILES=/usr/share/vulkan/icd.d/virtio_icd.json vulkaninfo --summary
 VK_DRIVER_FILES=/usr/share/vulkan/icd.d/virtio_icd.json vkcubepp --wsi xcb --c 120
 ```
 
-模拟 XR 功能验证，必须明确软件模式：
+硬件模拟 XR 功能验证：
+
+```sh
+xr-simulator --renderer venus --scale 200 --seconds 40
+xr-simulator --renderer venus --qwerty --scale 100 --seconds 20
+```
+
+`--scale 200` 在当前模拟 HMD 中对应单眼最大 1280×1440；默认 30 用于轻量开发。日志明确记录 renderer 与 runtime prefix。软件对照模式：
 
 ```sh
 xr-simulator --renderer lavapipe --seconds 20
@@ -110,9 +117,11 @@ xr-simulator --renderer lavapipe --qwerty --seconds 20
 
 ```sh
 python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" ssh --tty \
-  'xr-simulator --renderer lavapipe --qwerty'
+  'xr-simulator --renderer venus --qwerty --scale 100'
 ```
 
-qwerty 的键鼠操作说明在 Monado debug GUI 的 Help 中。不带 `--seconds` 时按终端任意键结束示例；入口清理自身服务和客户端。日志与原生 `metrics.pb` 位于用户 `.local/state/xr-simulator/`，`latest` 指向最近运行目录。`--renderer venus` 专用于复现尚未通过的共享图像路径。
+qwerty 的键鼠操作说明在 Monado debug GUI 的 Help 中。不带 `--seconds` 时按终端任意键结束示例；入口清理自身服务和客户端。日志与原生 `metrics.pb` 位于用户 `.local/state/xr-simulator/`，`latest` 指向最近运行目录。`--runtime-prefix DIR` 可选择独立构建或回退版本；当前 VM 的原软件运行时及摘要保留在 `/opt/xr-dev/rollback/monado-8d4e76`。IPC 布局有变化，服务与客户端必须来自同一次构建。
+
+验收使用的 Khronos Vulkan validation layer 由官方 Ubuntu `vulkan-validationlayers` 包隔离解包到 `/opt/xr-validation`，未安装进来宾 dpkg；它仅用于诊断。Vulkan loader 的实际 instance/device layer 插入日志与零 VUID 计数一起保存。原生 Monado metrics 中应用帧、合成帧、GPU 时间分别记录，不将合成节奏或 GPU 时间等同物理帧率、延迟或 MIX 性能。
 
 `screenshot --output /work/desktop.png` 优先使用 QMP；GL 扫描输出没有 CPU surface 时改用来宾的 scrot。验证截图与生成概念图应分开保存。

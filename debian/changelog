@@ -1,3 +1,10 @@
+xr-image-tools (0.1.2) unstable; urgency=medium
+
+  * Add isolated x86 QEMU development and explicit Venus Vulkan XR sessions.
+  * Pin modifier-capable Monado and keep a selectable software reference path.
+
+ -- openKylin XR SIG <xr@lists.openkylin.top>  Tue, 03 Nov 2026 19:15:10 +0800
+
 xr-image-tools (0.1.1) unstable; urgency=medium
 
   * Prepare pinned openKylin 3.0 ARM64 ISOs and select optional osstore roots.

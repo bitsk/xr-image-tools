@@ -8,7 +8,7 @@
     "origin": "https://github.com/KhronosGroup/Vulkan-Tools.git"
   },
   "monado": {
-    "commit": "8d4e76ca189c69c0bc6991a5638cc569a4a408d6",
+    "commit": "3dfb97ef330121368adab4fb509944e8cfeea246",
     "origin": "https://gitee.com/bigbits/xr-monado.git",
     "dirty": false
   },
