@@ -21,7 +21,7 @@ ln -sfn /usr/lib/systemd/system/multi-user.target "$r/etc/systemd/system/default
 printf '[Journal]\nStorage=persistent\nSystemMaxUse=64M\n' > "$r/etc/systemd/journald.conf.d/a081.conf"
 printf '#!/bin/sh\nexec systemctl reboot\n' > "$r/usr/local/sbin/boot-android"
 chmod 755 "$r/usr/local/sbin/boot-android"
-printf 'Debian 13 arm64 on Qiyu MIX A081. USB console grants local root access.\nRun boot-android to return to stock Android.\n' > "$r/etc/motd"
+printf 'Debian 13 arm64 on XR MIX A081. USB console grants local root access.\nRun boot-android to return to stock Android.\n' > "$r/etc/motd"
 printf 'a081-debian-trixie-arm64\n' > "$r/etc/a081-rootfs-id"
 : > "$r/etc/machine-id"
 # Network login stays disabled until an interface and credentials are configured.

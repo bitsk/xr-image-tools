@@ -2,13 +2,16 @@
   "schema": 1,
   "id": "debug",
   "components": [
-    "qiyu-kernel",
-    "qiyu-device-service",
-    "qiyu-head-tracking",
-    "qiyu-controller-tracking",
-    "qiyu-vr-runtime",
-    "qiyu-vr-session",
-    "qiyu-debug"
+    "xr-kernel",
+    "xr-device-io",
+    "xr-head-tracking",
+    "xr-controller-tracking",
+    "xr-monado",
+    "xr-session-manager",
+    "xr-debug-console",
+    "openkylin-xr-integration",
+    "xr-mesa",
+    "xr-hexagonrpc"
   ],
   "vendor_libraries": "externally imported, never checked into this repository",
   "automatic_service_enable": false,

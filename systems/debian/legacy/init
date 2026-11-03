@@ -21,7 +21,7 @@ printf 0x4ee7 > idProduct
 printf 0x0200 > bcdUSB
 printf 0x0100 > bcdDevice
 mkdir -p strings/0x409 configs/c.1 functions/acm.usb0
-printf 'Qiyu MIX' > strings/0x409/manufacturer
+printf 'XR MIX' > strings/0x409/manufacturer
 printf 'Debian mainline console' > strings/0x409/product
 printf A081-DEBIAN > strings/0x409/serialnumber
 ln -s "$g/functions/acm.usb0" configs/c.1/acm.usb0
@@ -39,11 +39,11 @@ while [ ! -b /dev/sda16 ] && [ "$n" -lt 60 ]; do sleep 1; n=$((n+1)); done
 [ -b /dev/sda16 ] || fail 'osstore device missing'
 # Installation identity is supplied locally, never embedded in public source.
 osstore_uuid=
-[ ! -r /etc/qiyu-device.conf ] || . /etc/qiyu-device.conf
+[ ! -r /etc/xr-device.conf ] || . /etc/xr-device.conf
 for arg in $(cat /proc/cmdline); do
-    case "$arg" in qiyu.osstore_uuid=*) osstore_uuid=${arg#*=};; esac
+    case "$arg" in xr.osstore_uuid=*) osstore_uuid=${arg#*=};; esac
 done
-[ -n "$osstore_uuid" ] || fail 'Supply qiyu.osstore_uuid or local qiyu-device.conf'
+[ -n "$osstore_uuid" ] || fail 'Supply xr.osstore_uuid or local xr-device.conf'
 blkid /dev/sda16 | grep -Fq "UUID=\"$osstore_uuid\"" || fail 'osstore UUID mismatch'
 mount -t ext4 -o noatime /dev/sda16 /osstore || fail 'osstore mount failed'
 [ "$(cat /osstore/systems/debian/rootfs/etc/a081-rootfs-id)" = a081-debian-trixie-arm64 ] || fail 'Debian installation marker missing'

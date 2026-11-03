@@ -20,7 +20,7 @@ printf 0x4ee7 > idProduct
 printf 0x0200 > bcdUSB
 printf 0x0100 > bcdDevice
 mkdir -p strings/0x409 configs/c.1 functions/acm.usb0
-printf 'Qiyu MIX' > strings/0x409/manufacturer
+printf 'XR MIX' > strings/0x409/manufacturer
 printf 'A081 recovery console' > strings/0x409/product
 # Keep the proven maintenance transport, including before a root is selected.
 # /etc/a081-rootfs-id and /run/a081-handoff identify the actual running system.
@@ -40,11 +40,11 @@ while [ ! -b /dev/sda16 ] && [ "$n" -lt 60 ]; do sleep 1; n=$((n+1)); done
 [ -b /dev/sda16 ] || fail 'osstore device missing'
 # Installation identity is supplied locally, never embedded in public source.
 osstore_uuid=
-[ ! -r /etc/qiyu-device.conf ] || . /etc/qiyu-device.conf
+[ ! -r /etc/xr-device.conf ] || . /etc/xr-device.conf
 for arg in $(cat /proc/cmdline); do
-    case "$arg" in qiyu.osstore_uuid=*) osstore_uuid=${arg#*=};; esac
+    case "$arg" in xr.osstore_uuid=*) osstore_uuid=${arg#*=};; esac
 done
-[ -n "$osstore_uuid" ] || fail 'Supply qiyu.osstore_uuid or local qiyu-device.conf'
+[ -n "$osstore_uuid" ] || fail 'Supply xr.osstore_uuid or local xr-device.conf'
 blkid /dev/sda16 | grep -Fq "UUID=\"$osstore_uuid\"" || fail 'osstore UUID mismatch'
 mount -t ext4 -o noatime /dev/sda16 /osstore || fail 'osstore mount failed'
 

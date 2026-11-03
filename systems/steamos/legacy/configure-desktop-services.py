@@ -184,7 +184,7 @@ def main():
     if PROFILE.is_symlink() or (PROFILE.exists() and not PROFILE.read_text().startswith(OWNER)):
         fail('Refusing to replace an unrelated NetworkManager profile')
 
-    ucm = Path('/usr/share/alsa/ucm2/conf.d/sm8250/Qiyu MIX WCD9385 DMIC.conf')
+    ucm = Path('/usr/share/alsa/ucm2/conf.d/sm8250/XR MIX WCD9385 DMIC.conf')
     ucm_target = '../../Qualcomm/sm8250/a081/A081.conf'
     source_ucm = DEBIAN / str(ucm).lstrip('/')
     if not source_ucm.is_symlink():

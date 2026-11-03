@@ -1,6 +1,0 @@
-[Match]
-Driver=ath11k_pci
-
-[Link]
-NamePolicy=
-Name=wlan0

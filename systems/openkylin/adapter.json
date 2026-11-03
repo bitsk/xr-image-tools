@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "id": "openkylin",
+  "architecture": "arm64",
+  "prepare": {
+    "program": "adapter.py",
+    "arguments": [
+      "--output",
+      "{output}",
+      "--source",
+      "{source}"
+    ]
+  },
+  "base_archive": "rootfs.tar",
+  "status": "verified official base archive input; no device write"
+}

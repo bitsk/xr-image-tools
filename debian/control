@@ -1,0 +1,15 @@
+Source: xr-image-tools
+Section: misc
+Priority: optional
+Maintainer: openKylin XR SIG <xr@lists.openkylin.top>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Vcs-Git: https://gitee.com/bigbits/xr-image-tools.git
+Vcs-Browser: https://gitee.com/bigbits/xr-image-tools
+
+Package: xr-image-builder
+Architecture: all
+Depends: ${misc:Depends}, python3, debootstrap, xz-utils, zstd, tar, openkylin-xr-defaults
+Description: XR multi-system image preparation and composition tools
+ Independently maintained XR component for openKylin integration.

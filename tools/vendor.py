@@ -11,9 +11,11 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
+import urllib.request
+import urllib.parse
 
 REPO = Path(__file__).resolve().parents[1]
-DEFAULT_LOCK = REPO / 'devices/a081/vendor.lock.json'
+DEFAULT_LOCK = REPO.parent / 'openkylin-xr-integration/devices/a081/vendor.lock.json'
 
 def digest(path):
     value = hashlib.sha256()
@@ -104,7 +106,7 @@ def fetch(lock_path, output, selected):
     if output.exists() or output.is_symlink():
         raise ValueError('Choose a new vendor-cache directory')
     output.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='.qiyu-vendor-', dir=output.parent) as temp:
+    with tempfile.TemporaryDirectory(prefix='.xr-vendor-assets-', dir=output.parent) as temp:
         staged = Path(temp) / 'cache'
         downloads = Path(temp) / 'downloads'
         staged.mkdir()
@@ -116,12 +118,17 @@ def fetch(lock_path, output, selected):
             if relative(asset).name != asset:
                 raise ValueError('Invalid asset name')
             archive = downloads / asset
-            if 'asset_id' in bundle:
-                command = ['gh', 'api', 'repos/' + lock['repository'] + '/releases/assets/' + str(int(bundle['asset_id'])), '-H', 'Accept: application/octet-stream']
-                with archive.open('wb') as target:
-                    subprocess.run(command, stdout=target, check=True)
+            if lock.get('platform') == 'gitee':
+                url = bundle['download_url']
+                if not url.startswith('https://gitee.com/'):
+                    raise ValueError('Unsupported vendor download origin')
+                credential = os.environ.get('GITEE_ACCESS_TOKEN')
+                if credential:
+                    url += ('&' if '?' in url else '?') + urllib.parse.urlencode({'access_token': credential})
+                with urllib.request.urlopen(url, timeout=120) as source, archive.open('wb') as target:
+                    shutil.copyfileobj(source, target)
             else:
-                subprocess.run(['gh', 'release', 'download', lock['tag'], '--repo', lock['repository'], '--pattern', asset, '--dir', str(downloads)], check=True)
+                raise ValueError('This lock requires a Gitee asset provider')
             if archive.stat().st_size != bundle['bytes'] or digest(archive) != bundle['sha256']:
                 raise ValueError('Release asset checksum mismatch: ' + asset)
             unpack(archive, staged / name, bundle)

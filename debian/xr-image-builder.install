@@ -1,0 +1,5 @@
+tools/*.py usr/lib/xr/image-tools/tools/
+systems usr/lib/xr/image-tools/
+profiles usr/lib/xr/image-tools/
+components.lock.json usr/lib/xr/image-tools/
+bin/* usr/bin/

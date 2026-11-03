@@ -1,60 +1,72 @@
 {
   "schema": 1,
   "components": {
-    "qiyu-kernel": {
-      "repository": "https://github.com/bitsk/qiyu-kernel",
-      "commit": "fc30355dbc6b5ff06b97d6e8a60bbd0e1433273b"
+    "xr-kernel": {
+      "repository": "https://gitee.com/bigbits/xr-kernel",
+      "commit": "3b2556491c73b027a815b5a4be3d764da3c2930e"
     },
-    "qiyu-device-service": {
-      "repository": "https://github.com/bitsk/qiyu-device-service",
-      "commit": "47bb5da824fba32373d79af246952077e119fcc7",
+    "xr-device-io": {
+      "repository": "https://gitee.com/bigbits/xr-device-io",
+      "commit": "0dd923078ca0685a77c2a8b791e9cbe2f8f535f0",
       "public_headers_sha256": {
-        "include/qiyu/device/a081_camera_capture.hpp": "e287db7d4cfd033bc28e345f08d5ce888a8f56b4b8ab39f7ff430ab6482c8384",
-        "include/qiyu/device/a081_camera_groups.hpp": "34391b8a470237b87e1bee11c25c9f265262cd10c1a61e960d327fdca6867c63",
-        "include/qiyu/device/a081_camera_metadata.hpp": "fcf32157d5fc6a98a9006088fa686b247a5312fed4502604d39ffd1e6045d3eb",
-        "include/qiyu/device/a081_camera_pattern.hpp": "3c017fec3241b8196abbd8b49e13fdc9d4fef136c167fcf615b5bc3dc6d2f0e5",
-        "include/qiyu/device/a081_camera_pixels.hpp": "12ddfc2993765b38251c792be308f95a3fff966a0beba572d85ab4060b16dba6",
-        "include/qiyu/device/a081_camera_timing.hpp": "df5bf35c45d527dab98cc8c012e6f346541775c711680308272138ac0b81a4ea",
-        "include/qiyu/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
-        "include/qiyu/device/a081_controller_frame_export.hpp": "8edbb136146eb52e2b9af2988299138a601f2e5dc1aef490dec786f0dd9cbd44",
-        "include/qiyu/device/a081_controller_input_wire.h": "96543c56e3b9f0df3d7b5b40e2f97e7094a6641ac260ede67b394a9b1ba906a7",
-        "include/qiyu/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
-        "include/qiyu/device/a081_controller_wire.h": "42556858a01e9f279dc94770db433d7e918844569fdc8a43ea6495dd4fcdcb79",
-        "include/qiyu/device/a081_radio_clock_reference.h": "6527202d4c47f56e11ee193107322acde1f666bbd8c58497cf8bbca956835b3b",
-        "include/qiyu/device/abi_reference.hpp": "27d7f773d3b9f94c47d8347129041ab933c83c4cb05cb38561e0707f5a806463",
-        "include/qiyu/device/camera-preview.hpp": "89e2d13ce8786dd0bb96f2b86e11a1e1bc2c80d673b84ed71f950a00061d01ae"
+        "include/xr/device/a081_camera_capture.hpp": "7d99069d6a371c74427ba4a409137b8cc7e05f43bf5f6fab487a3e683c9fd072",
+        "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
+        "include/xr/device/a081_camera_metadata.hpp": "4ec91b957ecbc985c597621821e385c3febe6221af8a78f56623b01e7fa290a0",
+        "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
+        "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
+        "include/xr/device/a081_camera_timing.hpp": "df5bf35c45d527dab98cc8c012e6f346541775c711680308272138ac0b81a4ea",
+        "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
+        "include/xr/device/a081_controller_frame_export.hpp": "99d7f00b42ee67faab582d6340345c00ff2d738e67aa42d56284ba991feba7dc",
+        "include/xr/device/a081_controller_input_wire.h": "96543c56e3b9f0df3d7b5b40e2f97e7094a6641ac260ede67b394a9b1ba906a7",
+        "include/xr/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
+        "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
+        "include/xr/device/a081_radio_clock_reference.h": "0f4489e218b9483292ac01b78ed65f02bbfa5dce44e739268f65c3056d8097f0",
+        "include/xr/device/abi_reference.hpp": "27d7f773d3b9f94c47d8347129041ab933c83c4cb05cb38561e0707f5a806463",
+        "include/xr/device/camera-preview.hpp": "89e2d13ce8786dd0bb96f2b86e11a1e1bc2c80d673b84ed71f950a00061d01ae"
       }
     },
-    "qiyu-head-tracking": {
-      "repository": "https://github.com/bitsk/qiyu-head-tracking",
-      "commit": "092d898bdbdfad0292bd1711f2dbeefbf2987efb",
+    "xr-head-tracking": {
+      "repository": "https://gitee.com/bigbits/xr-head-tracking",
+      "commit": "9b0108eb3ce088f78e86865bef4ffbe04f0ffe8b",
       "public_headers_sha256": {
-        "include/qiyu/head/a081_qvr_pose.h": "e548b8b3027de011ad2c868a812017b1ea55d5e1f0f424abfa0d205cd2b0455e",
-        "include/qiyu/head/a081_tracking_client.h": "553fbc3bad33d4c6389b24c6305c640ad7f4b5b8b5a42cc0f694b6ba5bb2d06c",
-        "include/qiyu/head/a081_tracking_wire.h": "a59d94185675de3196f63ac0d682cb6f26a0d283e2615ddda3cab5671bc36062"
+        "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
+        "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
+        "include/xr/head/a081_tracking_wire.h": "a59d94185675de3196f63ac0d682cb6f26a0d283e2615ddda3cab5671bc36062"
       }
     },
-    "qiyu-controller-tracking": {
-      "repository": "https://github.com/bitsk/qiyu-controller-tracking",
-      "commit": "c1adfb285f15670b3e87ba19f0b0e9e41df5d31d",
+    "xr-controller-tracking": {
+      "repository": "https://gitee.com/bigbits/xr-controller-tracking",
+      "commit": "d7d80610e4c02c2059d9f68280c2f33208baa692",
       "public_headers_sha256": {
-        "include/qiyu/controller/a081_controller_controls.h": "d79c96213f8f59e2bf242025e1729bf0d196c76ed859c0b14bdeb1e4f54cc1e1",
-        "include/qiyu/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
-        "include/qiyu/controller/a081_controller_input_contract.hpp": "c28806dceb9ba1b2df47e3d6997910eeebdd055063c7267e10e9af77735b019d",
-        "include/qiyu/controller/a081_controller_pose_wire.h": "2f37564580cd456d0e0700e244a43d80425a827d3ea1dd4e9e68606987fa9526"
+        "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
+        "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
+        "include/xr/controller/a081_controller_input_contract.hpp": "b161ff1272af3f2f49416b7065304b2eb86d099f4a001820221ca11bceb6364f",
+        "include/xr/controller/a081_controller_pose_wire.h": "2f37564580cd456d0e0700e244a43d80425a827d3ea1dd4e9e68606987fa9526"
       }
     },
-    "qiyu-vr-runtime": {
-      "repository": "https://github.com/bitsk/qiyu-vr-runtime",
-      "commit": "e15246cd334f0d5d3cc09df9df892c93a3e1c787"
+    "xr-monado": {
+      "repository": "https://gitee.com/bigbits/xr-monado",
+      "commit": "116bdc58e5a957d7d0a3cb3931711412c7a7bf11"
     },
-    "qiyu-vr-session": {
-      "repository": "https://github.com/bitsk/qiyu-vr-session",
-      "commit": "b3e78137f0b22a278ea287b9b5efa98e7a3f6ad3"
+    "xr-session-manager": {
+      "repository": "https://gitee.com/bigbits/xr-session-manager",
+      "commit": "4293388a35280c5073ca82179454fc647bae9d83"
     },
-    "qiyu-debug": {
-      "repository": "https://github.com/bitsk/qiyu-debug",
-      "commit": "79ea54d5283deccc1d698eea0b43250778db3629"
+    "xr-debug-console": {
+      "repository": "https://gitee.com/bigbits/xr-debug-console",
+      "commit": "f8d9f95ac198b29278711ddb4e6acbcdbf0b9977"
+    },
+    "xr-mesa": {
+      "repository": "https://gitee.com/bigbits/xr-mesa",
+      "commit": "5f414ae81369cfb1da7438552bcbbf47df59a90f"
+    },
+    "xr-hexagonrpc": {
+      "repository": "https://gitee.com/bigbits/xr-hexagonrpc",
+      "commit": "934dc102d3b4626fdbfd23c5e9d5c68cd91ca25b"
+    },
+    "openkylin-xr-integration": {
+      "repository": "https://gitee.com/bigbits/openkylin-xr-integration",
+      "commit": "ccc4bf9b9dcc0fc25775529503e1d8e5590cee4d"
     }
   }
 }

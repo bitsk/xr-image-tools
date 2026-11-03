@@ -132,7 +132,7 @@ def main():
     link('/etc/localtime', '/usr/share/zoneinfo/Asia/Hong_Kong')
     write('/etc/machine-id', uuid.uuid4().hex + '\n', 0o444)
     link('/var/lib/dbus/machine-id', '/etc/machine-id')
-    write('/etc/motd', 'SteamOS ARM64 on Qiyu MIX A081. Local USB root maintenance console.\n')
+    write('/etc/motd', 'SteamOS ARM64 on XR MIX A081. Local USB root maintenance console.\n')
     link('/etc/systemd/system/default.target', '/usr/lib/systemd/system/multi-user.target')
 
     patterns = ('deckard*', 'steamos*', 'steam*', 'atomupd*', 'holo-*', 'adbd*', 'usb-*',
