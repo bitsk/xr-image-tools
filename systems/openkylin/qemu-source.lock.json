@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "system": "openkylin",
+  "version": "3.0",
+  "architecture": "amd64",
+  "url": "https://releases.openkylin.top/3.0/openKylin-Desktop-V3.0-20260918-x86_64.iso",
+  "bytes": 7647188992,
+  "sha256": "4bc4389d15c8af8da7882c16871edcb43650d534ee56deeda8991ea1492652ce",
+  "download_page_md5": "032510d24855c74250ad2e4deb19f999",
+  "squashfs_sha256": "f94af0cf539af4e54bc3011493ddfc8dfc2694caa8c625a60c27082080605b02",
+  "checksum_scope": "Official download-page MD5 matched, local SHA-256 pinned, squashfs checked against ISO SHA256SUMS; no detached signature verified."
+}

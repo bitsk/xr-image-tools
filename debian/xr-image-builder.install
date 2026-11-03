@@ -1,4 +1,6 @@
 tools/*.py usr/lib/xr/image-tools/tools/
+tools/qemu/*.sh usr/lib/xr/image-tools/tools/qemu/
+tools/qemu/README.md usr/share/doc/xr-image-builder/qemu/
 systems usr/lib/xr/image-tools/
 profiles usr/lib/xr/image-tools/
 components.lock.json usr/lib/xr/image-tools/

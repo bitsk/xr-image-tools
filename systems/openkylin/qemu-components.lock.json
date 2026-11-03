@@ -1,0 +1,19 @@
+{
+  "openxr-sdk": {
+    "commit": "c15d38cb4bb10a5b7e075f74493ff13896e2597a",
+    "origin": "https://github.com/KhronosGroup/OpenXR-SDK.git"
+  },
+  "vulkan-tools": {
+    "commit": "48a4bcbdf619e57204783f8c1a04c76c160ddd5b",
+    "origin": "https://github.com/KhronosGroup/Vulkan-Tools.git"
+  },
+  "monado": {
+    "commit": "8d4e76ca189c69c0bc6991a5638cc569a4a408d6",
+    "origin": "https://gitee.com/bigbits/xr-monado.git",
+    "dirty": false
+  },
+  "openxr-sdk-source": {
+    "commit": "58e026e7efa5a4f6a612c554560b53aa482f04d4",
+    "origin": "https://github.com/KhronosGroup/OpenXR-SDK-Source.git"
+  }
+}
