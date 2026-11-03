@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /usr/lib/xr/image-tools/tools/qemu/run-simulator.sh "$@"

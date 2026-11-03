@@ -95,12 +95,10 @@ python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" run --graphics venus \
 python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" ssh --user root \
   'cat > /tmp/xr-sdk.sh; systemd-run --unit=xr-sdk-build --property=Type=exec /bin/bash -c "bash /tmp/xr-sdk.sh > /var/log/xr-sdk-build.log 2>&1"' \
   < "$tools_dir/tools/qemu/install-sdk.sh"
-python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" ssh --user root \
-  'target=/usr/local/bin/xr-simulator; temp=$(mktemp "${target}.XXXXXX"); trap '\''rm -f "$temp"'\'' EXIT; cat > "$temp" && chmod 755 "$temp" && mv -f "$temp" "$target"' \
-  < "$tools_dir/tools/qemu/run-simulator.sh"
+
 ```
 
-更新运行中的 Bash 入口时使用同目录临时文件加 rename，旧进程继续读取原 inode。不要用 `cat > /usr/local/bin/xr-simulator` 覆盖活动脚本。`run-shell.sh` 可按相同步骤原子安装为 `/usr/local/bin/xr-shell-simulator`；两者安装不会启动会话。
+运行入口使用同版 `xr-image-builder` 包安装的 `tools/qemu` 与 `tools/common`，或完整版本目录。自 `0.1.6` 起不能只复制一个薄入口到 `/usr/local/bin`；包提供 `xr-simulator`、`xr-shell-simulator` 和 `xr-desktop-dev` 命令。更新使用完整版本目录加原子 symlink/rename，旧 Bash 进程保留原 inode。不要覆盖活动脚本；安装本身不会启动会话。
 
 已验证的源码提交见 `systems/openkylin/qemu-components.lock.json`；更新本地源码后需要明确同步来宾源码和重建，不把旧构建目录当作新输入。
 
@@ -192,3 +190,5 @@ profile 记录每个自己启动进程的 PID/启动标识。SIGTERM 先通知�
 验收使用的 Khronos Vulkan validation layer 由官方 Ubuntu `vulkan-validationlayers` 包隔离解包到 `/opt/xr-validation`，未安装进来宾 dpkg；它仅用于诊断。Vulkan loader 的实际 instance/device layer 插入日志与零 VUID 计数一起保存。原生 Monado metrics 中应用帧、合成帧、GPU 时间分别记录，不将合成节奏或 GPU 时间等同物理帧率、延迟或 MIX 性能。
 
 `screenshot --output /work/desktop.png` 优先使用 QMP；GL 扫描输出没有 CPU surface 时改用来宾的 scrot。验证截图与生成概念图应分开保存。
+
+QEMU运行入口现在调用同仓 `../common` 中唯一的生命周期实现；仍检查原有 VM 标记。部署时保留 `tools/qemu` 与 `tools/common` 的完整相对布局，不能只复制单个薄脚本。原生 ARM64 开发必须通过独立 `tools/native` 入口并显式 opt-in，不写入或伪造 VM 标记。

@@ -1,3 +1,11 @@
+xr-image-tools (0.1.6) unstable; urgency=medium
+
+  * Share owned development-session lifecycle across QEMU and native entries.
+  * Add explicit openKylin arm64 native profiles with native Vulkan/WSI paths.
+  * Verify private null-sink routing and loopback-only native remote input.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 01:28:38 +0800
+
 xr-image-tools (0.1.5) unstable; urgency=medium
 
   * Add an isolated QEMU desktop composition profile for Shell and components.

@@ -1,5 +1,8 @@
 tools/*.py usr/lib/xr/image-tools/tools/
 tools/qemu/*.sh usr/lib/xr/image-tools/tools/qemu/
+tools/common/*.sh usr/lib/xr/image-tools/tools/common/
+tools/native/*.sh usr/lib/xr/image-tools/tools/native/
+tools/native/README.md usr/share/doc/xr-image-builder/native/
 tools/qemu/*.py usr/lib/xr/image-tools/tools/qemu/
 tools/qemu/*.c usr/lib/xr/image-tools/tools/qemu/
 tools/qemu/README.md usr/share/doc/xr-image-builder/qemu/
