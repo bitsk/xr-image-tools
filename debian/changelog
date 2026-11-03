@@ -1,3 +1,10 @@
+xr-image-tools (0.1.4) unstable; urgency=medium
+
+  * Add a Rust Shell development profile with owned client shutdown.
+  * Expose the installed panorama client through the isolated desktop entry.
+
+ -- openKylin XR SIG <xr@lists.openkylin.top>  Tue, 03 Nov 2026 23:01:29 +0800
+
 xr-image-tools (0.1.3) unstable; urgency=medium
 
   * Add authenticated UKUI desktop sharing and persistent idle policy.

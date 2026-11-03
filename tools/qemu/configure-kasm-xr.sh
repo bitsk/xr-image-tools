@@ -19,6 +19,21 @@ desktop_dir=$(xdg-user-dir DESKTOP)
 mkdir -p "$desktop_dir"
 install -m 755 "$HOME/.local/share/applications/xr-debug.desktop" "$desktop_dir/OpenXR-Debug.desktop"
 gio set "$desktop_dir/OpenXR-Debug.desktop" metadata::trusted true || true
+if command -v xr-shell >/dev/null && command -v xr-shell-simulator >/dev/null; then
+ cat > "$HOME/.local/share/applications/xr-shell.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=UKUI XR Shell
+Name[zh_CN]=UKUI XR 空间桌面
+Comment=Qingkong panorama with simulated OpenXR view controls
+Exec=/usr/local/bin/xr-shell-simulator
+Icon=preferences-desktop
+Terminal=false
+Categories=Development;
+EOF
+ install -m 755 "$HOME/.local/share/applications/xr-shell.desktop" "$desktop_dir/UKUI-XR-Shell.desktop"
+ gio set "$desktop_dir/UKUI-XR-Shell.desktop" metadata::trusted true || true
+fi
 cat > "$HOME/.config/autostart/xr-dev-awake.desktop" <<'EOF'
 [Desktop Entry]
 Type=Application
