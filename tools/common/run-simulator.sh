@@ -287,11 +287,23 @@ for ((i=0;i<150;i++)); do
 done
 [[ -S $XDG_RUNTIME_DIR/monado_comp_ipc ]] || { cat "$out/monado.log" >&2; exit 1; }
 if [[ $XR_DEVELOPMENT_BACKEND == native && $mode == remote ]]; then
- ss -H -ltn "sport = :$remote_port" > "$out/remote-listener.log"
- if ! awk -v port="$remote_port" '$4 == "127.0.0.1:" port { found = 1; next } { bad = 1 } END { exit (!found || bad) }' "$out/remote-listener.log"; then
-  echo 'Native Monado remote input must listen only on 127.0.0.1; inspect the bind-address support and remote-listener.log' >&2
-  exit 1
- fi
+ listener_ready=false
+ listener_deadline=$((SECONDS+5))
+ while ((SECONDS < listener_deadline)); do
+  child_alive "$service_pid" || { record 'XR_REMOTE_LISTENER_RUNTIME_EXITED=1'; exit 1; }
+  ss -H -ltn "sport = :$remote_port" > "$out/remote-listener.log"
+  if [[ -s $out/remote-listener.log ]]; then
+   if awk -v port="$remote_port" '$4 == "127.0.0.1:" port { found = 1; next } { bad = 1 } END { exit (!found || bad) }' "$out/remote-listener.log"; then
+    listener_ready=true; break
+   fi
+   record 'XR_REMOTE_LISTENER_NON_LOOPBACK=1'
+   echo 'Native Monado remote input must listen only on 127.0.0.1; inspect the bind-address support and remote-listener.log' >&2
+   exit 1
+  fi
+  # The compositor IPC socket can become ready before the remote driver.
+  sleep .05
+ done
+ $listener_ready || { record 'XR_REMOTE_LISTENER_TIMEOUT=5'; exit 1; }
  record "XR_REMOTE_BIND_ADDRESS=127.0.0.1 XR_REMOTE_LISTENER_VERIFIED=1"
 fi
 record "XR_RENDERER=$renderer XR_RUNTIME_PREFIX=$prefix"

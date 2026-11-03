@@ -1,3 +1,10 @@
+xr-image-tools (0.1.8) unstable; urgency=medium
+
+  * Wait up to five seconds for the native remote listener after IPC startup.
+  * Reject non-loopback listeners immediately and preserve owned cleanup.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 01:58:38 +0800
+
 xr-image-tools (0.1.7) unstable; urgency=medium
 
   * Limit private WirePlumber to virtual-node routing policy.

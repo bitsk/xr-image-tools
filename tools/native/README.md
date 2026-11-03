@@ -36,7 +36,9 @@ The full desktop and standalone native simulator use
 `$XDG_RUNTIME_DIR/xr-desktop-runtime`, a process lock, and remote input port 4244
 (overridable with `--remote-port`). The native Monado candidate must implement
 `XRT_REMOTE_BIND_ADDRESS=127.0.0.1`; the profile verifies the actual TCP listener
-is exclusively loopback before starting the XR client. An unsupported bind
+is exclusively loopback before starting the XR client. The remote driver has a
+five-second readiness window after compositor IPC becomes ready; an empty listener
+result waits, a non-loopback listener fails immediately. An unsupported bind
 contract or occupied port fails startup and cleans up owned children.
 
 Component sessions use a fresh D-Bus, 0700 private runtime/config/state/cache,
