@@ -80,3 +80,11 @@ Install updates via a complete versioned directory and an atomic symlink/rename.
 Do not overwrite a Bash script while it is executing. Script/package checks,
 native startup, GPU rendering and actual input/IME/audio acceptance are distinct
 results. This source change by itself does not establish native runtime success.
+
+For an operator-requested normal stop, signal the top-level `run-desktop.sh`
+process whose PID was captured when launching this development session. Its
+outer wrapper forwards only to its owned helper; the helper leaves its health
+monitor loop before stopping the Shell and collecting its runtime. Do not use
+the Rust Shell client PID as the session stop API. Signaling the simulator
+wrapper directly retains its Unix signal exit status; a direct client exit has
+no advance draining marker and is not silently accepted as a successful session.
