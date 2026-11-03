@@ -47,13 +47,16 @@ python3 tools/qemu/kasmvnc-forward.py --workspace VM_WORKSPACE --listen HOST_LAN
 python3 tools/qemu/kasmvnc-forward.py --workspace VM_WORKSPACE --listen HOST_LAN_IP --remove
 ```
 
-Open `https://HOST_LAN_IP:8444/` in a browser and authenticate as `kasm-xr` with
+Open `https://HOST_LAN_IP:8444/?resize=scale` in a browser and authenticate as `kasm-xr` with
 the separately supplied password. The installer creates a private self-signed
 certificate. Trust it for this development endpoint or install your own
 certificate in the account's `.vnc/tls.crt` and `.vnc/tls.key` files. This
 account's password file is separate from existing VNC and desktop passwords.
 The Unix account remains locked for password login; the supplied credential
-is for KasmVNC Basic authentication only.
+is for KasmVNC Basic authentication only. The `resize=scale` option scales the
+existing desktop locally, preserving its resolution and application layout.
+Without that option, the client defaults to resizing the guest desktop to
+match the browser viewport.
 
 Session environment for launching applications:
 
@@ -112,3 +115,18 @@ The relay existed only for acceptance and is not part of the service. The
 LAN listener retains TLS and Basic auth; unauthenticated requests return 401.
 Native browser password-dialog behavior must be checked separately by the
 interactive user.
+
+## Vulkan window presentation under KasmVNC
+
+With the tested Mesa 26.0.3 Venus/X11 combination, GPU Vulkan applications
+can keep rendering while their Kasm windows appear black. A bounded Venus
+`vkcube` comparison reproduced this with the default WSI path and with
+`MESA_VK_WSI_DEBUG=linear`. The same Venus application became visible using
+`MESA_VK_WSI_DEBUG=sw,linear`; the selected GPU remained Intel UHD 770.
+This preserves GPU rendering and changes the window image transfer to a CPU
+path. It is not a zero-copy presentation path.
+
+Apply this workaround only to the affected application's or XR compositor's
+process environment. Do not change the existing display's runtime, all Vulkan
+applications, or global Mesa settings. A runtime's frame counters alone do
+not establish that its mirror is visible; verify the actual browser image.
