@@ -16,7 +16,7 @@ EOF
 original_args=("$@")
 seconds=0 capture_dir= environment= simulator= private=
 validation=false debug_input=false xwayland=false audio=true ime=true
-runtime_args=()
+runtime_args=(--remote-port "${XR_DESKTOP_REMOTE_PORT:-4244}")
 while (($#)); do
  case "$1" in
   --help|-h) usage; exit 0 ;;
@@ -42,6 +42,15 @@ grep -qx openkylin-qemu-amd64 /etc/xr-vm-id
 [[ $(id -u) != 0 ]]
 original_runtime=${XDG_RUNTIME_DIR:?A logged-in development runtime directory is required}
 [[ -d $original_runtime && -O $original_runtime ]]
+# A dedicated Monado runtime and port let the earlier panorama/debug session
+# keep running. Explicit test sessions may already supply their own directory.
+if [[ -z $private && ${XR_DESKTOP_DEDICATED_RUNTIME:-1} == 1 ]]; then
+ original_runtime="$original_runtime/xr-desktop-runtime"
+ [[ ! -L $original_runtime ]]
+ mkdir -p -m 700 "$original_runtime"
+ [[ -d $original_runtime && -O $original_runtime ]]
+ export XDG_RUNTIME_DIR="$original_runtime"
+fi
 prefix=${XR_DESKTOP_PREFIX:-/usr}
 shell_socket="$original_runtime/xr-desktop/shell.sock"
 
