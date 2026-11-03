@@ -1,3 +1,10 @@
+xr-image-tools (0.1.5) unstable; urgency=medium
+
+  * Add an isolated QEMU desktop composition profile for Shell and components.
+  * Keep private D-Bus, Wayland, IME and audio outside the active desktop runtime.
+
+ -- openKylin XR SIG <xr@lists.openkylin.top>  Tue, 03 Nov 2026 23:58:21 +0800
+
 xr-image-tools (0.1.4) unstable; urgency=medium
 
   * Add a Rust Shell development profile with owned client shutdown.

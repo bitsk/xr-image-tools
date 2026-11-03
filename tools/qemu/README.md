@@ -167,6 +167,24 @@ bash tools/qemu/run-shell.sh --simulator /usr/local/bin/xr-simulator \
 
 开发桌面通过 GSettings 关闭自动休眠、变暗和屏保，X11 屏保 timeout 为 0、DPMS 关闭；`xr-dev-awake --hold` 持续持有 UKUI 标准 idle/suspend inhibitor，处理当前会话缓存的空闲定时器。原桌面由用户服务启动，独立 Kasm 会话由用户自启动项启动。停止防空闲服务或移除对应自启动项可以撤销持续抑制；持久化设置需按需恢复。
 
+## 多组件开发桌面
+
+`run-desktop.sh` 仅在带 `openkylin-qemu-amd64` 标记的开发 VM 中运行。它组合已有 `run-shell.sh`/`xr-simulator`，保留其 Monado/客户端生命周期；这是开发 profile，不是替代生产 `xr-session-manager` 的新接口。按同目录临时文件加 rename 原子安装入口，或直接运行完整脚本目录。
+
+```sh
+XR_DESKTOP_PREFIX=/opt/xr-desktop-candidate \
+  bash tools/qemu/run-desktop.sh --seconds 120 \
+  --capture-dir "$HOME/.local/state/xr-desktop-captures" --validation --debug-input
+```
+
+`XR_DESKTOP_PREFIX` 默认 `/usr`，候选目录应包含 `bin/xr-shell`、`xr-window-server`、`xr-dock` 和 `xr-system-ui`。`--simulator PATH` 可以选择本次版本的模拟器；环境、renderer、Monado prefix、remote port 与 WSI 开关继续由既有 profile 处理。`--xwayland` 显式请求窗口服务的可选 Xwayland 支持；`--no-ime`、`--no-audio` 仅用于未启用对应能力的阶段，不表示这些能力已验收。
+
+Shell 与 Monado 保持启动者原来的 `XDG_RUNTIME_DIR` 和显示输出。其组件 socket 始终为原 runtime 下的 `xr-desktop/shell.sock`，由各组件显式指定。profile 用 `dbus-run-session` 新建总线，并在原 runtime 的唯一 `xr-desktop-dev.*` 子目录内分配 0700 的组件 runtime/config/state/cache；Wayland display 固定为私有的 `xr-wayland-0`。组件环境去除原 X11 `DISPLAY`，避免 Fcitx `--replace` 或应用退回原桌面的 X11/DBus/音频实例；GTK/Qt 使用私有 Wayland 和 Fcitx 环境。`XR_SYSTEM_UI_ISOLATED_BUS=1` 与 System UI 的 `--isolated-notifications` 只在这份新总线中启用。
+
+启动顺序为 Shell/socket → 私有 Wayland/socket → Fcitx/服务名 → 私有 PipeWire、Pulse、WirePlumber 与显式 `xr_desktop_null` sink → Dock → System UI。所有 socket 查询和 pactl 均使用私有 runtime/明确的 server；没有原用户音频 socket 的硬编码。无声卡也可以验证音量、静音与路由控制，但 null sink 不代表物理音频输出通过。若已安装 Fcitx 拼音方法，profile 在私有配置中选择该方法；预编辑、候选和提交仍需真实应用验收。
+
+profile 记录每个自己启动进程的 PID/启动标识。SIGTERM 先通知本次 Shell；随后终止并等待自己的组件和 daemon，最后等待既有模拟器完成客户端/Monado回收。超时只向身份仍匹配的自有 PID 发信号；不调用全局 pkill 或删除原 runtime。外层等待私有 D-Bus 会话退出后删除本次临时子目录。日志和抓帧保留在用户 state/capture 目录，`xr-desktop-dev/latest` 指向最近日志；异常退出状态应结合各 child exit 与实际端点/进程结果判断，不能仅靠 READY 判断整套能力通过。
+
 验收使用的 Khronos Vulkan validation layer 由官方 Ubuntu `vulkan-validationlayers` 包隔离解包到 `/opt/xr-validation`，未安装进来宾 dpkg；它仅用于诊断。Vulkan loader 的实际 instance/device layer 插入日志与零 VUID 计数一起保存。原生 Monado metrics 中应用帧、合成帧、GPU 时间分别记录，不将合成节奏或 GPU 时间等同物理帧率、延迟或 MIX 性能。
 
 `screenshot --output /work/desktop.png` 优先使用 QMP；GL 扫描输出没有 CPU surface 时改用来宾的 scrot。验证截图与生成概念图应分开保存。
