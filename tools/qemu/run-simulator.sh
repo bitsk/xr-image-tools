@@ -1,8 +1,18 @@
 #!/bin/bash
 # Run as the logged-in UKUI development user inside the x86_64 VM.
 set -euo pipefail
-grep -qx openkylin-qemu-amd64 /etc/xr-vm-id
-[[ $(id -u) != 0 ]]
+usage() {
+ cat <<'EOF'
+Usage: run-simulator.sh [--seconds N] [--qwerty|--sliders]
+       [--remote-port PORT] [--wsi-copy] [--renderer venus|lavapipe]
+       [--runtime-prefix DIR] [--scale 1-200]
+       [--client PATH [--client-arg ARG ...]]
+
+The default client is hello_xr -g Vulkan2 -v. Custom clients receive only the
+explicit --client-arg arguments and must handle SIGTERM for graceful shutdown.
+The timer or closing the sliders stops the client before this session's runtime.
+EOF
+}
 seconds=0
 mode=simulated
 renderer=venus
@@ -10,8 +20,11 @@ prefix=/opt/xr-dev
 scale=30
 remote_port=4242
 wsi_copy=false
+client_path=
+client_args=()
 while (($#)); do
  case "$1" in
+  --help|-h) usage; exit 0 ;;
   --seconds) seconds=${2:?Missing duration}; shift 2 ;;
   --qwerty) mode=qwerty; shift ;;
   --sliders) mode=remote; shift ;;
@@ -20,12 +33,19 @@ while (($#)); do
   --renderer) renderer=${2:?Missing renderer}; shift 2 ;;
   --runtime-prefix) prefix=${2:?Missing runtime prefix}; shift 2 ;;
   --scale) scale=${2:?Missing scale percentage}; shift 2 ;;
-  *) echo 'Usage: run-simulator.sh [--seconds N] [--qwerty|--sliders] [--remote-port PORT] [--wsi-copy] [--renderer venus|lavapipe] [--runtime-prefix DIR] [--scale 1-200]' >&2; exit 2 ;;
+  --client) client_path=${2:?Missing client executable}; shift 2 ;;
+  --client-arg)
+   (($# >= 2)) || { echo 'Missing client argument' >&2; exit 2; }
+   client_args+=("$2"); shift 2 ;;
+  *) usage >&2; exit 2 ;;
  esac
 done
 [[ $seconds =~ ^[0-9]+$ ]]
 [[ $scale =~ ^[0-9]+$ && $scale -ge 1 && $scale -le 200 ]]
 [[ $remote_port =~ ^[0-9]+$ && $remote_port -ge 1024 && $remote_port -le 65535 ]]
+[[ -n $client_path || ${#client_args[@]} == 0 ]] || { echo '--client-arg requires --client' >&2; exit 2; }
+grep -qx openkylin-qemu-amd64 /etc/xr-vm-id
+[[ $(id -u) != 0 ]]
 [[ -x $prefix/bin/monado-service && -f $prefix/share/openxr/1/openxr_monado.json ]]
 source /opt/xr-dev/env.sh
 export LD_LIBRARY_PATH="$prefix/lib64:$prefix/lib:$prefix/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
@@ -33,6 +53,20 @@ export DISPLAY=${DISPLAY:-:0}
 export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 exec 9>"$XDG_RUNTIME_DIR/xr-simulator.lock"
 flock -n 9 || { echo 'A simulator session is already running' >&2; exit 1; }
+[[ ! -e $XDG_RUNTIME_DIR/monado_comp_ipc ]] || {
+ echo 'An existing runtime socket is present; stop its owning session first' >&2; exit 1;
+}
+custom_client=false
+if [[ -n $client_path ]]; then
+ client_path=$(command -v -- "$client_path")
+ [[ -f $client_path && -x $client_path ]] || { echo 'Client must be an executable file' >&2; exit 2; }
+ custom_client=true
+ client=("$client_path" "${client_args[@]}")
+ client_log=client.log
+else
+ client=(hello_xr -g Vulkan2 -v)
+ client_log=hello-xr.log
+fi
 logs=${XDG_STATE_HOME:-$HOME/.local/state}/xr-simulator
 mkdir -p "$logs"
 out=$(mktemp -d "$logs/run-XXXXXX")
@@ -61,32 +95,113 @@ else
  unset QWERTY_ENABLE
 fi
 service_pid= app_pid= timer_pid= gui_pid= layout_pid=
+app_status=not-started
+fifo_open=false
+stop_reason=client-exit
+declare -A child_start=()
+
+record() { printf '%s\n' "$*" | tee -a "$out/lifecycle.log"; }
+process_start() {
+ local stat rest
+ [[ -r /proc/$1/stat ]] || return 1
+ stat=$(<"/proc/$1/stat")
+ rest=${stat##*) }
+ local fields=()
+ read -r -a fields <<< "$rest"
+ [[ ${#fields[@]} -ge 20 ]] || return 1
+ printf '%s\n' "${fields[19]}"
+}
+remember_child() {
+ local token
+ token=$(process_start "$2") || token=
+ child_start[$2]=$token
+ record "XR_CHILD_START role=$1 pid=$2 start=$token"
+}
+child_alive() {
+ local token
+ [[ -n ${1:-} ]] || return 1
+ [[ -n ${child_start[$1]:-} ]] || return 1
+ token=$(process_start "$1") || return 1
+ [[ $token == "${child_start[$1]}" ]] && kill -0 "$1" 2>/dev/null
+}
+signal_child() {
+ child_alive "${2:-}" || return 0
+ kill -s "$1" "$2" 2>/dev/null || true
+}
+reap_child() {
+ local role=$1 pid=$2 result
+ if wait "$pid"; then result=0; else result=$?; fi
+ record "XR_CHILD_EXIT role=$role pid=$pid status=$result"
+}
+stop_client() {
+ [[ -n $app_pid ]] || return 0
+ if child_alive "$app_pid"; then
+  record "XR_CLIENT_STOP reason=$stop_reason pid=$app_pid"
+  if ! $custom_client && $fifo_open; then
+   printf '\n' >&8
+  else
+   signal_child TERM "$app_pid"
+  fi
+  local limit=$((SECONDS + 15))
+  while child_alive "$app_pid"; do
+   if ((SECONDS >= limit)); then
+    record "XR_CLIENT_GRACE_TIMEOUT pid=$app_pid"
+    signal_child KILL "$app_pid"
+    cleanup_status=124
+    break
+   fi
+   sleep .1
+  done
+  if wait "$app_pid"; then app_status=0; else app_status=$?; fi
+ else
+  if wait "$app_pid"; then app_status=0; else app_status=$?; fi
+ fi
+ record "XR_CHILD_EXIT role=client pid=$app_pid status=$app_status"
+ app_pid=
+}
 cleanup() {
+ local cleanup_status=$?
  trap - EXIT INT TERM
- for p in "$timer_pid" "$layout_pid" "$app_pid" "$gui_pid" "$service_pid"; do
-  [[ -z $p ]] || kill "$p" 2>/dev/null || true
- done
- wait || true
+ set +e
+ if [[ -n $timer_pid ]]; then signal_child TERM "$timer_pid"; reap_child timer "$timer_pid"; timer_pid=; fi
+ if [[ -n $layout_pid ]]; then signal_child TERM "$layout_pid"; reap_child layout "$layout_pid"; layout_pid=; fi
+ stop_client
+ if [[ $app_status != not-started && $app_status != 0 && $cleanup_status == 0 ]]; then cleanup_status=$app_status; fi
+ if [[ -n $gui_pid ]]; then signal_child TERM "$gui_pid"; reap_child controls "$gui_pid"; gui_pid=; fi
+ # The runtime remains alive until the client's graceful exit has completed.
+ if [[ -n $service_pid ]]; then signal_child TERM "$service_pid"; reap_child runtime "$service_pid"; service_pid=; fi
+ if $fifo_open; then exec 8>&-; fi
+ exec 7<&-
  rm -f "$out/input.fifo"
+ record "XR_CLIENT_EXIT=$app_status XR_STOP_REASON=$stop_reason"
+ record "XR_SESSION_EXIT=$cleanup_status"
+ exit "$cleanup_status"
 }
 trap cleanup EXIT
-trap 'exit 130' INT TERM
+trap 'stop_reason=signal-int; exit 130' INT
+trap 'stop_reason=signal-term; exit 143' TERM
 present_env=()
 if $wsi_copy; then
  # Xkasmvnc needs CPU WSI transport; application/compositor rendering stays GPU.
  present_env=(env MESA_VK_WSI_DEBUG=sw,linear)
 fi
-"${present_env[@]}" "$prefix/bin/monado-service" > "$out/monado.log" 2>&1 & service_pid=$!
+"${present_env[@]}" "$prefix/bin/monado-service" 9>&- > "$out/monado.log" 2>&1 & service_pid=$!
+remember_child runtime "$service_pid"
 for ((i=0;i<150;i++)); do
+ child_alive "$service_pid" || { cat "$out/monado.log" >&2; exit 1; }
  [[ -S $XDG_RUNTIME_DIR/monado_comp_ipc ]] && break
- kill -0 "$service_pid" || { cat "$out/monado.log" >&2; exit 1; }
  sleep .1
 done
 [[ -S $XDG_RUNTIME_DIR/monado_comp_ipc ]] || { cat "$out/monado.log" >&2; exit 1; }
-printf 'XR_RENDERER=%s\nXR_RUNTIME_PREFIX=%s\nXR_LOG_DIRECTORY=%s\n' "$renderer" "$prefix" "$out"
-printf 'XR_WSI_CPU_COPY=%s\n' "$wsi_copy"
+record "XR_RENDERER=$renderer XR_RUNTIME_PREFIX=$prefix"
+record "XR_RUNTIME_JSON=$XR_RUNTIME_JSON XR_VK_DRIVER_FILES=$VK_DRIVER_FILES"
+record "XR_LOG_DIRECTORY=$out XR_RUNTIME_DIRECTORY=$XDG_RUNTIME_DIR"
+record "XR_WSI_CPU_COPY=$wsi_copy XR_DISPLAY=$DISPLAY XR_CLIENT_LOG=$client_log"
+printf -v client_description '%q ' "${client[@]}"
+record "XR_CLIENT_COMMAND=$client_description"
 if [[ $mode == remote ]]; then
- "$prefix/bin/monado-gui" remote "127.0.0.1:$remote_port" > "$out/controls.log" 2>&1 & gui_pid=$!
+ "$prefix/bin/monado-gui" remote "127.0.0.1:$remote_port" 9>&- > "$out/controls.log" 2>&1 & gui_pid=$!
+ remember_child controls "$gui_pid"
  if command -v xdotool >/dev/null && command -v wmctrl >/dev/null; then
   (
    for ((attempt=0;attempt<80;attempt++)); do
@@ -105,28 +220,59 @@ if [[ $mode == remote ]]; then
     fi
     sleep .1
    done
-  ) > "$out/layout.log" 2>&1 & layout_pid=$!
+  ) 9>&- > "$out/layout.log" 2>&1 & layout_pid=$!
+  remember_child layout "$layout_pid"
  fi
 fi
-if ((seconds)); then
+if ! $custom_client && { ((seconds)) || [[ $mode == remote ]]; }; then
  mkfifo "$out/input.fifo"
  exec 8<>"$out/input.fifo"
- (sleep "$seconds"; printf '\n' >&8) & timer_pid=$!
- hello_xr -g Vulkan2 -v <&8 > "$out/hello-xr.log" 2>&1 & app_pid=$!
- wait "$app_pid"
- app_pid=
- exec 8>&-
-elif [[ $mode == remote ]]; then
- # The GUI owns interactive lifetime; keep stdin open for the sample.
- mkfifo "$out/input.fifo"
- exec 8<>"$out/input.fifo"
- hello_xr -g Vulkan2 -v <&8 > "$out/hello-xr.log" 2>&1 & app_pid=$!
- wait -n "$app_pid" "$gui_pid"
- printf '\n' >&8
- wait "$app_pid"
- app_pid=
- exec 8>&-
+ fifo_open=true
+ "${client[@]}" <&8 8>&- 9>&- > "$out/$client_log" 2>&1 & app_pid=$!
+elif $custom_client; then
+ "${client[@]}" </dev/null 9>&- > "$out/$client_log" 2>&1 & app_pid=$!
 else
- hello_xr -g Vulkan2 -v > >(tee "$out/hello-xr.log") 2>&1
+ # Explicitly retain terminal stdin when running the sample in the background.
+ exec 7<&0
+ "${client[@]}" <&7 7<&- 9>&- > "$out/$client_log" 2>&1 & app_pid=$!
 fi
-printf 'XR_SESSION_EXIT=0\n'
+remember_child client "$app_pid"
+wait_pids=("$app_pid" "$service_pid")
+[[ -z $gui_pid ]] || wait_pids+=("$gui_pid")
+if ((seconds)); then
+ sleep "$seconds" 9>&- & timer_pid=$!
+ remember_child timer "$timer_pid"
+ wait_pids+=("$timer_pid")
+fi
+finished=
+# Check owned child identities before waiting. wait -n can overlook a child
+# that has already completed while another child is still running.
+while [[ -z $finished ]]; do
+ for pid in "${wait_pids[@]}"; do
+  if ! child_alive "$pid"; then
+   finished=$pid
+   if wait "$pid"; then result=0; else result=$?; fi
+   break
+  fi
+ done
+ [[ -n $finished ]] || sleep .1
+done
+case ${finished:-} in
+ "$app_pid")
+  app_status=$result
+  record "XR_CHILD_EXIT role=client pid=$app_pid status=$app_status"
+  app_pid=
+  exit "$result" ;;
+ "$service_pid")
+  record "XR_CHILD_EXIT role=runtime pid=$service_pid status=$result"
+  service_pid=; stop_reason=runtime-exit
+  ((result)) || result=1
+  exit "$result" ;;
+ "$gui_pid")
+  record "XR_CHILD_EXIT role=controls pid=$gui_pid status=$result"
+  gui_pid=; stop_reason=controls-exit; exit "$result" ;;
+ "$timer_pid")
+  record "XR_CHILD_EXIT role=timer pid=$timer_pid status=$result"
+  timer_pid=; stop_reason=duration; exit "$result" ;;
+ *) stop_reason=wait-error; exit "$result" ;;
+esac

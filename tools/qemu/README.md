@@ -96,9 +96,11 @@ python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" ssh --user root \
   'cat > /tmp/xr-sdk.sh; systemd-run --unit=xr-sdk-build --property=Type=exec /bin/bash -c "bash /tmp/xr-sdk.sh > /var/log/xr-sdk-build.log 2>&1"' \
   < "$tools_dir/tools/qemu/install-sdk.sh"
 python3 "$tools_dir/tools/qemu.py" --workspace "$vm_dir" ssh --user root \
-  'cat > /usr/local/bin/xr-simulator && chmod 755 /usr/local/bin/xr-simulator' \
+  'target=/usr/local/bin/xr-simulator; temp=$(mktemp "${target}.XXXXXX"); trap '\''rm -f "$temp"'\'' EXIT; cat > "$temp" && chmod 755 "$temp" && mv -f "$temp" "$target"' \
   < "$tools_dir/tools/qemu/run-simulator.sh"
 ```
+
+更新运行中的 Bash 入口时使用同目录临时文件加 rename，旧进程继续读取原 inode。不要用 `cat > /usr/local/bin/xr-simulator` 覆盖活动脚本。`run-shell.sh` 可按相同步骤原子安装为 `/usr/local/bin/xr-shell-simulator`；两者安装不会启动会话。
 
 已验证的源码提交见 `systems/openkylin/qemu-components.lock.json`；更新本地源码后需要明确同步来宾源码和重建，不把旧构建目录当作新输入。
 
@@ -138,6 +140,28 @@ qwerty 的键鼠操作说明在 Monado debug GUI 的 Help 中。不带 `--second
 同机的第二个独立桌面用户可使用 `--remote-port 4243`，保留默认会话的 4242；IPC、配置和日志按用户隔离。`configure-kasm-xr.sh` 应在 Kasm 桌面账户内运行，创建使用第二端口的入口。远程输入端口不加入宿主转发。
 
 Kasm 桌面的入口同时使用 `--wsi-copy`：仅给 Monado service 设置 `MESA_VK_WSI_DEBUG=sw,linear`，修复 Venus Vulkan 的原生 WSI 在该 X server 中黑屏的问题。应用与合成器仍选择 Venus GPU，最后的虚拟显示传输使用 CPU 拷贝；原 `:0` 会话保留原生 WSI 路径。浏览器使用 `?resize=scale` 可以保持 1600×1000 调试桌面的布局。
+
+## Rust Shell 与自定义客户端
+
+`run-simulator.sh --client PATH --client-arg ARG ...` 保留既有 Monado、renderer 与滑块配置，仅替换默认的 `hello_xr -g Vulkan2 -v`。参数以 argv 数组传递，不经过 shell 求值。自定义客户端必须处理 SIGTERM；`--seconds` 到期或关闭滑块时，入口先通知客户端，等待其 OpenXR/GPU 清理，再停止本次启动的 GUI 和 Monado。15 秒仍未退出会记录 `XR_CLIENT_GRACE_TIMEOUT`，终止自己的客户端并报告失败，不能视为优雅清理通过。
+
+`run-shell.sh` 是薄 profile，可在原位置通过 `bash` 运行，或安装为 `xr-shell-simulator`。它总是启动现有视角/手柄滑块，并将 `--environment`、`--capture-dir`、`--validation` 传入 Rust Shell。默认 compositor scale 为 100，可显式调整；`DISPLAY=:1` 默认使用端口 4243 和 WSI CPU copy，其他显示使用 4242。需要显式指定未加入 PATH 的 Shell 二进制：
+
+```sh
+xr-shell-simulator --shell-binary /opt/xr-shell/bin/xr-shell \
+  --environment /usr/share/xr/environments/qingkong/environment.json \
+  --capture-dir "$HOME/.local/state/xr-shell/captures" --validation --seconds 30
+
+# 原位置运行源码脚本时可明确选择模拟器入口。
+bash tools/qemu/run-shell.sh --simulator /usr/local/bin/xr-simulator \
+  --shell-binary /opt/xr-shell/bin/xr-shell --seconds 30
+```
+
+扩展的 Rust CLI 参数可以用重复的 `--shell-arg ARG` 原样传递。`--seconds` 由模拟会话计时，退出通过 SIGTERM 进入 Rust 的正常会话结束流程，不要求客户端读取 stdin。
+
+入口记录每个直接子进程的 PID 和 `/proc` 启动标识，只向身份仍匹配的本次子进程发信号；不使用全局 `pkill`。当前用户 runtime 锁与已有 IPC socket 检查阻止覆盖活动会话。客户端、runtime、GUI 均不继承锁 FD；计时器是可独立回收的直接子进程。
+
+日志目录中，默认示例写 `hello-xr.log`，自定义客户端写 `client.log`。`lifecycle.log` 记录客户端 argv、PID/启动标识、renderer、runtime JSON、ICD、WSI 路径、停止原因及各进程退出状态。最后的 `XR_SESSION_EXIT=0` 表示启动入口正常结束；仍需结合客户端的资源清理记录、实际 socket/process 状态以及画面证据判断验收。
 
 开发桌面通过 GSettings 关闭自动休眠、变暗和屏保，X11 屏保 timeout 为 0、DPMS 关闭；`xr-dev-awake --hold` 持续持有 UKUI 标准 idle/suspend inhibitor，处理当前会话缓存的空闲定时器。原桌面由用户服务启动，独立 Kasm 会话由用户自启动项启动。停止防空闲服务或移除对应自启动项可以撤销持续抑制；持久化设置需按需恢复。
 
