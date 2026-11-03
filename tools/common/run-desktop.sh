@@ -204,6 +204,28 @@ reap() {
  if wait "$pid"; then result=0; else result=$?; fi
  record "XR_DESKTOP_CHILD_EXIT role=$role pid=$pid status=$result"
  unset 'pids[$role]'
+ return "$result"
+}
+draining_recorded=false
+session_draining() {
+ local phase owner_pid owner_start client_pid client_start reason initial_status current
+ [[ -f $private/shell-session.state && ! -L $private/shell-session.state ]] || return 1
+ read -r phase owner_pid owner_start client_pid client_start reason initial_status < "$private/shell-session.state" || return 1
+ [[ $phase == draining && $owner_pid =~ ^[0-9]+$ && $client_pid =~ ^[0-9]+$ \
+    && $initial_status =~ ^[0-9]+$ \
+    && $owner_pid == "${pids[shell-session]:-}" \
+    && $owner_start == "${starts[$owner_pid]:-}" \
+    && $client_pid == "${pids[shell-client]:-}" \
+    && $client_start == "${starts[$client_pid]:-}" ]] || return 1
+ # The wrapper can finish between the loop check and this read. Its cached
+ # owned identity still applies; reject a live PID with a different birth.
+ if current=$(birth "$owner_pid"); then [[ $current == "$owner_start" ]] || return 1; fi
+ # A client may already be reaped, but a reused PID must not match this state.
+ if current=$(birth "$client_pid"); then [[ $current == "$client_start" ]] || return 1; fi
+ if ! $draining_recorded; then
+  record "XR_DESKTOP_SESSION_DRAINING owner_pid=$owner_pid client_pid=$client_pid reason=$reason initial_status=$initial_status"
+  draining_recorded=true
+ fi
 }
 cleanup() {
  local result=$?
@@ -238,7 +260,7 @@ if [[ $XR_DEVELOPMENT_BACKEND == native ]]; then shell_args+=(--native-developme
 [[ -z $simulator ]] || shell_args+=(--simulator "$simulator")
 if $validation; then shell_args+=(--validation); fi
 if $debug_input; then shell_args+=(--shell-arg --debug-input); fi
-start shell-session "$run_shell" "${shell_args[@]}"
+start shell-session env "XR_SESSION_STATE_FILE=$private/shell-session.state" "$run_shell" "${shell_args[@]}"
 wait_socket "$shell_socket" shell-session
 while read -r marker role pid token; do
  if [[ $marker == XR_CHILD_START && $role == role=client ]]; then
@@ -358,7 +380,18 @@ record 'XR_DESKTOP_READY=1'
 
 while alive "${pids[shell-session]}"; do
  for role in window-server dock system-ui ime pipewire pulse wireplumber; do
-  [[ -z ${pids[$role]:-} ]] || alive "${pids[$role]}" || { record "XR_DESKTOP_COMPONENT_FAILED=$role"; exit 1; }
+  [[ -z ${pids[$role]:-} ]] || alive "${pids[$role]}" || {
+   # Re-read after observing an exit to close the polling/marker boundary race.
+   if [[ $role == window-server || $role == dock || $role == system-ui ]] && session_draining; then
+    if reap "$role"; then
+     record "XR_DESKTOP_COMPONENT_DRAINED=$role"
+    else
+     record "XR_DESKTOP_COMPONENT_FAILED=$role phase=draining"; exit 1
+    fi
+   else
+    record "XR_DESKTOP_COMPONENT_FAILED=$role"; exit 1
+   fi
+  }
  done
  sleep .2
 done

@@ -60,6 +60,11 @@ Qt/GDK and audio settings.
 require `--native-development`. `run-shell.sh --headless-input` uses the same
 remote devices without a sliders GUI. Both variants share the QEMU-tested owned
 client-before-runtime cleanup implementation rather than a second session API.
+The simulator atomically publishes a draining marker in this session's private
+directory before signaling its client. The desktop validates wrapper/client
+PID birth identities: only successful Shell-dependent component exits during
+that matching drain are orderly. Unexpected exits, failed drains and early
+IME/audio exits still fail; the simulator's final status remains authoritative.
 PID birth tokens restrict signals to children created by this session. Runtime
 exit, bounded termination and component cleanup are recorded in the user state
 logs; no global process kill or native user-service restart is performed.

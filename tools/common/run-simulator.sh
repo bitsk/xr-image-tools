@@ -188,6 +188,7 @@ else
  unset QWERTY_ENABLE
 fi
 service_pid= app_pid= timer_pid= gui_pid= layout_pid=
+app_identity_pid= app_identity_start=
 app_status=not-started
 fifo_open=false
 stop_reason=client-exit
@@ -226,6 +227,22 @@ reap_child() {
  if wait "$pid"; then result=0; else result=$?; fi
  record "XR_CHILD_EXIT role=$role pid=$pid status=$result"
 }
+publish_draining() {
+ local state=${XR_SESSION_STATE_FILE:-} temporary owner_start
+ [[ -n $state ]] || return 0
+ # Only the enclosing owned desktop session may request this private marker.
+ [[ $state == "$XDG_RUNTIME_DIR"/xr-desktop-dev.*/shell-session.state \
+    && -d ${state%/*} && -O ${state%/*} && ! -L ${state%/*} \
+    && -n $app_identity_pid && -n $app_identity_start ]] || return 1
+ owner_start=$(process_start $$) || return 1
+ temporary=$(mktemp "$state.XXXXXX") || return 1
+ if ! printf 'draining %s %s %s %s %s %s\n' "$$" "$owner_start" \
+     "$app_identity_pid" "$app_identity_start" "$stop_reason" "$cleanup_status" > "$temporary"; then
+  rm -f -- "$temporary"; return 1
+ fi
+ if ! mv -f -- "$temporary" "$state"; then rm -f -- "$temporary"; return 1; fi
+ record "XR_SESSION_DRAINING owner_pid=$$ owner_start=$owner_start client_pid=$app_identity_pid client_start=$app_identity_start reason=$stop_reason initial_status=$cleanup_status"
+}
 stop_client() {
  [[ -n $app_pid ]] || return 0
  if child_alive "$app_pid"; then
@@ -256,6 +273,12 @@ cleanup() {
  local cleanup_status=$?
  trap - EXIT INT TERM
  set +e
+ # Publish before signaling the client: SessionEnding can retire components
+ # while this wrapper is still waiting for OpenXR and Monado cleanup.
+ if ! publish_draining; then
+  record 'XR_SESSION_DRAIN_MARKER_FAILED=1'
+  ((cleanup_status)) || cleanup_status=1
+ fi
  if [[ -n $timer_pid ]]; then signal_child TERM "$timer_pid"; reap_child timer "$timer_pid"; timer_pid=; fi
  if [[ -n $layout_pid ]]; then signal_child TERM "$layout_pid"; reap_child layout "$layout_pid"; layout_pid=; fi
  stop_client
@@ -351,6 +374,8 @@ else
  "${client[@]}" <&7 7<&- 9>&- > "$out/$client_log" 2>&1 & app_pid=$!
 fi
 remember_child client "$app_pid"
+app_identity_pid=$app_pid
+app_identity_start=${child_start[$app_pid]}
 wait_pids=("$app_pid" "$service_pid")
 [[ -z $gui_pid ]] || wait_pids+=("$gui_pid")
 if ((seconds)); then
