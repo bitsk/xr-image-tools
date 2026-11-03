@@ -90,6 +90,12 @@ if [[ -z $private ]]; then
  }
  trap outer_cleanup EXIT
  trap forward INT TERM
+ if [[ -n ${DBUS_SESSION_BUS_ADDRESS:-} ]]; then
+  gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus \
+   --method org.freedesktop.DBus.GetId > "$private/original-bus-id"
+ else
+  : > "$private/original-bus-id"
+ fi
  dbus-run-session -- "$0" --inside-private-bus "$private" "${original_args[@]}" & outer_child=$!
  starts[$outer_child]=$(birth "$outer_child")
  result=0
@@ -119,20 +125,40 @@ record "XR_DESKTOP_LOG_DIRECTORY=$logs XR_DESKTOP_CAPTURE_DIRECTORY=$capture_dir
 record "XR_DESKTOP_SHELL_RUNTIME=$original_runtime XR_DESKTOP_COMPONENT_RUNTIME=$component_runtime"
 record "XR_DESKTOP_SHELL_SOCKET=$shell_socket XR_DESKTOP_ISOLATED_BUS=1"
 
+# dbus-run-session starts its daemon before it sets the child's address. Its
+# activation environment must therefore be replaced explicitly as well as the
+# environments of directly spawned components. Never update the user manager.
+[[ -r $private/original-bus-id ]]
+private_bus_id=$(gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus \
+ --method org.freedesktop.DBus.GetId)
+original_bus_id=$(<"$private/original-bus-id")
+[[ -n $private_bus_id && $private_bus_id != "$original_bus_id" ]] || {
+ record 'XR_DESKTOP_PRIVATE_BUS_CHECK_FAILED=1'; exit 1;
+}
+gtk_im_module=${XR_DESKTOP_GTK_IM_MODULE:-wayland}
+qt_im_module=${XR_DESKTOP_QT_IM_MODULE-}
+mkdir -p "$private/config/pulse"
+printf 'autospawn = no\n' > "$private/config/pulse/client.conf"
+activation_env=(
+ "PATH=$prefix/bin:$PATH" "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
+ DISPLAY= XAUTHORITY= SESSION_MANAGER= DESKTOP_STARTUP_ID=
+ "XDG_RUNTIME_DIR=$component_runtime" "XDG_CONFIG_HOME=$private/config"
+ "XDG_STATE_HOME=$private/state" "XDG_CACHE_HOME=$private/cache"
+ WAYLAND_DISPLAY=xr-wayland-0 XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=UKUI
+ QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland "QT_IM_MODULE=$qt_im_module" "GTK_IM_MODULE=$gtk_im_module" XMODIFIERS=
+ "PIPEWIRE_RUNTIME_DIR=$component_runtime" PIPEWIRE_REMOTE=pipewire-0
+ "PULSE_RUNTIME_PATH=$component_runtime/pulse" "PULSE_SERVER=unix:$component_runtime/pulse/native" PULSE_COOKIE=
+ "PULSE_CLIENTCONFIG=$private/config/pulse/client.conf" XR_SYSTEM_UI_ISOLATED_BUS=1)
+dbus-update-activation-environment "${activation_env[@]}"
+record "XR_DESKTOP_ACTIVATION_ENV_PRIVATE=1 XR_DESKTOP_GTK_IM_MODULE=$gtk_im_module"
+
 for binary in xr-shell xr-window-server xr-dock xr-system-ui; do
  [[ -x $prefix/bin/$binary ]] || { record "Missing component: $prefix/bin/$binary"; exit 1; }
 done
 run_shell=$(dirname -- "$(readlink -f -- "$0")")/run-shell.sh
 if [[ ! -x $run_shell ]]; then run_shell=$(command -v xr-shell-simulator); fi
 
-component_env=(env -u DISPLAY -u PULSE_COOKIE -u PULSE_SERVER -u PIPEWIRE_REMOTE
- "PATH=$prefix/bin:$PATH" "XDG_RUNTIME_DIR=$component_runtime"
- "XDG_CONFIG_HOME=$private/config" "XDG_STATE_HOME=$private/state" "XDG_CACHE_HOME=$private/cache"
- WAYLAND_DISPLAY=xr-wayland-0 XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=UKUI
- QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland QT_IM_MODULE=fcitx GTK_IM_MODULE=fcitx XMODIFIERS=@im=fcitx
- "PIPEWIRE_RUNTIME_DIR=$component_runtime" PIPEWIRE_REMOTE=pipewire-0
- "PULSE_RUNTIME_PATH=$component_runtime/pulse" "PULSE_SERVER=unix:$component_runtime/pulse/native"
- XR_SYSTEM_UI_ISOLATED_BUS=1)
+component_env=(env "${activation_env[@]}")
 start() {
  local role=$1; shift
  "$@" > "$logs/$role.log" 2>&1 &

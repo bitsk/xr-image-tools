@@ -179,7 +179,9 @@ XR_DESKTOP_PREFIX=/opt/xr-desktop-candidate \
 
 `XR_DESKTOP_PREFIX` 默认 `/usr`，候选目录应包含 `bin/xr-shell`、`xr-window-server`、`xr-dock` 和 `xr-system-ui`。`--simulator PATH` 可以选择本次版本的模拟器；环境、renderer、Monado prefix、remote port 与 WSI 开关继续由既有 profile 处理。`--xwayland` 显式请求窗口服务的可选 Xwayland 支持；`--no-ime`、`--no-audio` 仅用于未启用对应能力的阶段，不表示这些能力已验收。
 
-Shell 与 Monado 保持启动者原来的 `XDG_RUNTIME_DIR` 和显示输出。其组件 socket 始终为原 runtime 下的 `xr-desktop/shell.sock`，由各组件显式指定。profile 用 `dbus-run-session` 新建总线，并在原 runtime 的唯一 `xr-desktop-dev.*` 子目录内分配 0700 的组件 runtime/config/state/cache；Wayland display 固定为私有的 `xr-wayland-0`。组件环境去除原 X11 `DISPLAY`，避免 Fcitx `--replace` 或应用退回原桌面的 X11/DBus/音频实例；GTK/Qt 使用私有 Wayland 和 Fcitx 环境。`XR_SYSTEM_UI_ISOLATED_BUS=1` 与 System UI 的 `--isolated-notifications` 只在这份新总线中启用。
+Shell 与 Monado 保持启动者原来的 `XDG_RUNTIME_DIR` 和显示输出。其组件 socket 始终为原 runtime 下的 `xr-desktop/shell.sock`，由各组件显式指定。profile 用 `dbus-run-session` 新建总线，并在原 runtime 的唯一 `xr-desktop-dev.*` 子目录内分配 0700 的组件 runtime/config/state/cache；Wayland display 固定为私有的 `xr-wayland-0`。启动任何组件前先比较总线 GetId，再用 `dbus-update-activation-environment` 仅更新这份新总线的服务激活环境（不使用 `--systemd`）：DISPLAY、旧 X authority/session 为空，Wayland、XDG、音频路径全部指向私有环境。直接进程与 D-Bus 自动激活服务共用同一份环境，Shell/Monado 的显示和 runtime 不变。`XR_SYSTEM_UI_ISOLATED_BUS=1` 与 System UI 的 `--isolated-notifications` 只在这份新总线中启用。
+
+GTK 默认 `GTK_IM_MODULE=wayland`，通过真实的 Wayland text-input/input-method 链路接入预编辑与提交；可用 `XR_DESKTOP_GTK_IM_MODULE` 显式选择其他模块，但不能以 Fcitx 的 D-Bus IM 模块结果充当 Wayland preedit 验收。Qt 默认清空 `QT_IM_MODULE` 由 Wayland 平台选择，可用 `XR_DESKTOP_QT_IM_MODULE` 覆盖。Pulse 客户端使用私有配置并禁用 autospawn，避免 `--no-audio` 的查询动作隐式启动音频 daemon。`--no-ime` 也要求探测端不自动激活输入法服务；能力是否可用以本次实际进程和端点为准。
 
 启动顺序为 Shell/socket → 私有 Wayland/socket → Fcitx/服务名 → 私有 PipeWire、Pulse、WirePlumber 与显式 `xr_desktop_null` sink → Dock → System UI。所有 socket 查询和 pactl 均使用私有 runtime/明确的 server；没有原用户音频 socket 的硬编码。无声卡也可以验证音量、静音与路由控制，但 null sink 不代表物理音频输出通过。若已安装 Fcitx 拼音方法，profile 在私有配置中选择该方法；预编辑、候选和提交仍需真实应用验收。
 
