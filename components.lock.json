@@ -66,7 +66,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://gitee.com/bigbits/openkylin-xr-integration",
-      "commit": "ccc4bf9b9dcc0fc25775529503e1d8e5590cee4d"
+      "commit": "99031e508100f608f491e95f4624aa5ce06de7a7"
     }
   }
 }
