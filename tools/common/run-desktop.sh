@@ -8,6 +8,7 @@ usage() {
  cat <<'EOF'
 Usage: run-desktop.sh [--seconds N] [--capture-dir DIR] [--validation]
        [--debug-input] [--xwayland] [--no-audio] [--no-ime]
+       [--scale 1-200]
        [--environment FILE] [--runtime-prefix DIR] [--remote-port PORT]
        [--renderer venus|freedreno|lavapipe] [--wsi-copy] [--simulator PATH]
        [--presentation auto|wayland|xcb] [--runtime-json FILE]
@@ -37,7 +38,7 @@ while (($#)); do
   --xwayland) xwayland=true; shift ;;
   --no-audio) audio=false; shift ;;
   --no-ime) ime=false; shift ;;
-  --runtime-prefix|--remote-port|--renderer|--presentation|--runtime-json|--runtime-lib-dir|--icd)
+  --runtime-prefix|--remote-port|--renderer|--presentation|--runtime-json|--runtime-lib-dir|--icd|--scale)
    (($# >= 2)) || { usage >&2; exit 2; }
    runtime_args+=("$1" "$2"); shift 2 ;;
   --wsi-copy) runtime_args+=(--wsi-copy); shift ;;

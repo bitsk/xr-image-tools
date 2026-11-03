@@ -27,6 +27,9 @@ is `$HOME/ukui-xr-dev/runtime` (overridable with `XR_NATIVE_RUNTIME_PREFIX`).
 `--renderer lavapipe` selects `lvp_icd*.json` and is logged as software rendering;
 it is separate acceptance evidence. `--icd FILE` selects the exact installed ICD.
 Native sessions do not automatically add Mesa software/linear WSI overrides.
+For the current simulated 960×1080 view configuration, `--scale 200` requests
+1920×2160 development captures so small panel text can be inspected. This is an
+explicit development option; the default compositor scale is unchanged.
 `--presentation auto` prefers the original Wayland socket and then a reachable
 X11 DISPLAY. Explicit `wayland`/`xcb` selects the corresponding Monado compositor
 window. No fullscreen/direct-display mode is requested. The original Wayland
