@@ -44,6 +44,8 @@ python3 tools/rootfs.py assemble --system steamos --base-archive /prepared/rootf
 
 `xr-shell-session` 是已经运行的真实 OpenXR 会话中的前台场景应用入口，消费父会话提供的 `XR_RUNTIME_JSON`、Vulkan ICD 和兼容层环境。它不启动模拟器、硬件采集、跟踪生产者或音频服务，也不修改全局运行时选择。以已登录的普通用户运行：
 
+该入口由独立的 `xr-shell-session` 包提供，目标设备不需要安装带镜像制作依赖的 `xr-image-builder`。原生 loader 必须以 `libopenxr_loader.so.1` 可被动态链接器查找到；入口会检查并记录实际映射。可用目标发行版的系统包，或由父会话通过私有 `LD_LIBRARY_PATH` 提供经过核验的本机运行时 loader；本包不会下载、替换或重新选择运行时。
+
 ```sh
 xr-shell-session --debug-input
 xr-shell-session --prefix /opt/xr-development --seconds 30

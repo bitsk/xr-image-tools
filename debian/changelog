@@ -1,3 +1,11 @@
+xr-image-tools (0.1.13) unstable; urgency=medium
+
+  * Split the native scene into an independent xr-shell-session runtime package.
+  * Keep image construction dependencies on xr-image-builder only.
+  * Diagnose the required native OpenXR loader before starting scene children.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 10:34:32 +0800
+
 xr-image-tools (0.1.12) unstable; urgency=medium
 
   * Add xr-shell-session for a scene in the selected native OpenXR runtime.

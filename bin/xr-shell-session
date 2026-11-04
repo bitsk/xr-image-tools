@@ -1,2 +1,2 @@
 #!/bin/sh
-exec /usr/bin/python3 /usr/lib/xr/image-tools/tools/device/session.py "$@"
+exec /usr/bin/python3 /usr/lib/xr/session/session.py "$@"

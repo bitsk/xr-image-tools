@@ -7,6 +7,7 @@ a compositor runtime, hardware capture, radio, tracking producer or audio core.
 """
 import argparse
 import ast
+import ctypes
 import hashlib
 import json
 import os
@@ -204,6 +205,15 @@ class Scene:
         runtime = os.environ.get('XR_RUNTIME_JSON')
         if not runtime or not Path(runtime).is_file():
             raise RuntimeError('Select the existing native OpenXR runtime with XR_RUNTIME_JSON')
+        try:
+            loader = ctypes.CDLL('libopenxr_loader.so.1')
+            getattr(loader, 'xrGetInstanceProcAddr')
+        except (OSError, AttributeError) as error:
+            raise RuntimeError('Native OpenXR loader libopenxr_loader.so.1 is unavailable: '
+                               + str(error) + '. Install the target system loader or provide '
+                               'the verified native loader in the session LD_LIBRARY_PATH') from error
+        self.result['openxr_loader_mappings'] = sorted({row.split()[-1] for row in
+            Path('/proc/self/maps').read_text().splitlines() if 'libopenxr_loader' in row})
         for name in ('xr-shell', 'xr-shellctl', 'xr-window-server', 'xr-dock', 'xr-system-ui'):
             binary = self.opts.prefix / 'bin' / name
             if not binary.is_file() or not os.access(binary, os.X_OK):
@@ -423,7 +433,10 @@ def outer(opts):
                 break
         time.sleep(.05)
     child.wait(timeout=2)
-    cleanup = Path(__file__).resolve().parent.parent / 'common/cleanup-private-activation.py'
+    cleanup = Path(__file__).resolve().parent / 'cleanup-private-activation.py'
+    if not cleanup.is_file():
+        # The source checkout retains one canonical shared helper.
+        cleanup = Path(__file__).resolve().parent.parent / 'common/cleanup-private-activation.py'
     cleanup_status = 1
     try:
         with (run / 'private-activation-cleanup.json').open('w') as log:

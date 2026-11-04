@@ -2,7 +2,6 @@ tools/*.py usr/lib/xr/image-tools/tools/
 tools/qemu/*.sh usr/lib/xr/image-tools/tools/qemu/
 tools/common/*.sh usr/lib/xr/image-tools/tools/common/
 tools/common/*.py usr/lib/xr/image-tools/tools/common/
-tools/device/*.py usr/lib/xr/image-tools/tools/device/
 tools/native/*.sh usr/lib/xr/image-tools/tools/native/
 tools/native/README.md usr/share/doc/xr-image-builder/native/
 tools/qemu/*.py usr/lib/xr/image-tools/tools/qemu/
@@ -12,4 +11,11 @@ docs/*.md usr/share/doc/xr-image-builder/
 systems usr/lib/xr/image-tools/
 profiles usr/lib/xr/image-tools/
 components.lock.json usr/lib/xr/image-tools/
-bin/* usr/bin/
+bin/xr-native-desktop-dev usr/bin/
+bin/xr-desktop-dev usr/bin/
+bin/xr-native-shell-simulator usr/bin/
+bin/xr-shell-simulator usr/bin/
+bin/xr-simulator usr/bin/
+bin/xr-native-simulator usr/bin/
+bin/xr-image-builder usr/bin/
+bin/xr-vendor-cache usr/bin/

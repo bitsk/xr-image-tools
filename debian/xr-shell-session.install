@@ -1,0 +1,3 @@
+bin/xr-shell-session usr/bin/
+tools/device/session.py usr/lib/xr/session/
+tools/common/cleanup-private-activation.py usr/lib/xr/session/
