@@ -1,3 +1,11 @@
+xr-image-tools (0.1.14) unstable; urgency=medium
+
+  * Bind the owned scene bus inside its private login-runtime directory.
+  * Record bus identity and socket state around component activation and exit.
+  * Keep dbus-run-session responsible for daemon lifecycle and ordered shutdown.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 12:04:10 +0800
+
 xr-image-tools (0.1.13) unstable; urgency=medium
 
   * Split the native scene into an independent xr-shell-session runtime package.

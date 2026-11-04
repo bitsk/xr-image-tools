@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import signal
 import stat
 import subprocess
@@ -84,6 +85,34 @@ class Scene:
             stream.write(line + '\n')
         print('XR_SHELL_SESSION ' + line, flush=True)
 
+    def record_bus(self, stage, environment, bus_id=None, query=True):
+        path = self.private / 'runtime/bus'
+        row = {'stage': stage, 'address': environment.get('DBUS_SESSION_BUS_ADDRESS'),
+               'xdg_runtime_dir': environment.get('XDG_RUNTIME_DIR'),
+               'socket_path': str(path), 'socket_exists': False}
+        try:
+            info = path.lstat()
+            row.update(socket_exists=True, socket_is_socket=stat.S_ISSOCK(info.st_mode), socket_uid=info.st_uid,
+                       socket_inode=info.st_ino)
+        except OSError as error:
+            row['socket_error'] = str(error)
+        pid_file = self.private / 'dbus-daemon.pid'
+        try:
+            pid = int(pid_file.read_text().strip())
+            row.update(daemon_pid=pid, daemon_birth=birth(pid))
+        except (OSError, ValueError) as error:
+            row['daemon_identity_error'] = str(error)
+        if query and bus_id is None:
+            try:
+                bus_id = command(['gdbus', 'call', '--session', '--dest', 'org.freedesktop.DBus',
+                                  '--object-path', '/org/freedesktop/DBus', '--method',
+                                  'org.freedesktop.DBus.GetId'], environment)
+            except Exception as error:
+                row['get_id_error'] = str(error)
+        row['get_id'] = bus_id
+        self.result.setdefault('private_bus_observations', []).append(row)
+        self.record('private-bus', **row)
+
     def start(self, role, argv, environment):
         log = (self.run / (role + '.log')).open('wb')
         self.logs[role] = log
@@ -113,7 +142,7 @@ class Scene:
     def component_environment(self):
         private = self.private
         for name in ('runtime', 'config', 'state', 'cache', 'data'):
-            (private / name).mkdir(mode=0o700)
+            (private / name).mkdir(mode=0o700, exist_ok=name == 'runtime')
         env = dict(os.environ)
         env.update({
             'PATH': str(self.opts.prefix / 'bin') + ':' + env.get('PATH', '/usr/bin:/bin'),
@@ -141,7 +170,11 @@ class Scene:
                 'GDK_BACKEND', 'QT_QPA_PLATFORM', 'GTK_CSD', 'GTK_IM_MODULE', 'QT_IM_MODULE',
                 'XMODIFIERS', 'PULSE_SERVER', 'PULSE_RUNTIME_PATH', 'PULSE_CLIENTCONFIG',
                 'PIPEWIRE_RUNTIME_DIR', 'PIPEWIRE_REMOTE', 'XR_SYSTEM_UI_ISOLATED_BUS']
-        command(['dbus-update-activation-environment', *[key + '=' + env[key] for key in keys]], env)
+        self.record_bus('component-env-before', env)
+        try:
+            command(['dbus-update-activation-environment', *[key + '=' + env[key] for key in keys]], env)
+        finally:
+            self.record_bus('component-env-after', env)
         return env
 
     def start_ime(self, env):
@@ -333,6 +366,7 @@ class Scene:
                 self.result['errors'].append(role + ' exit ' + str(process.returncode))
         for log in self.logs.values():
             log.close()
+        self.record_bus('exit', os.environ, query=False)
         self.result['phase'] = 'stopped'
         self.result['exit'] = 0 if not self.result['errors'] else 1
         atomic(self.run / 'ready.json', self.result)
@@ -358,6 +392,7 @@ def inside(opts):
         raise RuntimeError('The component bus is not isolated')
     (private / 'session-bus-address').write_text(bus + '\n')
     scene = Scene(opts, private, run, original)
+    scene.record_bus('inside-GetId', os.environ, bus_id=current_id)
     status = 1
     try:
         scene.execute()
@@ -389,8 +424,17 @@ def outer(opts):
                                 'org.freedesktop.DBus.GetId'], os.environ)
     private = Path(tempfile.mkdtemp(prefix='xr-desktop-dev.', dir=original))
     os.chmod(private, 0o700)
+    (private / 'runtime').mkdir(mode=0o700)
+    bus_socket = private / 'runtime/bus'
+    bus_wrapper = private / 'dbus-daemon-wrapper'
+    bus_wrapper.write_text('#!/bin/sh\n'
+        + 'printf \'%s\\n\' "$$" > ' + shlex.quote(str(private / 'dbus-daemon.pid')) + '\n'
+        + 'exec /usr/bin/dbus-daemon --address=' + shlex.quote('unix:path=' + str(bus_socket))
+        + ' "$@" 2>>' + shlex.quote(str(run / 'dbus.log')) + '\n')
+    bus_wrapper.chmod(0o700)
     atomic(run / 'launch.json', {'schema': 1, 'private': str(private),
            'original_runtime': str(original), 'original_bus_id': original_bus,
+           'private_bus_socket': str(bus_socket), 'private_bus_wrapper': str(bus_wrapper),
            'owner_pid': os.getpid(), 'owner_birth': birth(os.getpid()),
            'boot_id': Path('/proc/sys/kernel/random/boot_id').read_text().strip(),
            'prefix': str(opts.prefix), 'xr_runtime_json': os.environ.get('XR_RUNTIME_JSON'),
@@ -399,7 +443,7 @@ def outer(opts):
                'VK_ADD_LAYER_PATH', 'VK_INSTANCE_LAYERS', 'LD_LIBRARY_PATH',
                'DISABLE_GAMESCOPE_WSI', 'DISABLE_VULKAN_FDM_INJECTION_LAYER') if key in os.environ},
            'environment': str(opts.environment) if opts.environment else None})
-    argv = ['dbus-run-session', '--', sys.executable, str(Path(__file__).resolve()),
+    argv = ['dbus-run-session', '--dbus-daemon=' + str(bus_wrapper), '--', sys.executable, str(Path(__file__).resolve()),
             '--inside-private-bus', str(run), *sys.argv[1:]]
     child = subprocess.Popen(argv, start_new_session=True)
     print('XR_SHELL_SESSION_RUN=' + str(run), flush=True)
