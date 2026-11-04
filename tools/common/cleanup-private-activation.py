@@ -52,7 +52,8 @@ def session_processes(private, bus):
 def activated(item):
     name = Path(item['executable']).name
     return name.startswith(('xdg-desktop-portal', 'gvfs')) or name in {
-        'xdg-document-portal', 'xdg-permission-store'}
+        'xdg-document-portal', 'xdg-permission-store',
+        'kylin-status-manager', 'peony-intelligent-data-management-service'}
 
 
 def same_process(item, private, bus):

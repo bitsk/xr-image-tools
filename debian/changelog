@@ -1,3 +1,10 @@
+xr-image-tools (0.1.17) unstable; urgency=medium
+
+  * Retire private-bus UKUI status and Peony activation services on scene exit.
+  * Keep PID birth, user, runtime, config and bus ownership checks intact.
+
+ -- bits <bigbits@hackx.cc>  Thu, 05 Nov 2026 01:58:04 +0800
+
 xr-image-tools (0.1.16) unstable; urgency=medium
 
   * Carry user taskbar preferences outside ephemeral component config roots.
