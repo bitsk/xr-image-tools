@@ -1,3 +1,10 @@
+xr-image-tools (0.1.15) unstable; urgency=medium
+
+  * Forward explicit UI anchoring mode to the native XR scene application.
+  * Preserve stage as the default and record the requested UI mode.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 12:17:20 +0800
+
 xr-image-tools (0.1.14) unstable; urgency=medium
 
   * Bind the owned scene bus inside its private login-runtime directory.

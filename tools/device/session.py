@@ -61,6 +61,7 @@ def arguments():
     parser.add_argument('--validation', action='store_true')
     parser.add_argument('--no-xwayland', action='store_true')
     parser.add_argument('--no-ime', action='store_true')
+    parser.add_argument('--ui-anchor', choices=('stage', 'head'), default='stage')
     parser.add_argument('--inside-private-bus', type=Path, help=argparse.SUPPRESS)
     opts = parser.parse_args()
     if opts.seconds < 0:
@@ -74,6 +75,7 @@ class Scene:
         self.processes, self.logs, self.records = {}, {}, {}
         self.events = run / 'lifecycle.jsonl'
         self.result = {'schema': 1, 'kind': 'native-openxr-scene', 'ready': False,
+                       'ui_anchor_mode': opts.ui_anchor,
                        'runtime_started': False, 'hardware_producer_started': False,
                        'audio_core_started': False, 'errors': [], 'children': {}}
         self.stopping = False
@@ -264,7 +266,8 @@ class Scene:
         shell_env = dict(os.environ)
         shell_env['XDG_RUNTIME_DIR'] = str(self.original)
         argv = [self.opts.prefix / 'bin/xr-shell', '--components', '--component-socket', shell_socket,
-                '--environment', environment, '--capture-dir', captures]
+                '--environment', environment, '--capture-dir', captures,
+                '--ui-anchor', self.opts.ui_anchor]
         if self.opts.debug_input:
             argv.append('--debug-input')
         if self.opts.validation:
