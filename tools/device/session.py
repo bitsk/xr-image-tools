@@ -146,6 +146,8 @@ class Scene:
         for name in ('runtime', 'config', 'state', 'cache', 'data'):
             (private / name).mkdir(mode=0o700, exist_ok=name == 'runtime')
         env = dict(os.environ)
+        preferences = env.get('XR_SYSTEM_UI_PREFERENCES_FILE') or str(
+            Path(env.get('XDG_CONFIG_HOME') or Path.home() / '.config') / 'xr-system-ui/preferences.json')
         env.update({
             'PATH': str(self.opts.prefix / 'bin') + ':' + env.get('PATH', '/usr/bin:/bin'),
             'DISPLAY': '', 'XAUTHORITY': '', 'SESSION_MANAGER': '', 'DESKTOP_STARTUP_ID': '',
@@ -160,6 +162,7 @@ class Scene:
             'PULSE_SERVER': os.environ.get('PULSE_SERVER', 'unix:' + str(self.original / 'pulse/native')),
             'PULSE_RUNTIME_PATH': str(self.original / 'pulse'),
             'XR_SYSTEM_UI_ISOLATED_BUS': '1',
+            'XR_SYSTEM_UI_PREFERENCES_FILE': preferences,
         })
         pulse = private / 'config/pulse'
         pulse.mkdir()
@@ -171,7 +174,8 @@ class Scene:
                 'XDG_DATA_HOME', 'XDG_CURRENT_DESKTOP', 'XDG_SESSION_TYPE', 'WAYLAND_DISPLAY',
                 'GDK_BACKEND', 'QT_QPA_PLATFORM', 'GTK_CSD', 'GTK_IM_MODULE', 'QT_IM_MODULE',
                 'XMODIFIERS', 'PULSE_SERVER', 'PULSE_RUNTIME_PATH', 'PULSE_CLIENTCONFIG',
-                'PIPEWIRE_RUNTIME_DIR', 'PIPEWIRE_REMOTE', 'XR_SYSTEM_UI_ISOLATED_BUS']
+                'PIPEWIRE_RUNTIME_DIR', 'PIPEWIRE_REMOTE', 'XR_SYSTEM_UI_ISOLATED_BUS',
+                'XR_SYSTEM_UI_PREFERENCES_FILE']
         self.record_bus('component-env-before', env)
         try:
             command(['dbus-update-activation-environment', *[key + '=' + env[key] for key in keys]], env)

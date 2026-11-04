@@ -1,3 +1,10 @@
+xr-image-tools (0.1.16) unstable; urgency=medium
+
+  * Carry user taskbar preferences outside ephemeral component config roots.
+  * Preserve all other private desktop and activation directories.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 22:25:26 +0800
+
 xr-image-tools (0.1.15) unstable; urgency=medium
 
   * Forward explicit UI anchoring mode to the native XR scene application.

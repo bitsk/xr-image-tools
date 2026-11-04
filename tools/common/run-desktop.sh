@@ -172,6 +172,7 @@ gtk_im_module=${XR_DESKTOP_GTK_IM_MODULE:-wayland}
 qt_im_module=${XR_DESKTOP_QT_IM_MODULE-}
 mkdir -p "$private/config/pulse"
 printf 'autospawn = no\n' > "$private/config/pulse/client.conf"
+taskbar_preferences=${XR_SYSTEM_UI_PREFERENCES_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/xr-system-ui/preferences.json}
 activation_env=(
  "PATH=$prefix/bin:$PATH" "DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS"
  DISPLAY= XAUTHORITY= SESSION_MANAGER= DESKTOP_STARTUP_ID=
@@ -181,7 +182,8 @@ activation_env=(
  QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland "QT_IM_MODULE=$qt_im_module" "GTK_IM_MODULE=$gtk_im_module" XMODIFIERS=
  "PIPEWIRE_RUNTIME_DIR=$component_runtime" PIPEWIRE_REMOTE=pipewire-0
  "PULSE_RUNTIME_PATH=$component_runtime/pulse" "PULSE_SERVER=unix:$component_runtime/pulse/native" PULSE_COOKIE=
- "PULSE_CLIENTCONFIG=$private/config/pulse/client.conf" XR_SYSTEM_UI_ISOLATED_BUS=1)
+ "PULSE_CLIENTCONFIG=$private/config/pulse/client.conf" XR_SYSTEM_UI_ISOLATED_BUS=1
+ "XR_SYSTEM_UI_PREFERENCES_FILE=$taskbar_preferences")
 dbus-update-activation-environment "${activation_env[@]}"
 record "XR_DESKTOP_ACTIVATION_ENV_PRIVATE=1 XR_DESKTOP_GTK_IM_MODULE=$gtk_im_module QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland"
 
