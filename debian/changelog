@@ -1,3 +1,10 @@
+xr-image-tools (0.1.20) unstable; urgency=medium
+
+  * Persist XR-specific Office settings across private scene sessions.
+  * Retire owned Office background helpers during private-session cleanup.
+
+ -- bits <bigbits@hackx.cc>  Thu, 05 Nov 2026 02:10:48 +0800
+
 xr-image-tools (0.1.19) unstable; urgency=medium
 
   * Retire the inactive maintenance desktop status singleton before XR starts.

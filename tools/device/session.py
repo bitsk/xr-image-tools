@@ -145,6 +145,11 @@ class Scene:
         private = self.private
         for name in ('runtime', 'config', 'state', 'cache', 'data'):
             (private / name).mkdir(mode=0o700, exist_ok=name == 'runtime')
+        # Keep approved WPS first-run settings across XR sessions without
+        # changing the maintenance desktop's Office configuration.
+        app_config = Path(os.environ.get('XDG_CONFIG_HOME') or Path.home() / '.config') / 'xr-applications/Kingsoft'
+        app_config.mkdir(mode=0o700, parents=True, exist_ok=True)
+        (private / 'config/Kingsoft').symlink_to(app_config, target_is_directory=True)
         env = dict(os.environ)
         preferences = env.get('XR_SYSTEM_UI_PREFERENCES_FILE') or str(
             Path(env.get('XDG_CONFIG_HOME') or Path.home() / '.config') / 'xr-system-ui/preferences.json')
