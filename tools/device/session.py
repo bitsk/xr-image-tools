@@ -413,6 +413,39 @@ def inside(opts):
     return status
 
 
+def retire_inactive_desktop_status(run):
+    """Release the UKUI singleton left on the inactive maintenance bus."""
+    original_bus = os.environ.get('DBUS_SESSION_BUS_ADDRESS', '').split(',guid=')[0]
+    executable = Path('/usr/bin/kylin-status-manager')
+    if not original_bus or not executable.is_file():
+        return
+    if subprocess.run(['pgrep', '-u', str(os.getuid()), '-x', 'kylin-wlcom'],
+                      stdout=subprocess.DEVNULL).returncode == 0:
+        return
+    retired = []
+    for root in Path('/proc').glob('[0-9]*'):
+        try:
+            if root.stat().st_uid != os.getuid() or (root / 'exe').resolve() != executable.resolve():
+                continue
+            env = dict(item.split('=', 1) for item in (root / 'environ').read_text().strip('\0').split('\0')
+                       if '=' in item)
+            if env.get('DBUS_SESSION_BUS_ADDRESS', '').split(',guid=')[0] != original_bus:
+                continue
+            pid = int(root.name)
+            identity = birth(pid)
+            if identity is None or birth(pid) != identity:
+                continue
+            os.kill(pid, signal.SIGTERM)
+            deadline = time.monotonic() + 3
+            while birth(pid) == identity and time.monotonic() < deadline:
+                time.sleep(.05)
+            retired.append({'pid': pid, 'birth': identity, 'gone': birth(pid) != identity})
+        except (FileNotFoundError, ProcessLookupError, PermissionError):
+            continue
+    atomic(run / 'inactive-desktop-status.json', {'retired': retired,
+           'restore': 'The maintenance bus can activate its installed service after XR exits.'})
+
+
 def outer(opts):
     if os.getuid() == 0:
         raise RuntimeError('Run the scene as the logged-in VR session user')
@@ -423,6 +456,7 @@ def outer(opts):
     state.mkdir(mode=0o700, parents=True, exist_ok=True)
     run = state / ('run-' + uuid.uuid4().hex[:12])
     run.mkdir(mode=0o700)
+    retire_inactive_desktop_status(run)
     (state / 'latest').write_text(str(run) + '\n')
     original_bus = ''
     if os.environ.get('DBUS_SESSION_BUS_ADDRESS'):

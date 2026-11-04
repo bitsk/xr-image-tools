@@ -1,3 +1,10 @@
+xr-image-tools (0.1.19) unstable; urgency=medium
+
+  * Retire the inactive maintenance desktop status singleton before XR starts.
+  * Preserve active UKUI desktops and match service user, executable and bus.
+
+ -- bits <bigbits@hackx.cc>  Thu, 05 Nov 2026 02:08:05 +0800
+
 xr-image-tools (0.1.18) unstable; urgency=medium
 
   * Set the private session bus address for activated desktop services.
