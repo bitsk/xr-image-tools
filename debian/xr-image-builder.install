@@ -2,6 +2,7 @@ tools/*.py usr/lib/xr/image-tools/tools/
 tools/qemu/*.sh usr/lib/xr/image-tools/tools/qemu/
 tools/common/*.sh usr/lib/xr/image-tools/tools/common/
 tools/common/*.py usr/lib/xr/image-tools/tools/common/
+tools/device/*.py usr/lib/xr/image-tools/tools/device/
 tools/native/*.sh usr/lib/xr/image-tools/tools/native/
 tools/native/README.md usr/share/doc/xr-image-builder/native/
 tools/qemu/*.py usr/lib/xr/image-tools/tools/qemu/

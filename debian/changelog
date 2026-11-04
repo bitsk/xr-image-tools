@@ -1,3 +1,11 @@
+xr-image-tools (0.1.12) unstable; urgency=medium
+
+  * Add xr-shell-session for a scene in the selected native OpenXR runtime.
+  * Isolate Wayland, D-Bus and input-method components while retaining real audio.
+  * Drain Shell GPU resources before components and record owned process cleanup.
+
+ -- bits <bigbits@hackx.cc>  Wed, 04 Nov 2026 10:08:39 +0800
+
 xr-image-tools (0.1.11) unstable; urgency=medium
 
   * Accept IME exit zero only during the identity-checked session drain.

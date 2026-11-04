@@ -11,5 +11,6 @@ Vcs-Browser: https://gitee.com/bigbits/xr-image-tools
 Package: xr-image-builder
 Architecture: all
 Depends: ${misc:Depends}, python3, debootstrap, xz-utils, zstd, tar, squashfs-tools-ng, xorriso, openkylin-xr-defaults
+Recommends: dbus-daemon, dbus-bin, libglib2.0-bin, fcitx5, fcitx5-chinese-addons, xwayland
 Description: XR multi-system image preparation and composition tools
  Independently maintained XR component for openKylin integration.

@@ -40,6 +40,19 @@ python3 tools/rootfs.py assemble --system steamos --base-archive /prepared/rootf
 
 当前迁移不自动启用竞争采集、切换活动运行时或写设备启动分区；已有验证基线继续保留。
 
+## 原生 XR 场景会话
+
+`xr-shell-session` 是已经运行的真实 OpenXR 会话中的前台场景应用入口，消费父会话提供的 `XR_RUNTIME_JSON`、Vulkan ICD 和兼容层环境。它不启动模拟器、硬件采集、跟踪生产者或音频服务，也不修改全局运行时选择。以已登录的普通用户运行：
+
+```sh
+xr-shell-session --debug-input
+xr-shell-session --prefix /opt/xr-development --seconds 30
+```
+
+所选 prefix 必须提供 `xr-shell`、`xr-shellctl`、`xr-window-server`、`xr-dock`、`xr-system-ui`，以及 `share/xr/environments/qingkong/environment.json`；可用 `--environment` 指定其他环境描述。Shell 保持真实登录用户的 `XDG_RUNTIME_DIR`，组件单独使用私有 Wayland socket、运行与配置目录及 D-Bus。默认带 Xwayland 和 Fcitx 的 `keyboard-us`/`pinyin` 组；缺少依赖会明确失败，可显式用 `--no-xwayland` 或 `--no-ime` 关闭对应功能。Pulse 客户端指向原登录用户的服务，禁止自动派生新音频服务。
+
+外层收到 SIGTERM 后只通知其拥有的内部 helper。helper 先请求 Shell 正常退出并等待 OpenXR/GPU 清理，再回收组件；最后私有 D-Bus 退出并清理身份匹配的激活进程与挂载。正常退出码为零，超时或异常退出会保留失败状态，不将强制终止标为正常。状态默认写入 `~/.local/state/xr-shell-session/run-*`，`latest` 记录最近目录：`ready.json` 和 `startup-snapshot.json` 记录真实组件场景发布，`captures/` 保存 Shell 产物，`summary.json`、`children.json`、`lifecycle.jsonl` 与 `session-result.json` 记录进程、退出顺序和清理结果。运行时本体与跟踪服务不由此入口停止。Fcitx 组配置检查不代表中文预编辑已验收。
+
 ## openKylin 3.0 ARM64 基础系统
 
 `systems/openkylin/source.lock.json` 固定官方桌面 ISO、长度和摘要。下载后核对官方 MD5 及锁定的 SHA-256，并把 SHA-256 写入 ISO 同名的 `.sha256` 文件：
