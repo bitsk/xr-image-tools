@@ -1,3 +1,11 @@
+xr-image-tools (0.1.18) unstable; urgency=medium
+
+  * Set the private session bus address for activated desktop services.
+  * Drop XR ambient and inheritable capabilities from the bus daemon only.
+  * Preserve the native XR Shell capability context.
+
+ -- bits <bigbits@hackx.cc>  Thu, 05 Nov 2026 02:02:24 +0800
+
 xr-image-tools (0.1.17) unstable; urgency=medium
 
   * Retire private-bus UKUI status and Peony activation services on scene exit.

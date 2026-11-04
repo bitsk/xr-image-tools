@@ -169,7 +169,7 @@ class Scene:
         (pulse / 'client.conf').write_text('autospawn = no\n')
         env['PULSE_CLIENTCONFIG'] = str(pulse / 'client.conf')
         # Only the private bus activation environment changes, never systemd --user.
-        keys = ['PATH', 'DISPLAY', 'XAUTHORITY', 'SESSION_MANAGER', 'DESKTOP_STARTUP_ID',
+        keys = ['DBUS_SESSION_BUS_ADDRESS', 'PATH', 'DISPLAY', 'XAUTHORITY', 'SESSION_MANAGER', 'DESKTOP_STARTUP_ID',
                 'XDG_RUNTIME_DIR', 'XDG_CONFIG_HOME', 'XDG_STATE_HOME', 'XDG_CACHE_HOME',
                 'XDG_DATA_HOME', 'XDG_CURRENT_DESKTOP', 'XDG_SESSION_TYPE', 'WAYLAND_DISPLAY',
                 'GDK_BACKEND', 'QT_QPA_PLATFORM', 'GTK_CSD', 'GTK_IM_MODULE', 'QT_IM_MODULE',
@@ -436,7 +436,7 @@ def outer(opts):
     bus_wrapper = private / 'dbus-daemon-wrapper'
     bus_wrapper.write_text('#!/bin/sh\n'
         + 'printf \'%s\\n\' "$$" > ' + shlex.quote(str(private / 'dbus-daemon.pid')) + '\n'
-        + 'exec /usr/bin/dbus-daemon --address=' + shlex.quote('unix:path=' + str(bus_socket))
+        + 'exec /usr/bin/setpriv --inh-caps=-all --ambient-caps=-all /usr/bin/dbus-daemon --address=' + shlex.quote('unix:path=' + str(bus_socket))
         + ' "$@" 2>>' + shlex.quote(str(run / 'dbus.log')) + '\n')
     bus_wrapper.chmod(0o700)
     atomic(run / 'launch.json', {'schema': 1, 'private': str(private),
