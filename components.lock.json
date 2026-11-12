@@ -3,7 +3,7 @@
   "components": {
     "xr-kernel": {
       "repository": "https://github.com/bitsk/xr-kernel",
-      "commit": "d552265cf4a64feea64156ff79626abbc7ba3a4c"
+      "commit": "bcb9c39002dfb3ebc0baa13cdf3b335a273c74b6"
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
@@ -41,7 +41,7 @@
     },
     "xr-controller-tracking": {
       "repository": "https://github.com/bitsk/xr-controller-tracking",
-      "commit": "a65b55c987796104eef8abcb35ef1cb3f2b6d270",
+      "commit": "b53092893a74689ef729fbc5cbe1e662fb3a4760",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
@@ -56,7 +56,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "9d0b9fb0edd4438655363138145ae4b15cee746d"
+      "commit": "8ada6dd742fb75b2025d43eff04af17a665ae7e0"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",

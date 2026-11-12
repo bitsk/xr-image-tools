@@ -24,7 +24,7 @@
   "components": {
     "xr-kernel": {
       "kind": "kernel-uapi",
-      "version": "7.3.0+xr2",
+      "version": "7.3.0+xr3",
       "kernel_release": "7.3.0-qiyu-mix-scheduling"
     },
     "xr-hexagonrpc": {
