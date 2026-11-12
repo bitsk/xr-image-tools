@@ -11,7 +11,8 @@
     "openkylin-xr-integration",
     "xr-mesa",
     "xr-hexagonrpc",
-    "xr-hand-tracking"
+    "xr-hand-tracking",
+    "xr-shell"
   ],
   "vendor_libraries": "externally imported, never checked into this repository",
   "automatic_service_enable": false,
