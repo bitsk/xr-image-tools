@@ -2,6 +2,7 @@
   "schema": 1,
   "order": [
     "xr-kernel",
+    "xr-mesa",
     "xr-vendor-assets",
     "xr-hexagonrpc",
     "xr-device-io",
@@ -81,6 +82,9 @@
     },
     "xr-image-tools": {
       "kind": "debian"
+    },
+    "xr-mesa": {
+      "kind": "mesa"
     }
   }
 }

@@ -41,7 +41,7 @@
     },
     "xr-controller-tracking": {
       "repository": "https://github.com/bitsk/xr-controller-tracking",
-      "commit": "bfa046dc37a136fd694b34d90e07f74efcb2a3da",
+      "commit": "a65b55c987796104eef8abcb35ef1cb3f2b6d270",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
@@ -56,7 +56,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "b4e442d76225b23cbfd6af4f6e2d64c0c9cd7a7c"
+      "commit": "9d0b9fb0edd4438655363138145ae4b15cee746d"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
@@ -64,7 +64,7 @@
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
-      "commit": "a024fc677fa02dcb492efb769ecfd2f017e76d61"
+      "commit": "d111d07a39c9caa0362649d1f587d6f6f171a191"
     },
     "xr-hexagonrpc": {
       "repository": "https://github.com/bitsk/xr-hexagonrpc",
@@ -72,7 +72,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "d589206adb226108b61a5ed223817c2b8c29336d"
+      "commit": "b4f3244ea1db7a3a5f250a60baf8c8a1e40aaf76"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",

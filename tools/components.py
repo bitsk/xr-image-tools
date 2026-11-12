@@ -209,8 +209,17 @@ def main():
                 argv = [sys.executable, repo / 'packaging/build-uapi-deb.py', '--output', packages,
                         '--version', recipe['version']]
                 command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
-            elif recipe['kind'] == 'debian':
-                builds = [repo / p for p in recipe.get('directories', ['.'])]
+            elif recipe['kind'] in ('debian', 'mesa'):
+                source = repo
+                if recipe['kind'] == 'mesa':
+                    source = out / 'upstream' / name
+                    if not source.exists():
+                        source.parent.mkdir(exist_ok=True)
+                        argv = [sys.executable, repo / 'tools/prepare-source.py', '--output', source]
+                        if component_env.get('XR_MESA_UPSTREAM_CACHE'):
+                            argv += ['--upstream-repo', component_env['XR_MESA_UPSTREAM_CACHE']]
+                        command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                builds = [source / p for p in recipe.get('directories', ['.'])]
                 for work in builds:
                     argv = ['dpkg-buildpackage', '-b', '-us', '-uc']
                     if config.get('architecture'):
