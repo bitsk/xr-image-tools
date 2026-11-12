@@ -1,3 +1,9 @@
+xr-image-tools (0.1.26) unstable; urgency=medium
+
+  * Build clean locked component snapshots and export checksum-verified package repositories.
+
+ -- bits <bigbits@hackx.cc>  Thu, 12 Nov 2026 19:14:34 +0800
+
 xr-image-tools (0.1.25) unstable; urgency=medium
 
   * Lock live interaction controls and the complete shared camera producer.

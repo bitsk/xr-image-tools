@@ -16,6 +16,8 @@ import urllib.parse
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_LOCK = REPO.parent / 'openkylin-xr-integration/devices/a081/vendor.lock.json'
+if not DEFAULT_LOCK.is_file():
+    DEFAULT_LOCK = Path('/usr/lib/xr/openkylin-xr-integration/devices/a081/vendor.lock.json')
 
 def digest(path):
     value = hashlib.sha256()
@@ -42,7 +44,9 @@ def verify_cache(cache, lock_path=DEFAULT_LOCK, required_bundles=None):
     lock = load_lock(lock_path)
     receipt = json.loads((cache / 'receipt.json').read_text())
     # Identity and per-file hashes keep metadata-only updates cache-compatible.
-    if any(receipt.get(key) != lock.get(key) for key in ['repository', 'tag', 'model']):
+    repositories = set(lock.get('compatible_cache_repositories', [])) | {lock['repository']}
+    if (receipt.get('repository') not in repositories or
+            any(receipt.get(key) != lock.get(key) for key in ['tag', 'model'])):
         raise ValueError('Cache was created for a different vendor release or model')
     selected = receipt['bundles']
     if len(selected) != len(set(selected)) or set(selected) - set(lock['bundles']):
@@ -127,8 +131,13 @@ def fetch(lock_path, output, selected):
                     url += ('&' if '?' in url else '?') + urllib.parse.urlencode({'access_token': credential})
                 with urllib.request.urlopen(url, timeout=120) as source, archive.open('wb') as target:
                     shutil.copyfileobj(source, target)
+            elif lock.get('platform', 'github') == 'github':
+                subprocess.run(['gh', 'api', 'repos/' + lock['repository'] +
+                                '/releases/assets/' + str(bundle['asset_id']),
+                                '-H', 'Accept: application/octet-stream'],
+                               check=True, stdout=archive.open('wb'))
             else:
-                raise ValueError('This lock requires a Gitee asset provider')
+                raise ValueError('Unsupported vendor asset provider')
             if archive.stat().st_size != bundle['bytes'] or digest(archive) != bundle['sha256']:
                 raise ValueError('Release asset checksum mismatch: ' + asset)
             unpack(archive, staged / name, bundle)

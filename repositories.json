@@ -1,0 +1,278 @@
+{
+  "schema": 1,
+  "repositories": [
+    {
+      "repository": "xr-kernel",
+      "url": "https://github.com/bitsk/xr-kernel",
+      "maintenance": "canonical-kernel-build-wrapper",
+      "source_packages": [
+        "linux-xr"
+      ],
+      "binary_packages": [
+        "linux-image-<kernelrelease>",
+        "linux-headers-<kernelrelease>",
+        "xr-kernel-uapi-dev",
+        "linux-image-xr-arm64"
+      ],
+      "local_path": "xr-kernel",
+      "source_owner": "https://github.com/bitsk/qiyu-kernel"
+    },
+    {
+      "repository": "xr-mesa",
+      "url": "https://github.com/bitsk/xr-mesa",
+      "maintenance": "patch-stack",
+      "source_packages": [
+        "mesa-xr"
+      ],
+      "binary_packages": [
+        "xr-mesa-vulkan-drivers"
+      ],
+      "local_path": "xr-mesa"
+    },
+    {
+      "repository": "xr-monado",
+      "url": "https://github.com/bitsk/xr-monado",
+      "maintenance": "upstream-derived",
+      "source_packages": [
+        "monado-xr"
+      ],
+      "binary_packages": [
+        "xr-monado-steamvr-driver",
+        "xr-native-interop"
+      ],
+      "local_path": "xr-monado"
+    },
+    {
+      "repository": "xr-hexagonrpc",
+      "url": "https://github.com/bitsk/xr-hexagonrpc",
+      "maintenance": "upstream-derived",
+      "source_packages": [
+        "xr-hexagonrpc"
+      ],
+      "binary_packages": [
+        "libxr-hexagonrpc-dev",
+        "xr-hexagonrpc-source",
+        "xr-hexagonrpc-daemon"
+      ],
+      "local_path": "xr-hexagonrpc"
+    },
+    {
+      "repository": "xr-device-io",
+      "url": "https://github.com/bitsk/xr-device-io",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-device-io"
+      ],
+      "binary_packages": [
+        "xr-device-tools",
+        "libxr-device-dev"
+      ],
+      "local_path": "xr-device-io"
+    },
+    {
+      "repository": "xr-head-tracking",
+      "url": "https://github.com/bitsk/xr-head-tracking",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-head-tracking"
+      ],
+      "binary_packages": [
+        "xr-head-tracking",
+        "xr-head-tracking-tools",
+        "libxr-head-dev"
+      ],
+      "local_path": "xr-head-tracking"
+    },
+    {
+      "repository": "xr-controller-tracking",
+      "url": "https://github.com/bitsk/xr-controller-tracking",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-controller-tracking"
+      ],
+      "binary_packages": [
+        "xr-controller-worker-bionic",
+        "libxr-controller-dev",
+        "xr-controller-tools"
+      ],
+      "local_path": "xr-controller-tracking"
+    },
+    {
+      "repository": "xr-session-manager",
+      "url": "https://github.com/bitsk/xr-session-manager",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-session-manager"
+      ],
+      "binary_packages": [
+        "xr-session-manager"
+      ],
+      "local_path": "xr-session-manager"
+    },
+    {
+      "repository": "xr-debug-console",
+      "url": "https://github.com/bitsk/xr-debug-console",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-debug-console"
+      ],
+      "binary_packages": [
+        "xr-debug-server",
+        "xr-debug-web",
+        "xr-debug-video",
+        "xr-debug-tools"
+      ],
+      "local_path": "xr-debug-console"
+    },
+    {
+      "repository": "xr-vendor-assets",
+      "url": "https://github.com/bitsk/xr-vendor-assets",
+      "maintenance": "asset-catalog",
+      "source_packages": [
+        "xr-firmware-a081",
+        "xr-vendor-a081"
+      ],
+      "binary_packages": [
+        "firmware-xr-a081",
+        "firmware-xr-a081-tracking",
+        "xr-vendor-a081-controller",
+        "xr-vendor-a081-dsp-host"
+      ],
+      "local_path": "xr-vendor-assets"
+    },
+    {
+      "repository": "openkylin-xr-integration",
+      "url": "https://github.com/bitsk/openkylin-xr-integration",
+      "maintenance": "component",
+      "source_packages": [
+        "openkylin-xr-integration"
+      ],
+      "binary_packages": [
+        "openkylin-xr-defaults",
+        "xr-device-a081",
+        "xr-device-a081-vr",
+        "openkylin-xr-base",
+        "openkylin-xr-streaming",
+        "openkylin-xr-debug",
+        "openkylin-xr-steamvr",
+        "openkylin-xr-hands",
+        "openkylin-xr-native"
+      ],
+      "local_path": "openkylin-xr-integration"
+    },
+    {
+      "repository": "xr-image-tools",
+      "url": "https://github.com/bitsk/xr-image-tools",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-image-tools"
+      ],
+      "binary_packages": [
+        "xr-image-builder",
+        "xr-shell-session"
+      ],
+      "local_path": "xr-image-tools"
+    },
+    {
+      "repository": "openkylin-xr-docs",
+      "url": "https://github.com/bitsk/openkylin-xr-docs",
+      "maintenance": "component",
+      "source_packages": [
+        "openkylin-xr-docs"
+      ],
+      "binary_packages": [
+        "openkylin-xr-doc"
+      ],
+      "local_path": "openkylin-xr-docs"
+    },
+    {
+      "repository": "xr-hand-tracking",
+      "url": "https://github.com/bitsk/xr-hand-tracking",
+      "maintenance": "native",
+      "source_packages": [
+        "xr-hand-tracking",
+        "xr-hand-backend-quest-dsp"
+      ],
+      "binary_packages": [
+        "xr-hand-tracking",
+        "libxr-hand-dev",
+        "xr-hand-backend-quest-dsp"
+      ],
+      "local_path": "xr-hand-tracking"
+    },
+    {
+      "repository": "xr-dock",
+      "url": "https://github.com/bitsk/xr-dock",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-dock"
+      ],
+      "binary_packages": [
+        "xr-dock"
+      ],
+      "local_path": "xr-dock"
+    },
+    {
+      "repository": "xr-environments",
+      "url": "https://github.com/bitsk/xr-environments",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-environments"
+      ],
+      "binary_packages": [
+        "xr-environment-qingkong"
+      ],
+      "local_path": "xr-environments"
+    },
+    {
+      "repository": "xr-shell",
+      "url": "https://github.com/bitsk/xr-shell",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-shell"
+      ],
+      "binary_packages": [
+        "xr-shell",
+        "librust-xr-shell-protocols-dev"
+      ],
+      "local_path": "xr-shell"
+    },
+    {
+      "repository": "xr-spatial-kit",
+      "url": "https://github.com/bitsk/xr-spatial-kit",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-spatial-kit"
+      ],
+      "binary_packages": [
+        "librust-xr-spatial-kit-dev",
+        "xr-spatial-style-ukui"
+      ],
+      "local_path": "xr-spatial-kit"
+    },
+    {
+      "repository": "xr-system-ui",
+      "url": "https://github.com/bitsk/xr-system-ui",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-system-ui"
+      ],
+      "binary_packages": [
+        "xr-system-ui"
+      ],
+      "local_path": "xr-system-ui"
+    },
+    {
+      "repository": "xr-wayland",
+      "url": "https://github.com/bitsk/xr-wayland",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-wayland"
+      ],
+      "binary_packages": [
+        "xr-window-server"
+      ],
+      "local_path": "xr-wayland"
+    }
+  ]
+}

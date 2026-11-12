@@ -9,7 +9,7 @@
   },
   "monado": {
     "commit": "0f271b3c5613b025b414fc6f9498cf6d170f40ec",
-    "origin": "https://gitee.com/bigbits/xr-monado.git",
+    "origin": "https://github.com/bitsk/xr-monado.git",
     "dirty": false
   },
   "openxr-sdk-source": {

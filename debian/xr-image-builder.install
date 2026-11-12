@@ -19,3 +19,7 @@ bin/xr-simulator usr/bin/
 bin/xr-native-simulator usr/bin/
 bin/xr-image-builder usr/bin/
 bin/xr-vendor-cache usr/bin/
+repositories.json usr/lib/xr/image-tools/
+build-recipes.json usr/lib/xr/image-tools/
+bin/xr-build-components usr/bin/
+builder-commit.txt usr/lib/xr/image-tools/

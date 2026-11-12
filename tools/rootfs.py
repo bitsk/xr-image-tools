@@ -4,6 +4,7 @@
 import argparse,hashlib,io,json,shutil,subprocess,sys,tarfile
 from pathlib import Path,PurePosixPath
 from vendor import verify_cache
+from package_bundle import export as export_packages
 r=Path(__file__).resolve().parents[1]
 def load(p):return json.loads(p.read_text())
 def digest(p):
@@ -14,7 +15,9 @@ def digest(p):
 def key(s):
  if not s or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-_' for c in s):raise ValueError('Invalid adapter/model/profile identifier')
  return s
-p=argparse.ArgumentParser();p.add_argument('--integration-root',type=Path,default=r.parent/'openkylin-xr-integration');p.add_argument('command',choices=['plan','prepare','assemble']);p.add_argument('--system',required=True,type=key);p.add_argument('--device',default='a081',type=key);p.add_argument('--profile',default='vr',type=key);p.add_argument('--source',help='prepare: mirror URL or existing source archive');p.add_argument('--base-archive',type=Path);p.add_argument('--artifacts',type=Path,help='JSON list of {source, destination, sha256} local artifacts');p.add_argument('--vendor-cache',type=Path,help='Verified cache downloaded with tools/vendor.py');p.add_argument('--output',type=Path);a=p.parse_args()
+integration_default=r.parent/'openkylin-xr-integration'
+if not integration_default.is_dir():integration_default=Path('/usr/lib/xr/openkylin-xr-integration')
+p=argparse.ArgumentParser();p.add_argument('--integration-root',type=Path,default=integration_default);p.add_argument('command',choices=['plan','prepare','assemble']);p.add_argument('--system',required=True,type=key);p.add_argument('--device',default='a081',type=key);p.add_argument('--profile',default='vr',type=key);p.add_argument('--source',help='prepare: mirror URL or existing source archive');p.add_argument('--base-archive',type=Path);p.add_argument('--artifacts',type=Path,help='JSON list of {source, destination, sha256} local artifacts');p.add_argument('--package-manifest',type=Path,help='Exact Git/deb manifest produced by xr-build-components');p.add_argument('--vendor-cache',type=Path,help='Verified cache downloaded with tools/vendor.py');p.add_argument('--output',type=Path);a=p.parse_args()
 adapter_path=r/'systems'/a.system;adapter=load(adapter_path/'adapter.json');model=load(a.integration_root/'devices'/a.device/'model.json');profile=load(r/'profiles'/(a.profile+'.json'));locks=load(r/'components.lock.json')
 if a.system not in model['systems']:p.error('Model does not list this system adapter')
 selected={n:locks['components'][n] for n in profile['components']}
@@ -47,5 +50,7 @@ for q,dest,_ in validated:
 with tarfile.open(a.output/'overlay.tar','w',format=tarfile.PAX_FORMAT) as tf:
  for dest,q in sorted(members.items()):
   data=q.read_bytes();ti=tarfile.TarInfo(dest);ti.mode=q.stat().st_mode&0o777;ti.size=len(data);ti.uid=ti.gid=0;ti.mtime=0;tf.addfile(ti,io.BytesIO(data))
+if a.package_manifest:
+ manifest['package_repository']=export_packages(a.package_manifest,a.output,selected,digest(r/'components.lock.json'),profile.get('packages',[]),[n for n in load(r/'build-recipes.json')['order'] if n in selected or n=='xr-image-tools'])
 manifest.update(base_archive={'name':base.name,'sha256':digest(base),'metadata_preservation':'input archive copied byte-for-byte'},overlay={'name':'overlay.tar','sha256':digest(a.output/'overlay.tar')},artifacts=[{'destination':d,'sha256':h} for _,d,h in validated],status='composition bundle; system-specific preparation, native board packages, kernel image and device acceptance are separate gates')
 (a.output/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'bundle':str(a.output),'hardware_validated':False}))

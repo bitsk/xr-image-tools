@@ -3,6 +3,7 @@
   "id": "vr-hands",
   "components": [
     "xr-kernel",
+    "xr-vendor-assets",
     "xr-device-io",
     "xr-head-tracking",
     "xr-controller-tracking",
@@ -17,7 +18,8 @@
     "xr-spatial-kit",
     "xr-dock",
     "xr-environments",
-    "xr-wayland"
+    "xr-wayland",
+    "xr-debug-console"
   ],
   "vendor_libraries": "externally imported, never checked into this repository",
   "automatic_service_enable": false,
@@ -34,7 +36,17 @@
     "assets": "private digest-locked import"
   },
   "packages": [
+    "openkylin-xr-native",
     "openkylin-xr-hands",
-    "xr-hand-backend-quest-dsp"
-  ]
+    "xr-hand-backend-quest-dsp",
+    "openkylin-xr-debug",
+    "xr-debug-video",
+    "xr-debug-tools"
+  ],
+  "private_runtime_inputs": {
+    "model_weights": "external digest-locked import",
+    "camera_calibration": "per-device local import",
+    "steamvr": "separately installed upstream runtime",
+    "pose_observer": "optional external source under its original terms; exact lock in xr-monado"
+  }
 }

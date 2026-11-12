@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "order": [
+    "xr-kernel",
+    "xr-vendor-assets",
+    "xr-hexagonrpc",
+    "xr-device-io",
+    "xr-head-tracking",
+    "xr-controller-tracking",
+    "xr-spatial-kit",
+    "xr-hand-tracking",
+    "xr-monado",
+    "xr-shell",
+    "xr-environments",
+    "xr-dock",
+    "xr-system-ui",
+    "xr-wayland",
+    "xr-session-manager",
+    "xr-debug-console",
+    "xr-image-tools",
+    "openkylin-xr-integration"
+  ],
+  "components": {
+    "xr-kernel": {
+      "kind": "kernel-uapi",
+      "version": "7.3.0+xr2",
+      "kernel_release": "7.3.0-qiyu-mix-scheduling"
+    },
+    "xr-hexagonrpc": {
+      "kind": "debian"
+    },
+    "xr-device-io": {
+      "kind": "debian"
+    },
+    "xr-head-tracking": {
+      "kind": "debian"
+    },
+    "xr-controller-tracking": {
+      "kind": "debian"
+    },
+    "xr-spatial-kit": {
+      "kind": "debian"
+    },
+    "xr-hand-tracking": {
+      "kind": "debian",
+      "directories": [
+        ".",
+        "backends/quest"
+      ]
+    },
+    "xr-monado": {
+      "kind": "debian"
+    },
+    "xr-shell": {
+      "kind": "debian"
+    },
+    "xr-environments": {
+      "kind": "debian"
+    },
+    "xr-dock": {
+      "kind": "debian"
+    },
+    "xr-system-ui": {
+      "kind": "debian"
+    },
+    "xr-wayland": {
+      "kind": "debian"
+    },
+    "xr-session-manager": {
+      "kind": "debian"
+    },
+    "xr-debug-console": {
+      "kind": "debian"
+    },
+    "openkylin-xr-integration": {
+      "kind": "debian"
+    },
+    "xr-vendor-assets": {
+      "kind": "vendor"
+    },
+    "xr-image-tools": {
+      "kind": "debian"
+    }
+  }
+}

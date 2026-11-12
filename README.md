@@ -18,11 +18,11 @@ assemble 生成基础归档的原样副本、设备配置 overlay.tar 和锁定�
 
 systems/*/legacy/ 保留原有设备侧初始化/配置和镜像配方；其中 /mnt/osstore 等路径属于既有 A081 安装流程，不能当作通用主机命令直接运行。相邻 openkylin-xr-integration 的 devices/a081/ 保存已用的音频、传感器、热控来源；网络凭据、厂商固件和库不进入 Git。
 
-这次是源码拆分和离线构建迁移，未重新验收硬件；已验证系统与 recovery 回退保持原状。工程架构、迁移状态、Wiki 与 Blog 见 [openkylin-xr-docs](https://gitee.com/bigbits/openkylin-xr-docs)。
+这次是源码拆分和离线构建迁移，未重新验收硬件；已验证系统与 recovery 回退保持原状。工程架构、迁移状态、Wiki 与 Blog 见 [openkylin-xr-docs](https://github.com/bitsk/openkylin-xr-docs)。
 
 ## 固定版本原厂二进制
 
-原厂依赖改由独立公开 [xr-vendor-assets](https://gitee.com/bigbits/xr-vendor-assets) 的 Release 提供；本仓库只保存 devices/a081/vendor.lock.json 中的资产 ID、归档与逐文件 SHA-256。无需反复提取原厂镜像：
+原厂依赖改由独立公开 [xr-vendor-assets](https://github.com/bitsk/xr-vendor-assets) 的 Release 提供；本仓库只保存 devices/a081/vendor.lock.json 中的资产 ID、归档与逐文件 SHA-256。无需反复提取原厂镜像：
 
 ```sh
 python3 tools/vendor.py fetch --output /new/vendor-cache

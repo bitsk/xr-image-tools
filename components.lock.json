@@ -2,12 +2,12 @@
   "schema": 1,
   "components": {
     "xr-kernel": {
-      "repository": "https://gitee.com/bigbits/xr-kernel",
-      "commit": "3b2556491c73b027a815b5a4be3d764da3c2930e"
+      "repository": "https://github.com/bitsk/xr-kernel",
+      "commit": "d552265cf4a64feea64156ff79626abbc7ba3a4c"
     },
     "xr-device-io": {
-      "repository": "https://gitee.com/bigbits/xr-device-io",
-      "commit": "297cc9fbdd66e2567d3e8870c3f8a35c0584ac7b",
+      "repository": "https://github.com/bitsk/xr-device-io",
+      "commit": "e32a1ddcfc1937ca9ba3c17c6cea290ba8fa8905",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "25152cb58381385055385d1ad38accef696011c408f75238dff120cf25a5dd98",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
@@ -25,18 +25,11 @@
         "include/xr/device/camera-preview.hpp": "b5971529b1ff6a31131285d2d39dd309088e30eb29e9b1c148f79b464e4c2d5c",
         "include/xr/device/passthrough-capture.hpp": "528aa8d2c911c3cab82c41aced3e971d66313a181d3f94282120c16020a770cb",
         "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07"
-      },
-      "source_bundle": {
-        "file": "xr-device-io.bundle",
-        "sha256": "0835949366897709f41045e7719e2de7d6bf4a9684631c3cf0e765be5ae841e6",
-        "commit": "297cc9fbdd66e2567d3e8870c3f8a35c0584ac7b",
-        "prerequisite_commit": "0dd923078ca0685a77c2a8b791e9cbe2f8f535f0"
-      },
-      "publication": "local Git bundle; updated commits are not published to the remote"
+      }
     },
     "xr-head-tracking": {
-      "repository": "https://gitee.com/bigbits/xr-head-tracking",
-      "commit": "fc19ca67b9487ca9ada7ba186fab62f5c7a7cfa2",
+      "repository": "https://github.com/bitsk/xr-head-tracking",
+      "commit": "bdf38242e5c99b8f8bb9baaf3258a9aa1a69fcd5",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
@@ -44,98 +37,46 @@
         "include/xr/head/production-v2/a081_qvr_pose.h": "b8b933e80a7d6c5d8f871347a7035cef7de0194b36c7ba6b2f9b2408c0d98d4e",
         "include/xr/head/production-v2/a081_tracking_client.h": "83356b9167f8a6ba7dcefe7a34a9404c38159ce71e46e6739147670fdfdbec8e",
         "include/xr/head/production-v2/a081_tracking_wire.h": "aed2c177a86ef4f5eeb28b40c45acaf14ff75910f3bc0191c82cbb8339289e2c"
-      },
-      "source_bundle": {
-        "file": "xr-head-tracking.bundle",
-        "sha256": "5a212952a7fe442dba771dd1d2a46e9825407a0f27033176ee615ce309643b84",
-        "commit": "fc19ca67b9487ca9ada7ba186fab62f5c7a7cfa2",
-        "prerequisite_commit": "9b0108eb3ce088f78e86865bef4ffbe04f0ffe8b"
-      },
-      "publication": "local Git bundle; updated commits are not published to the remote"
+      }
     },
     "xr-controller-tracking": {
-      "repository": "https://gitee.com/bigbits/xr-controller-tracking",
-      "commit": "7a79c40682f708788c4c9eb1bcf97ffb05c59c8a",
+      "repository": "https://github.com/bitsk/xr-controller-tracking",
+      "commit": "bfa046dc37a136fd694b34d90e07f74efcb2a3da",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
         "include/xr/controller/a081_controller_input_contract.hpp": "b161ff1272af3f2f49416b7065304b2eb86d099f4a001820221ca11bceb6364f",
         "include/xr/controller/a081_controller_pose_wire.h": "2f37564580cd456d0e0700e244a43d80425a827d3ea1dd4e9e68606987fa9526",
         "include/xr/controller/production-v2/a081_controller_pose_wire.h": "27115c80739c056cb23ec54211112add984a899507bbd0d3377cf747de636ce6"
-      },
-      "source_bundle": {
-        "file": "xr-controller-tracking.bundle",
-        "sha256": "62cd0e9e8e8b54b71b8e0bf370be11f98270ad9625ba8df6c6c9d7ca6a6aa0c9",
-        "prerequisite_commit": "d7d80610e4c02c2059d9f68280c2f33208baa692",
-        "commit": "7a79c40682f708788c4c9eb1bcf97ffb05c59c8a"
       }
     },
     "xr-monado": {
-      "repository": "https://gitee.com/bigbits/xr-monado",
-      "commit": "90329b8d0692a2165d46fb26a7c7a5324bcd54b2",
-      "source_bundle": {
-        "file": "xr-monado.bundle",
-        "sha256": "b5567cff56c3f4e1b01fea3018001df49c5c4bea53b85837392f014263d912af",
-        "commit": "90329b8d0692a2165d46fb26a7c7a5324bcd54b2",
-        "prerequisite_commit": "116bdc58e5a957d7d0a3cb3931711412c7a7bf11"
-      },
-      "publication": "local Git bundle; updated commits are not published to the remote"
+      "repository": "https://github.com/bitsk/xr-monado",
+      "commit": "9b394734c34436fee01e9d462f13da1b6a351889"
     },
     "xr-session-manager": {
-      "repository": "https://gitee.com/bigbits/xr-session-manager",
-      "commit": "18c820408e5bf9a2322611ed721774aa5fc433e3",
-      "source_bundle": {
-        "file": "xr-session-manager.bundle",
-        "sha256": "c2ab9a96a2c059163a292d065d5e469fd9ed254bd0a82b35dcb870ab9ccfaf9e",
-        "commit": "18c820408e5bf9a2322611ed721774aa5fc433e3",
-        "prerequisite_commit": "4293388a35280c5073ca82179454fc647bae9d83"
-      },
-      "publication": "local Git bundle; updated commits are not published to the remote"
+      "repository": "https://github.com/bitsk/xr-session-manager",
+      "commit": "b4e442d76225b23cbfd6af4f6e2d64c0c9cd7a7c"
     },
     "xr-debug-console": {
-      "repository": "https://gitee.com/bigbits/xr-debug-console",
-      "commit": "57ec1f0e70e1e282ab33c63415a8532f51277cf1",
-      "source_bundle": {
-        "file": "xr-debug-console.bundle",
-        "sha256": "a2b697804f4f369104d33ee3eff4bae54ebff73d7635cc65bc07a3a98dd3f2e1",
-        "prerequisite_commit": "f8d9f95ac198b29278711ddb4e6acbcdbf0b9977",
-        "commit": "57ec1f0e70e1e282ab33c63415a8532f51277cf1"
-      }
+      "repository": "https://github.com/bitsk/xr-debug-console",
+      "commit": "8e3a6d3a0cad11ff95193ab8981bbc62f0001b03"
     },
     "xr-mesa": {
-      "repository": "https://gitee.com/bigbits/xr-mesa",
-      "commit": "5f414ae81369cfb1da7438552bcbbf47df59a90f"
+      "repository": "https://github.com/bitsk/xr-mesa",
+      "commit": "a024fc677fa02dcb492efb769ecfd2f017e76d61"
     },
     "xr-hexagonrpc": {
-      "repository": "https://gitee.com/bigbits/xr-hexagonrpc",
-      "commit": "83f83d8c2053e117f9062d25ff5bbf74f658c540",
-      "source_bundle": {
-        "file": "xr-hexagonrpc.bundle",
-        "sha256": "29eb1edc5385e63e1f0f37ec7ad87fcd9711a343460d9ea64546d7c346cd238a",
-        "prerequisite_commit": "934dc102d3b4626fdbfd23c5e9d5c68cd91ca25b",
-        "commit": "83f83d8c2053e117f9062d25ff5bbf74f658c540"
-      }
+      "repository": "https://github.com/bitsk/xr-hexagonrpc",
+      "commit": "9c143461496e42f8ce53fba448d5c5eefd73f66a"
     },
     "openkylin-xr-integration": {
-      "repository": "https://gitee.com/bigbits/openkylin-xr-integration",
-      "commit": "ad623940dd18ee074d427c4a5c7e81f63469e0db",
-      "source_bundle": {
-        "file": "openkylin-xr-integration.bundle",
-        "sha256": "fc8dc7421d7720f2f56ac09b9db262ef90f219c171f99f25e130ca8c1ddc05ed",
-        "commit": "ad623940dd18ee074d427c4a5c7e81f63469e0db",
-        "prerequisite_commit": "ccc4bf9b9dcc0fc25775529503e1d8e5590cee4d"
-      },
-      "publication": "local Git bundle; updated commits are not published to the remote"
+      "repository": "https://github.com/bitsk/openkylin-xr-integration",
+      "commit": "d589206adb226108b61a5ed223817c2b8c29336d"
     },
     "xr-hand-tracking": {
-      "repository": "xr-hand-tracking",
-      "publication": "local Git bundle; updated commits are not published to the remote",
-      "commit": "3d77a2fd8252a3066554479dc6ddcd0b71656cb2",
-      "source_bundle": {
-        "file": "xr-hand-tracking.bundle",
-        "sha256": "d48773d560273fa5bf189b0036e5965f1864b70de19c4eef6d907b0309d82efb",
-        "commit": "3d77a2fd8252a3066554479dc6ddcd0b71656cb2"
-      },
+      "repository": "https://github.com/bitsk/xr-hand-tracking",
+      "commit": "15a20c5659103673431e37b07929ccca4a858f46",
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
         "include/xr/hand/joints.hpp": "245b98db23b3ab1f9450c2059708abac4897acddea6b1bcbe970db4af607af7d",
@@ -143,64 +84,28 @@
       }
     },
     "xr-shell": {
-      "repository": "xr-shell",
-      "publication": "local Git bundle; updated commits are not published to the remote",
-      "commit": "d962acbd95dd6504f93fe2956d8a57433abcf3b6",
-      "source_bundle": {
-        "file": "xr-shell.bundle",
-        "sha256": "92601364ee66564f37bcd4760b9d814eb15f809ba1bdb6d67961554fa7b6abc8",
-        "commit": "d962acbd95dd6504f93fe2956d8a57433abcf3b6"
-      }
+      "repository": "https://github.com/bitsk/xr-shell",
+      "commit": "6ee2a1fa0a60f40c4d01a0d67a5ed22e94803859"
     },
     "xr-system-ui": {
-      "repository": "xr-system-ui",
-      "commit": "9e8cfd745b93219f2ee887df0cf8245f97d5bbf5",
-      "publication": "local Git bundle; updated commits are not published to the remote",
-      "source_bundle": {
-        "file": "xr-system-ui.bundle",
-        "sha256": "20f582741332a57326a1a74ec2204adf291e490720c64f65e35fa2b05c14b8d0",
-        "commit": "9e8cfd745b93219f2ee887df0cf8245f97d5bbf5"
-      }
+      "repository": "https://github.com/bitsk/xr-system-ui",
+      "commit": "9f3fff7aae8257cb8dd5e05e64e0f8be8c4df249"
     },
     "xr-spatial-kit": {
-      "repository": "xr-spatial-kit",
-      "commit": "06e96965b0f888349a2a645ddfcfb00b0fbfa7e3",
-      "publication": "local Git bundle; updated commits are not published to the remote",
-      "source_bundle": {
-        "file": "xr-spatial-kit.bundle",
-        "sha256": "c041d0fdd834c411309b809edbecb8657d1863c4057e454bd6a468713ce24aac",
-        "commit": "06e96965b0f888349a2a645ddfcfb00b0fbfa7e3"
-      }
+      "repository": "https://github.com/bitsk/xr-spatial-kit",
+      "commit": "820b17b901c2fcbbcd4c69b3596401d6dd06b94f"
     },
     "xr-dock": {
-      "repository": "xr-dock",
-      "commit": "acd6cfe308a027de280098069170a4a733289e79",
-      "publication": "local Git bundle; updated commits are not published to the remote",
-      "source_bundle": {
-        "file": "xr-dock.bundle",
-        "sha256": "cf5ffd0d8e17e3eb600d6881218a455b853fb710b72f1fb9ad5e739fe266d178",
-        "commit": "acd6cfe308a027de280098069170a4a733289e79"
-      }
+      "repository": "https://github.com/bitsk/xr-dock",
+      "commit": "27722187152983eefcea720332ba4a18d6b6c291"
     },
     "xr-environments": {
-      "repository": "xr-environments",
-      "commit": "aa128fc7ef2183642fc89209af73be654481f735",
-      "publication": "local Git bundle; updated commits are not published to the remote",
-      "source_bundle": {
-        "file": "xr-environments.bundle",
-        "sha256": "fb185a1d34777dd07a57a5a3f76524c5f65ec049b34b721c84aef0aca9a1b145",
-        "commit": "aa128fc7ef2183642fc89209af73be654481f735"
-      }
+      "repository": "https://github.com/bitsk/xr-environments",
+      "commit": "2f765fc46357f81b383eb6ee322dd6fa44d8dc62"
     },
     "xr-wayland": {
-      "repository": "xr-wayland",
-      "commit": "2ccd37954ef06189aee9a5d78601fe21be7ec3da",
-      "publication": "local Git bundle; updated commits are not published to the remote",
-      "source_bundle": {
-        "file": "xr-wayland.bundle",
-        "sha256": "1582afa30f5ca344c70e592a2ecaffd0e7b834030ad34bf10ce5d883b63f6b12",
-        "commit": "2ccd37954ef06189aee9a5d78601fe21be7ec3da"
-      }
+      "repository": "https://github.com/bitsk/xr-wayland",
+      "commit": "a51be9650cade657995cc01edd54b1fe7c69f169"
     }
   }
 }

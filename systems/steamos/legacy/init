@@ -1,5 +1,5 @@
 #!/bin/sh
-# PID 1: retain Debian as the default; select optional roots for one boot.
+# PID 1: Debian fallback, explicit one-shot override, optional persistent default.
 export PATH=/bin
 mount -t devtmpfs devtmpfs /dev
 mount -t proc proc /proc
@@ -20,7 +20,7 @@ printf 0x4ee7 > idProduct
 printf 0x0200 > bcdUSB
 printf 0x0100 > bcdDevice
 mkdir -p strings/0x409 configs/c.1 functions/acm.usb0
-printf 'XR MIX' > strings/0x409/manufacturer
+printf 'Qiyu MIX' > strings/0x409/manufacturer
 printf 'A081 recovery console' > strings/0x409/product
 # Keep the proven maintenance transport, including before a root is selected.
 # /etc/a081-rootfs-id and /run/a081-handoff identify the actual running system.
@@ -40,11 +40,12 @@ while [ ! -b /dev/sda16 ] && [ "$n" -lt 60 ]; do sleep 1; n=$((n+1)); done
 [ -b /dev/sda16 ] || fail 'osstore device missing'
 # Installation identity is supplied locally, never embedded in public source.
 osstore_uuid=
+[ ! -r /etc/qiyu-device.conf ] || . /etc/qiyu-device.conf
 [ ! -r /etc/xr-device.conf ] || . /etc/xr-device.conf
 for arg in $(cat /proc/cmdline); do
-    case "$arg" in xr.osstore_uuid=*) osstore_uuid=${arg#*=};; esac
+    case "$arg" in xr.osstore_uuid=*|qiyu.osstore_uuid=*) osstore_uuid=${arg#*=};; esac
 done
-[ -n "$osstore_uuid" ] || fail 'Supply xr.osstore_uuid or local xr-device.conf'
+[ -n "$osstore_uuid" ] || fail 'Supply qiyu.osstore_uuid or local qiyu-device.conf'
 blkid /dev/sda16 | grep -Fq "UUID=\"$osstore_uuid\"" || fail 'osstore UUID mismatch'
 mount -t ext4 -o noatime /dev/sda16 /osstore || fail 'osstore mount failed'
 
@@ -52,58 +53,77 @@ debian_root=/osstore/systems/debian/rootfs
 steamos_root=/osstore/systems/steamos/rootfs
 openkylin_root=/osstore/systems/openkylin/rootfs
 selector=/osstore/boot/next-system
+default_selector=/osstore/boot/default-system
 selected=debian
 requested=debian
+selection_source=default
 reason=default
 root="$debian_root"
 
-# The fallback installation must remain intact even for a SteamOS request.
+# The verified Debian fallback must exist even for a requested optional root.
 [ "$(cat "$debian_root/etc/a081-rootfs-id" 2>/dev/null)" = a081-debian-trixie-arm64 ] || fail 'Debian fallback marker missing'
 [ -x "$debian_root/sbin/init" ] || fail 'Debian fallback systemd missing'
 if [ -e "$selector" ] || [ -L "$selector" ]; then
+    selection_source=one-shot
     requested=invalid
     if [ -f "$selector" ] && [ ! -L "$selector" ]; then
         requested=$(cat "$selector")
     fi
-    # Consume and persist before inspecting or executing the experimental root.
-    # A crash or unsuccessful SteamOS boot cannot make the next recovery repeat it.
-    if rm -f "$selector" && sync; then
-        case "$requested" in
-            steamos)
-                if [ "$(cat "$steamos_root/etc/a081-rootfs-id" 2>/dev/null)" = a081-steamos-arm64 ] &&
-                   [ -x "$steamos_root/sbin/init" ]; then
-                    selected=steamos
-                    root="$steamos_root"
-                    reason=one-shot
-                else
-                    reason=invalid-steamos-root
-                    echo 'A081: SteamOS installation unavailable; using Debian' > /dev/kmsg
-                fi
-                ;;
-            openkylin)
-                if [ "$(cat "$openkylin_root/etc/a081-rootfs-id" 2>/dev/null)" = a081-openkylin-3.0-arm64 ] &&
-                   [ -x "$openkylin_root/sbin/init" ]; then
-                    selected=openkylin
-                    root="$openkylin_root"
-                    reason=one-shot
-                else
-                    reason=invalid-openkylin-root
-                    echo 'A081: openKylin installation unavailable; using Debian' > /dev/kmsg
-                fi
-                ;;
-            debian) reason=explicit-debian ;;
-            *) reason=invalid-selector ;;
-        esac
-    else
+    # A one-shot always wins, including an invalid request. Consume it before
+    # checking the requested root; a failed override must go directly to Debian.
+    if ! { rm -f "$selector" && sync; }; then
+        selection_source=failed-one-shot
+        requested=debian
         reason=selector-consume-failed
         echo 'A081: cannot consume next-system; using Debian' > /dev/kmsg
     fi
+elif [ -e "$default_selector" ] || [ -L "$default_selector" ]; then
+    selection_source=persistent-default
+    requested=invalid
+    if [ -f "$default_selector" ] && [ ! -L "$default_selector" ]; then
+        requested=$(cat "$default_selector")
+    fi
+fi
+if [ "$selection_source" != failed-one-shot ]; then
+    case "$requested" in
+        steamos|openkylin)
+            if [ "$requested" = steamos ]; then
+                candidate_root="$steamos_root"
+                candidate_marker=a081-steamos-arm64
+            else
+                candidate_root="$openkylin_root"
+                candidate_marker=a081-openkylin-3.0-arm64
+            fi
+            if [ "$(cat "$candidate_root/etc/a081-rootfs-id" 2>/dev/null)" = "$candidate_marker" ] &&
+               [ -x "$candidate_root/sbin/init" ]; then
+                selected="$requested"
+                root="$candidate_root"
+                reason="$selection_source"
+            else
+                reason="invalid-$requested-root"
+                echo "A081: $requested installation unavailable; using Debian" > /dev/kmsg
+            fi
+            ;;
+        debian)
+            case "$selection_source" in
+                one-shot) reason=explicit-debian ;;
+                persistent-default) reason=persistent-default ;;
+            esac
+            ;;
+        *)
+            if [ "$selection_source" = persistent-default ]; then
+                reason=invalid-default-selector
+            else
+                reason=invalid-selector
+            fi
+            ;;
+    esac
 fi
 if ! mount --bind "$root" /newroot; then
     [ "$selected" != debian ] || fail 'Debian root bind failed'
+    reason="$selected-bind-failed"
     selected=debian
     root="$debian_root"
-    reason=steamos-bind-failed
     mount --bind "$root" /newroot || fail 'Debian fallback root bind failed'
 fi
 mkdir -p /newroot/osstore /newroot/run /newroot/dev /newroot/proc /newroot/sys
