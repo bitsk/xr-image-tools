@@ -71,3 +71,12 @@ python3 tools/rootfs.py assemble --system openkylin --profile maintenance --base
 原生与通用桌面启动器在隔离 XDG 配置前保留用户配置根，并向 System UI
 传入 `XR_SYSTEM_UI_PREFERENCES_FILE`；仅自身 taskbar 偏好跨会话保留。
 Wayland、D-Bus、输入法及其余组件配置仍使用原有私有目录和清理生命周期。
+
+## 可选手输入组合
+
+`--system openkylin --profile vr-hands` 选择独立手追踪、会话与运行时组件。
+`openkylin-xr-hands` 安装通用接入，`xr-hand-backend-quest-dsp` 为单独的可选非自由后端源码包；
+模型权重、原厂 DSP 库及私有标定仍通过本地摘要锁导入。安装与组装不自动切换输入或启动相机。
+
+组件锁中的 `source_bundle` 给出本次本地提交的 Git bundle 文件名、SHA-256 及父提交前置条件；
+它们是构建交付物，不代表这些新提交已发布到远端。公开头文件摘要随对应提交固定。

@@ -1,3 +1,9 @@
+xr-image-tools (0.1.21) unstable; urgency=medium
+
+  * Add a locked hand tracking composition profile.
+
+ -- bits <bigbits@hackx.cc>  Thu, 12 Nov 2026 10:43:15 +0800
+
 xr-image-tools (0.1.20) unstable; urgency=medium
 
   * Persist XR-specific Office settings across private scene sessions.

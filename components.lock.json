@@ -7,7 +7,7 @@
     },
     "xr-device-io": {
       "repository": "https://gitee.com/bigbits/xr-device-io",
-      "commit": "0dd923078ca0685a77c2a8b791e9cbe2f8f535f0",
+      "commit": "59a01b2b1c500093e58171dffec164fb8ea151ae",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "7d99069d6a371c74427ba4a409137b8cc7e05f43bf5f6fab487a3e683c9fd072",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
@@ -16,41 +16,75 @@
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
         "include/xr/device/a081_camera_timing.hpp": "df5bf35c45d527dab98cc8c012e6f346541775c711680308272138ac0b81a4ea",
         "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
-        "include/xr/device/a081_controller_frame_export.hpp": "99d7f00b42ee67faab582d6340345c00ff2d738e67aa42d56284ba991feba7dc",
+        "include/xr/device/a081_controller_frame_export.hpp": "7a28844cc393dccc182845ac2b16ee700754b8ad4346fe98a7a1a5e07b89d0f9",
         "include/xr/device/a081_controller_input_wire.h": "96543c56e3b9f0df3d7b5b40e2f97e7094a6641ac260ede67b394a9b1ba906a7",
         "include/xr/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
         "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
         "include/xr/device/a081_radio_clock_reference.h": "0f4489e218b9483292ac01b78ed65f02bbfa5dce44e739268f65c3056d8097f0",
         "include/xr/device/abi_reference.hpp": "27d7f773d3b9f94c47d8347129041ab933c83c4cb05cb38561e0707f5a806463",
         "include/xr/device/camera-preview.hpp": "89e2d13ce8786dd0bb96f2b86e11a1e1bc2c80d673b84ed71f950a00061d01ae"
+      },
+      "source_bundle": {
+        "file": "xr-device-io.bundle",
+        "sha256": "b57fc5942edf3ed7134ab142da341030dd828a1511734af35490aa930578e8b6",
+        "prerequisite_commit": "0dd923078ca0685a77c2a8b791e9cbe2f8f535f0",
+        "commit": "59a01b2b1c500093e58171dffec164fb8ea151ae"
       }
     },
     "xr-head-tracking": {
       "repository": "https://gitee.com/bigbits/xr-head-tracking",
-      "commit": "9b0108eb3ce088f78e86865bef4ffbe04f0ffe8b",
+      "commit": "7dfdeb3a35ff2883e4b52933e31279b85d9a95e0",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
-        "include/xr/head/a081_tracking_wire.h": "a59d94185675de3196f63ac0d682cb6f26a0d283e2615ddda3cab5671bc36062"
+        "include/xr/head/a081_tracking_wire.h": "a59d94185675de3196f63ac0d682cb6f26a0d283e2615ddda3cab5671bc36062",
+        "include/xr/head/production-v2/a081_qvr_pose.h": "b8b933e80a7d6c5d8f871347a7035cef7de0194b36c7ba6b2f9b2408c0d98d4e",
+        "include/xr/head/production-v2/a081_tracking_client.h": "83356b9167f8a6ba7dcefe7a34a9404c38159ce71e46e6739147670fdfdbec8e",
+        "include/xr/head/production-v2/a081_tracking_wire.h": "aed2c177a86ef4f5eeb28b40c45acaf14ff75910f3bc0191c82cbb8339289e2c"
+      },
+      "source_bundle": {
+        "file": "xr-head-tracking.bundle",
+        "sha256": "01741b0e947f017978222829e5b3fd4877679578c3dccab1d0a9a64498cf3d83",
+        "prerequisite_commit": "9b0108eb3ce088f78e86865bef4ffbe04f0ffe8b",
+        "commit": "7dfdeb3a35ff2883e4b52933e31279b85d9a95e0"
       }
     },
     "xr-controller-tracking": {
       "repository": "https://gitee.com/bigbits/xr-controller-tracking",
-      "commit": "d7d80610e4c02c2059d9f68280c2f33208baa692",
+      "commit": "7a79c40682f708788c4c9eb1bcf97ffb05c59c8a",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
         "include/xr/controller/a081_controller_input_contract.hpp": "b161ff1272af3f2f49416b7065304b2eb86d099f4a001820221ca11bceb6364f",
-        "include/xr/controller/a081_controller_pose_wire.h": "2f37564580cd456d0e0700e244a43d80425a827d3ea1dd4e9e68606987fa9526"
+        "include/xr/controller/a081_controller_pose_wire.h": "2f37564580cd456d0e0700e244a43d80425a827d3ea1dd4e9e68606987fa9526",
+        "include/xr/controller/production-v2/a081_controller_pose_wire.h": "27115c80739c056cb23ec54211112add984a899507bbd0d3377cf747de636ce6"
+      },
+      "source_bundle": {
+        "file": "xr-controller-tracking.bundle",
+        "sha256": "62cd0e9e8e8b54b71b8e0bf370be11f98270ad9625ba8df6c6c9d7ca6a6aa0c9",
+        "prerequisite_commit": "d7d80610e4c02c2059d9f68280c2f33208baa692",
+        "commit": "7a79c40682f708788c4c9eb1bcf97ffb05c59c8a"
       }
     },
     "xr-monado": {
       "repository": "https://gitee.com/bigbits/xr-monado",
-      "commit": "116bdc58e5a957d7d0a3cb3931711412c7a7bf11"
+      "commit": "8c68f52e282629ccd148c4045ecfb08225903152",
+      "source_bundle": {
+        "file": "xr-monado.bundle",
+        "sha256": "2fe326fa6bbc762df79a355bec41e6c429b0b7c6665b0b60e3518ea2ede3f31c",
+        "prerequisite_commit": "0f271b3c5613b025b414fc6f9498cf6d170f40ec",
+        "commit": "8c68f52e282629ccd148c4045ecfb08225903152"
+      }
     },
     "xr-session-manager": {
       "repository": "https://gitee.com/bigbits/xr-session-manager",
-      "commit": "4293388a35280c5073ca82179454fc647bae9d83"
+      "commit": "4f8e0fba75a222ff92fe795ddbb370333c73f405",
+      "source_bundle": {
+        "file": "xr-session-manager.bundle",
+        "sha256": "6d538de11acff979e6007fec9da13e6d3738f5f1fba67f42251189285680de80",
+        "prerequisite_commit": "4293388a35280c5073ca82179454fc647bae9d83",
+        "commit": "4f8e0fba75a222ff92fe795ddbb370333c73f405"
+      }
     },
     "xr-debug-console": {
       "repository": "https://gitee.com/bigbits/xr-debug-console",
@@ -62,11 +96,49 @@
     },
     "xr-hexagonrpc": {
       "repository": "https://gitee.com/bigbits/xr-hexagonrpc",
-      "commit": "934dc102d3b4626fdbfd23c5e9d5c68cd91ca25b"
+      "commit": "83f83d8c2053e117f9062d25ff5bbf74f658c540",
+      "source_bundle": {
+        "file": "xr-hexagonrpc.bundle",
+        "sha256": "29eb1edc5385e63e1f0f37ec7ad87fcd9711a343460d9ea64546d7c346cd238a",
+        "prerequisite_commit": "934dc102d3b4626fdbfd23c5e9d5c68cd91ca25b",
+        "commit": "83f83d8c2053e117f9062d25ff5bbf74f658c540"
+      }
     },
     "openkylin-xr-integration": {
       "repository": "https://gitee.com/bigbits/openkylin-xr-integration",
-      "commit": "99031e508100f608f491e95f4624aa5ce06de7a7"
+      "commit": "9566b67315fcd5c6372da5f9859e33840d4c92b5",
+      "source_bundle": {
+        "file": "openkylin-xr-integration.bundle",
+        "sha256": "fa52414f0339465229981a9444c87b06a03df634803f593c4c5e843f8bf3e0b2",
+        "prerequisite_commit": "b6771f0baf6fdc31e67f13bd8a3ef7a4e6ce45be",
+        "commit": "9566b67315fcd5c6372da5f9859e33840d4c92b5"
+      }
+    },
+    "xr-hand-tracking": {
+      "repository": "xr-hand-tracking",
+      "publication": "local Git bundle; not published",
+      "commit": "d44ccdbf178744c8a294305a5460aa19692b751e",
+      "source_bundle": {
+        "file": "xr-hand-tracking.bundle",
+        "sha256": "03bca3bf630cdb4de8d7d6da1c81c05c63b9c0a11363aeaaa701f72ac1807433",
+        "prerequisite_commit": null,
+        "commit": "d44ccdbf178744c8a294305a5460aa19692b751e"
+      },
+      "public_headers_sha256": {
+        "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
+        "include/xr/hand/state.h": "d453a147c6b80aebb1d79e5a2ce31a91fb179776b404c22783da394c09f5c522"
+      }
+    },
+    "xr-shell": {
+      "repository": "xr-hand-tracking",
+      "publication": "local Git bundle; not published",
+      "commit": "3312fb3a886c83a67eccd905f1f6582ff3b3b503",
+      "source_bundle": {
+        "file": "xr-shell.bundle",
+        "sha256": "1ebf262a4926c6669e984f2723108f82dc2f6bb4c6498335165da28ddd8a6263",
+        "prerequisite_commit": "9914ffaac2d9ed52624f628c2d01dac05f67e17b",
+        "commit": "3312fb3a886c83a67eccd905f1f6582ff3b3b503"
+      }
     }
   }
 }

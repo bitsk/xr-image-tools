@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "id": "vr-hands",
+  "components": [
+    "xr-kernel",
+    "xr-device-io",
+    "xr-head-tracking",
+    "xr-controller-tracking",
+    "xr-monado",
+    "xr-session-manager",
+    "openkylin-xr-integration",
+    "xr-mesa",
+    "xr-hexagonrpc",
+    "xr-hand-tracking"
+  ],
+  "vendor_libraries": "externally imported, never checked into this repository",
+  "automatic_service_enable": false,
+  "vendor_bundles": [
+    "firmware",
+    "qvr",
+    "controller",
+    "controller-dsp"
+  ],
+  "hand_tracking": {
+    "enabled": false,
+    "activation": "explicit session profile",
+    "backend": "quest-dsp",
+    "assets": "private digest-locked import"
+  },
+  "packages": [
+    "openkylin-xr-hands",
+    "xr-hand-backend-quest-dsp"
+  ]
+}
