@@ -68,12 +68,12 @@
     },
     "xr-monado": {
       "repository": "https://gitee.com/bigbits/xr-monado",
-      "commit": "8c68f52e282629ccd148c4045ecfb08225903152",
+      "commit": "0c3a488953be2d8a6850918111264ee3d24b4ab0",
       "source_bundle": {
         "file": "xr-monado.bundle",
-        "sha256": "2fe326fa6bbc762df79a355bec41e6c429b0b7c6665b0b60e3518ea2ede3f31c",
-        "prerequisite_commit": "0f271b3c5613b025b414fc6f9498cf6d170f40ec",
-        "commit": "8c68f52e282629ccd148c4045ecfb08225903152"
+        "sha256": "f2eb992751168253c581fcd7019f8dbc12cdb5c4d945135ef1f4ca702d3fd97d",
+        "prerequisite_commit": "8c68f52e282629ccd148c4045ecfb08225903152",
+        "commit": "0c3a488953be2d8a6850918111264ee3d24b4ab0"
       }
     },
     "xr-session-manager": {
@@ -106,38 +106,39 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://gitee.com/bigbits/openkylin-xr-integration",
-      "commit": "9566b67315fcd5c6372da5f9859e33840d4c92b5",
+      "commit": "cc9c4ee3fc9a141ae4f49f9fe33aceddda1d5087",
       "source_bundle": {
         "file": "openkylin-xr-integration.bundle",
-        "sha256": "fa52414f0339465229981a9444c87b06a03df634803f593c4c5e843f8bf3e0b2",
-        "prerequisite_commit": "b6771f0baf6fdc31e67f13bd8a3ef7a4e6ce45be",
-        "commit": "9566b67315fcd5c6372da5f9859e33840d4c92b5"
+        "sha256": "d6f755a24893842c777d1b470726dcff41a5489e07e7da448d0909f756c163c3",
+        "prerequisite_commit": "9566b67315fcd5c6372da5f9859e33840d4c92b5",
+        "commit": "cc9c4ee3fc9a141ae4f49f9fe33aceddda1d5087"
       }
     },
     "xr-hand-tracking": {
       "repository": "xr-hand-tracking",
       "publication": "local Git bundle; not published",
-      "commit": "d44ccdbf178744c8a294305a5460aa19692b751e",
+      "commit": "60675f96bfa3d34c95b7e6f9e35ddbafa1d6266c",
       "source_bundle": {
         "file": "xr-hand-tracking.bundle",
-        "sha256": "03bca3bf630cdb4de8d7d6da1c81c05c63b9c0a11363aeaaa701f72ac1807433",
-        "prerequisite_commit": null,
-        "commit": "d44ccdbf178744c8a294305a5460aa19692b751e"
+        "sha256": "9f81c2860521f0f0e77420847dfa1d87167fb9be5baf4ab8c2d7668b51a0a5a1",
+        "prerequisite_commit": "d44ccdbf178744c8a294305a5460aa19692b751e",
+        "commit": "60675f96bfa3d34c95b7e6f9e35ddbafa1d6266c"
       },
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
+        "include/xr/hand/joints.hpp": "bc785ba6cabc77f3d1a028ada1ce0be69f14324318a23910efa4ec76689e2a15",
         "include/xr/hand/state.h": "d453a147c6b80aebb1d79e5a2ce31a91fb179776b404c22783da394c09f5c522"
       }
     },
     "xr-shell": {
       "repository": "xr-hand-tracking",
       "publication": "local Git bundle; not published",
-      "commit": "3312fb3a886c83a67eccd905f1f6582ff3b3b503",
+      "commit": "cdbaf6b31cb79ed642282862b00b36a9e97c3dc0",
       "source_bundle": {
         "file": "xr-shell.bundle",
-        "sha256": "1ebf262a4926c6669e984f2723108f82dc2f6bb4c6498335165da28ddd8a6263",
-        "prerequisite_commit": "9914ffaac2d9ed52624f628c2d01dac05f67e17b",
-        "commit": "3312fb3a886c83a67eccd905f1f6582ff3b3b503"
+        "sha256": "bc76d40bb32350b9107984ccb4fd56dc484e23fbe83b9e88c9dbc44be6cde885",
+        "prerequisite_commit": "3312fb3a886c83a67eccd905f1f6582ff3b3b503",
+        "commit": "cdbaf6b31cb79ed642282862b00b36a9e97c3dc0"
       }
     }
   }
