@@ -98,7 +98,7 @@ def main():
     receipt_path = out / 'build-manifest.json'
     if args.resume:
         before = read(receipt_path)
-        for field in ['component_lock_sha256', 'recipes_sha256', 'profile']:
+        for field in ['component_lock_sha256', 'recipes_sha256', 'profile', 'components']:
             if before[field] != receipt[field]:
                 parser.error('Resume would mix different build inputs: ' + field)
         receipt = before
@@ -154,6 +154,7 @@ def main():
     env = dict(os.environ)
     env.update(config.get('environment', {}))
     env.update(DEB_BUILD_OPTIONS='nocheck', SOURCE_DATE_EPOCH='0')
+    env['XR_OPENVR_INCLUDE_DIR'] = str(sources / 'xr-monado/src/external/openvr_includes')
     sysroot = out / 'sysroot'
     sysroot.mkdir(exist_ok=True)
     prefix = sysroot / 'usr'
@@ -200,6 +201,10 @@ def main():
         component_env['XR_CARGO_TARGET_DIR'] = str(out / 'cargo-target' / name)
         repo = sources / name
         with (logs / (name + '.log')).open('w') as log:
+            cargo_manifest = repo / recipe.get('cargo_manifest', 'Cargo.toml')
+            if config.get('cargo_fetch', False) and cargo_manifest.is_file():
+                command(['cargo', 'fetch', '--locked', '--manifest-path', cargo_manifest],
+                        env=component_env, stdout=log, stderr=subprocess.STDOUT)
             if recipe['kind'] == 'kernel-uapi':
                 argv = [sys.executable, repo / 'packaging/build-uapi-deb.py', '--output', packages,
                         '--version', recipe['version']]

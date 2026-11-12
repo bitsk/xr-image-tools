@@ -70,7 +70,8 @@
       "kind": "debian"
     },
     "xr-debug-console": {
-      "kind": "debian"
+      "kind": "debian",
+      "cargo_manifest": "backend/Cargo.toml"
     },
     "openkylin-xr-integration": {
       "kind": "debian"
