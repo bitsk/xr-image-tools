@@ -60,7 +60,7 @@
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
-      "commit": "8e3a6d3a0cad11ff95193ab8981bbc62f0001b03"
+      "commit": "3be7eefe05091ff5ef7d6b85896562eb72485798"
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
@@ -72,7 +72,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "b4f3244ea1db7a3a5f250a60baf8c8a1e40aaf76"
+      "commit": "c0170916b17688a21515a48be230ee21bb6cfd7d"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",

@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import shutil
 import shlex
+import re
 import subprocess
 import tarfile
 
@@ -32,6 +33,7 @@ def export(manifest_path, output, selected, lock_digest, requested, expected_bui
     repository.mkdir()
     payload_owners = {}
     packages = {}
+    dependencies = {}
     for item in manifest['packages']:
         name = item['file']
         if Path(name).name != name or not name.endswith('.deb'):
@@ -45,6 +47,8 @@ def export(manifest_path, output, selected, lock_digest, requested, expected_bui
         if package in packages:
             raise ValueError('Multiple versions of a selected package: ' + package)
         packages[package] = item['version']
+        dependencies[package] = subprocess.check_output(
+            ['dpkg-deb', '-f', str(source), 'Pre-Depends', 'Depends'], text=True)
         process = subprocess.Popen(['dpkg-deb', '--fsys-tarfile', str(source)], stdout=subprocess.PIPE)
         try:
             with tarfile.open(fileobj=process.stdout, mode='r|') as archive:
@@ -65,11 +69,27 @@ def export(manifest_path, output, selected, lock_digest, requested, expected_bui
                 process.kill()
                 process.wait()
         shutil.copyfile(source, repository / name)
-    pins = []
-    for name in requested:
+    selected = set(requested)
+    pending = list(requested)
+    while pending:
+        name = pending.pop()
         if name not in packages:
             raise ValueError('Profile requests an unbuilt package: ' + name)
-        pins.append(name + '=' + packages[name])
+        text = re.sub(r'(?m)^(?:Pre-Depends|Depends):\s*', '', dependencies[name])
+        for group in text.split(','):
+            alternatives = [re.match(r'\s*([a-z0-9][a-z0-9+.-]*)', part)
+                            for part in group.split('|')]
+            local = [match.group(1) for match in alternatives
+                     if match and match.group(1) in packages]
+            if local:
+                # Local components have one implementation/version in a bundle.
+                # Pin transitive components too, so an installed candidate cannot
+                # silently keep a different old application implementation.
+                dependency = local[0]
+                if dependency not in selected:
+                    selected.add(dependency)
+                    pending.append(dependency)
+    pins = [name + '=' + packages[name] for name in sorted(selected)]
     index = subprocess.check_output(['dpkg-scanpackages', '--multiversion', '.', '/dev/null'], cwd=repository)
     (repository / 'Packages').write_bytes(index)
     (repository / 'Packages.gz').write_bytes(gzip.compress(index, mtime=0))
