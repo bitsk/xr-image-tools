@@ -7,11 +7,11 @@
     },
     "xr-device-io": {
       "repository": "https://gitee.com/bigbits/xr-device-io",
-      "commit": "59a01b2b1c500093e58171dffec164fb8ea151ae",
+      "commit": "297cc9fbdd66e2567d3e8870c3f8a35c0584ac7b",
       "public_headers_sha256": {
-        "include/xr/device/a081_camera_capture.hpp": "7d99069d6a371c74427ba4a409137b8cc7e05f43bf5f6fab487a3e683c9fd072",
+        "include/xr/device/a081_camera_capture.hpp": "25152cb58381385055385d1ad38accef696011c408f75238dff120cf25a5dd98",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
-        "include/xr/device/a081_camera_metadata.hpp": "4ec91b957ecbc985c597621821e385c3febe6221af8a78f56623b01e7fa290a0",
+        "include/xr/device/a081_camera_metadata.hpp": "fdcb0da8e3f36fec380f03e04cc5eff8539c2a4f59e47158f00c5f54a97b5a73",
         "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
         "include/xr/device/a081_camera_timing.hpp": "df5bf35c45d527dab98cc8c012e6f346541775c711680308272138ac0b81a4ea",
@@ -22,18 +22,21 @@
         "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
         "include/xr/device/a081_radio_clock_reference.h": "0f4489e218b9483292ac01b78ed65f02bbfa5dce44e739268f65c3056d8097f0",
         "include/xr/device/abi_reference.hpp": "27d7f773d3b9f94c47d8347129041ab933c83c4cb05cb38561e0707f5a806463",
-        "include/xr/device/camera-preview.hpp": "89e2d13ce8786dd0bb96f2b86e11a1e1bc2c80d673b84ed71f950a00061d01ae"
+        "include/xr/device/camera-preview.hpp": "b5971529b1ff6a31131285d2d39dd309088e30eb29e9b1c148f79b464e4c2d5c",
+        "include/xr/device/passthrough-capture.hpp": "528aa8d2c911c3cab82c41aced3e971d66313a181d3f94282120c16020a770cb",
+        "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07"
       },
       "source_bundle": {
         "file": "xr-device-io.bundle",
-        "sha256": "b57fc5942edf3ed7134ab142da341030dd828a1511734af35490aa930578e8b6",
-        "prerequisite_commit": "0dd923078ca0685a77c2a8b791e9cbe2f8f535f0",
-        "commit": "59a01b2b1c500093e58171dffec164fb8ea151ae"
-      }
+        "sha256": "0835949366897709f41045e7719e2de7d6bf4a9684631c3cf0e765be5ae841e6",
+        "commit": "297cc9fbdd66e2567d3e8870c3f8a35c0584ac7b",
+        "prerequisite_commit": "0dd923078ca0685a77c2a8b791e9cbe2f8f535f0"
+      },
+      "publication": "local Git bundle; updated commits are not published to the remote"
     },
     "xr-head-tracking": {
       "repository": "https://gitee.com/bigbits/xr-head-tracking",
-      "commit": "7dfdeb3a35ff2883e4b52933e31279b85d9a95e0",
+      "commit": "fc19ca67b9487ca9ada7ba186fab62f5c7a7cfa2",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
@@ -44,10 +47,11 @@
       },
       "source_bundle": {
         "file": "xr-head-tracking.bundle",
-        "sha256": "01741b0e947f017978222829e5b3fd4877679578c3dccab1d0a9a64498cf3d83",
-        "prerequisite_commit": "9b0108eb3ce088f78e86865bef4ffbe04f0ffe8b",
-        "commit": "7dfdeb3a35ff2883e4b52933e31279b85d9a95e0"
-      }
+        "sha256": "5a212952a7fe442dba771dd1d2a46e9825407a0f27033176ee615ce309643b84",
+        "commit": "fc19ca67b9487ca9ada7ba186fab62f5c7a7cfa2",
+        "prerequisite_commit": "9b0108eb3ce088f78e86865bef4ffbe04f0ffe8b"
+      },
+      "publication": "local Git bundle; updated commits are not published to the remote"
     },
     "xr-controller-tracking": {
       "repository": "https://gitee.com/bigbits/xr-controller-tracking",
@@ -68,23 +72,25 @@
     },
     "xr-monado": {
       "repository": "https://gitee.com/bigbits/xr-monado",
-      "commit": "0b6d990778bf6693ded6eb293c86c22ec75fa6fd",
+      "commit": "90329b8d0692a2165d46fb26a7c7a5324bcd54b2",
       "source_bundle": {
         "file": "xr-monado.bundle",
-        "sha256": "57d2b4c2a374b57ecee503be8a9154b5fb7013f50542d01ffe77d2c27c1b4527",
-        "prerequisite_commit": "8c68f52e282629ccd148c4045ecfb08225903152",
-        "commit": "0b6d990778bf6693ded6eb293c86c22ec75fa6fd"
-      }
+        "sha256": "b5567cff56c3f4e1b01fea3018001df49c5c4bea53b85837392f014263d912af",
+        "commit": "90329b8d0692a2165d46fb26a7c7a5324bcd54b2",
+        "prerequisite_commit": "116bdc58e5a957d7d0a3cb3931711412c7a7bf11"
+      },
+      "publication": "local Git bundle; updated commits are not published to the remote"
     },
     "xr-session-manager": {
       "repository": "https://gitee.com/bigbits/xr-session-manager",
-      "commit": "4f8e0fba75a222ff92fe795ddbb370333c73f405",
+      "commit": "18c820408e5bf9a2322611ed721774aa5fc433e3",
       "source_bundle": {
         "file": "xr-session-manager.bundle",
-        "sha256": "6d538de11acff979e6007fec9da13e6d3738f5f1fba67f42251189285680de80",
-        "prerequisite_commit": "4293388a35280c5073ca82179454fc647bae9d83",
-        "commit": "4f8e0fba75a222ff92fe795ddbb370333c73f405"
-      }
+        "sha256": "c2ab9a96a2c059163a292d065d5e469fd9ed254bd0a82b35dcb870ab9ccfaf9e",
+        "commit": "18c820408e5bf9a2322611ed721774aa5fc433e3",
+        "prerequisite_commit": "4293388a35280c5073ca82179454fc647bae9d83"
+      },
+      "publication": "local Git bundle; updated commits are not published to the remote"
     },
     "xr-debug-console": {
       "repository": "https://gitee.com/bigbits/xr-debug-console",
@@ -112,24 +118,23 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://gitee.com/bigbits/openkylin-xr-integration",
-      "commit": "cc9c4ee3fc9a141ae4f49f9fe33aceddda1d5087",
+      "commit": "ad623940dd18ee074d427c4a5c7e81f63469e0db",
       "source_bundle": {
         "file": "openkylin-xr-integration.bundle",
-        "sha256": "d6f755a24893842c777d1b470726dcff41a5489e07e7da448d0909f756c163c3",
-        "prerequisite_commit": "9566b67315fcd5c6372da5f9859e33840d4c92b5",
-        "commit": "cc9c4ee3fc9a141ae4f49f9fe33aceddda1d5087"
-      }
+        "sha256": "fc8dc7421d7720f2f56ac09b9db262ef90f219c171f99f25e130ca8c1ddc05ed",
+        "commit": "ad623940dd18ee074d427c4a5c7e81f63469e0db",
+        "prerequisite_commit": "ccc4bf9b9dcc0fc25775529503e1d8e5590cee4d"
+      },
+      "publication": "local Git bundle; updated commits are not published to the remote"
     },
     "xr-hand-tracking": {
       "repository": "xr-hand-tracking",
-      "publication": "local Git bundle; not published",
-      "commit": "80201da6480452abe49dcb1f8353b50ac8c238f4",
+      "publication": "local Git bundle; updated commits are not published to the remote",
+      "commit": "3d77a2fd8252a3066554479dc6ddcd0b71656cb2",
       "source_bundle": {
         "file": "xr-hand-tracking.bundle",
-        "sha256": "cdd373f029006ffd4db8977544adc38c5962e794c359175195ec9da2534ef128",
-        "prerequisite_commit": "435246cc2e2c2636c7c3e02710f989c54128de19",
-        "commit": "80201da6480452abe49dcb1f8353b50ac8c238f4",
-        "prerequisite_delivery": "build/xr-hand-openxr26/source-bundles.json"
+        "sha256": "d48773d560273fa5bf189b0036e5965f1864b70de19c4eef6d907b0309d82efb",
+        "commit": "3d77a2fd8252a3066554479dc6ddcd0b71656cb2"
       },
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
@@ -138,14 +143,63 @@
       }
     },
     "xr-shell": {
-      "repository": "xr-hand-tracking",
-      "publication": "local Git bundle; not published",
-      "commit": "cdbaf6b31cb79ed642282862b00b36a9e97c3dc0",
+      "repository": "xr-shell",
+      "publication": "local Git bundle; updated commits are not published to the remote",
+      "commit": "d962acbd95dd6504f93fe2956d8a57433abcf3b6",
       "source_bundle": {
         "file": "xr-shell.bundle",
-        "sha256": "bc76d40bb32350b9107984ccb4fd56dc484e23fbe83b9e88c9dbc44be6cde885",
-        "prerequisite_commit": "3312fb3a886c83a67eccd905f1f6582ff3b3b503",
-        "commit": "cdbaf6b31cb79ed642282862b00b36a9e97c3dc0"
+        "sha256": "92601364ee66564f37bcd4760b9d814eb15f809ba1bdb6d67961554fa7b6abc8",
+        "commit": "d962acbd95dd6504f93fe2956d8a57433abcf3b6"
+      }
+    },
+    "xr-system-ui": {
+      "repository": "xr-system-ui",
+      "commit": "9e8cfd745b93219f2ee887df0cf8245f97d5bbf5",
+      "publication": "local Git bundle; updated commits are not published to the remote",
+      "source_bundle": {
+        "file": "xr-system-ui.bundle",
+        "sha256": "20f582741332a57326a1a74ec2204adf291e490720c64f65e35fa2b05c14b8d0",
+        "commit": "9e8cfd745b93219f2ee887df0cf8245f97d5bbf5"
+      }
+    },
+    "xr-spatial-kit": {
+      "repository": "xr-spatial-kit",
+      "commit": "06e96965b0f888349a2a645ddfcfb00b0fbfa7e3",
+      "publication": "local Git bundle; updated commits are not published to the remote",
+      "source_bundle": {
+        "file": "xr-spatial-kit.bundle",
+        "sha256": "c041d0fdd834c411309b809edbecb8657d1863c4057e454bd6a468713ce24aac",
+        "commit": "06e96965b0f888349a2a645ddfcfb00b0fbfa7e3"
+      }
+    },
+    "xr-dock": {
+      "repository": "xr-dock",
+      "commit": "acd6cfe308a027de280098069170a4a733289e79",
+      "publication": "local Git bundle; updated commits are not published to the remote",
+      "source_bundle": {
+        "file": "xr-dock.bundle",
+        "sha256": "cf5ffd0d8e17e3eb600d6881218a455b853fb710b72f1fb9ad5e739fe266d178",
+        "commit": "acd6cfe308a027de280098069170a4a733289e79"
+      }
+    },
+    "xr-environments": {
+      "repository": "xr-environments",
+      "commit": "aa128fc7ef2183642fc89209af73be654481f735",
+      "publication": "local Git bundle; updated commits are not published to the remote",
+      "source_bundle": {
+        "file": "xr-environments.bundle",
+        "sha256": "fb185a1d34777dd07a57a5a3f76524c5f65ec049b34b721c84aef0aca9a1b145",
+        "commit": "aa128fc7ef2183642fc89209af73be654481f735"
+      }
+    },
+    "xr-wayland": {
+      "repository": "xr-wayland",
+      "commit": "2ccd37954ef06189aee9a5d78601fe21be7ec3da",
+      "publication": "local Git bundle; updated commits are not published to the remote",
+      "source_bundle": {
+        "file": "xr-wayland.bundle",
+        "sha256": "1582afa30f5ca344c70e592a2ecaffd0e7b834030ad34bf10ce5d883b63f6b12",
+        "commit": "2ccd37954ef06189aee9a5d78601fe21be7ec3da"
       }
     }
   }

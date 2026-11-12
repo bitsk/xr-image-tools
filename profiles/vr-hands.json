@@ -12,7 +12,12 @@
     "xr-mesa",
     "xr-hexagonrpc",
     "xr-hand-tracking",
-    "xr-shell"
+    "xr-shell",
+    "xr-system-ui",
+    "xr-spatial-kit",
+    "xr-dock",
+    "xr-environments",
+    "xr-wayland"
   ],
   "vendor_libraries": "externally imported, never checked into this repository",
   "automatic_service_enable": false,
