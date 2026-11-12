@@ -88,7 +88,13 @@
     },
     "xr-debug-console": {
       "repository": "https://gitee.com/bigbits/xr-debug-console",
-      "commit": "f8d9f95ac198b29278711ddb4e6acbcdbf0b9977"
+      "commit": "097b825cba9d7b39da479080b035299484ec083f",
+      "source_bundle": {
+        "file": "xr-debug-console.bundle",
+        "sha256": "228f2f5297e9e2432296e35eb4557edfb84026f0e5047d8d840184874c8bcb39",
+        "prerequisite_commit": "f8d9f95ac198b29278711ddb4e6acbcdbf0b9977",
+        "commit": "097b825cba9d7b39da479080b035299484ec083f"
+      }
     },
     "xr-mesa": {
       "repository": "https://gitee.com/bigbits/xr-mesa",
@@ -117,12 +123,12 @@
     "xr-hand-tracking": {
       "repository": "xr-hand-tracking",
       "publication": "local Git bundle; not published",
-      "commit": "435246cc2e2c2636c7c3e02710f989c54128de19",
+      "commit": "55a4b18ad0eb6f4331c54e7ab58984e5bda59f8f",
       "source_bundle": {
         "file": "xr-hand-tracking.bundle",
-        "sha256": "67b166e95750a3f009cdd5e8094993f0d30364c46a372a5ad38ada777bfae57c",
-        "prerequisite_commit": "d44ccdbf178744c8a294305a5460aa19692b751e",
-        "commit": "435246cc2e2c2636c7c3e02710f989c54128de19"
+        "sha256": "f1ebf2c7f2badcf915afa4e8cde1be9751d873615a1f42f2f297fd14e479af22",
+        "prerequisite_commit": "435246cc2e2c2636c7c3e02710f989c54128de19",
+        "commit": "55a4b18ad0eb6f4331c54e7ab58984e5bda59f8f"
       },
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
