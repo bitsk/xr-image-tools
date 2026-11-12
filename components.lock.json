@@ -3,7 +3,7 @@
   "components": {
     "xr-kernel": {
       "repository": "https://github.com/bitsk/xr-kernel",
-      "commit": "bcb9c39002dfb3ebc0baa13cdf3b335a273c74b6"
+      "commit": "9ab25347e82162ec8b387b21eaef19289acad39a"
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
@@ -60,11 +60,11 @@
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
-      "commit": "b1d54bc1289068b917737280bb5199490e81a098"
+      "commit": "2d8a88530b49a89d4826f65e2bece2762eed6dc5"
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
-      "commit": "a8f1e2e8187775c2a94d5632765e99c5988fe6a2"
+      "commit": "213f86480ea8a3d5fda85280a85d2be0faa3c021"
     },
     "xr-hexagonrpc": {
       "repository": "https://github.com/bitsk/xr-hexagonrpc",

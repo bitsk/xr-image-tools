@@ -120,7 +120,8 @@
         "xr-debug-server",
         "xr-debug-web",
         "xr-debug-video",
-        "xr-debug-tools"
+        "xr-debug-tools",
+        "xr-debug-gstreamer"
       ],
       "local_path": "xr-debug-console"
     },
