@@ -55,6 +55,7 @@ def main():
     parser.add_argument('--only', action='append', default=[])
     parser.add_argument('--builder-commit', help='Exact builder source commit when running an installed tool')
     parser.add_argument('--resume', action='store_true')
+    parser.add_argument('--keep-going', action='store_true', help='Collect independent package build failures')
     args = parser.parse_args()
     if not args.profile or any(c not in 'abcdefghijklmnopqrstuvwxyz0123456789-_' for c in args.profile):
         parser.error('Invalid profile identifier')
@@ -200,59 +201,70 @@ def main():
             component_env.setdefault('CARGO_BUILD_TARGET', 'aarch64-unknown-linux-gnu')
         component_env['XR_CARGO_TARGET_DIR'] = str(out / 'cargo-target' / name)
         repo = sources / name
-        with (logs / (name + '.log')).open('w') as log:
-            cargo_manifest = repo / recipe.get('cargo_manifest', 'Cargo.toml')
-            if config.get('cargo_fetch', False) and cargo_manifest.is_file():
-                command(['cargo', 'fetch', '--locked', '--manifest-path', cargo_manifest],
-                        env=component_env, stdout=log, stderr=subprocess.STDOUT)
-            if recipe['kind'] == 'kernel-uapi':
-                argv = [sys.executable, repo / 'packaging/build-uapi-deb.py', '--output', packages,
-                        '--version', recipe['version']]
-                command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
-            elif recipe['kind'] in ('debian', 'mesa'):
-                source = repo
-                if recipe['kind'] == 'mesa':
-                    source = out / 'upstream' / name
-                    if not source.exists():
-                        source.parent.mkdir(exist_ok=True)
-                        argv = [sys.executable, repo / 'tools/prepare-source.py', '--output', source]
-                        if component_env.get('XR_MESA_UPSTREAM_CACHE'):
-                            argv += ['--upstream-repo', component_env['XR_MESA_UPSTREAM_CACHE']]
-                        command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
-                builds = [source / p for p in recipe.get('directories', ['.'])]
-                for work in builds:
-                    argv = ['dpkg-buildpackage', '-b', '-us', '-uc']
-                    if config.get('architecture'):
-                        argv.append('-a' + config['architecture'])
-                    if config.get('external_dependency_check') == 'explicit-cross-sysroot':
-                        argv.append('-d')
-                    command(argv, cwd=work, env=component_env, stdout=log, stderr=subprocess.STDOUT)
-                    for item in work.parent.glob('*.deb'):
-                        info = package_info(item)
-                        destination = packages / item.name
-                        if destination.exists() and digest(destination) != info['sha256']:
-                            raise ValueError('Conflicting package payload: ' + item.name)
-                        shutil.copy2(item, destination)
-                        command(['dpkg-deb', '-x', destination, sysroot], stdout=log)
-            elif recipe['kind'] == 'vendor':
-                cache = component_env.get('XR_VENDOR_CACHE')
-                if not cache:
-                    raise ValueError('Provide the verified XR_VENDOR_CACHE for OEM package inputs')
-                work = out / 'vendor-packages'
-                command([sys.executable, repo / 'tools/build-debs.py', '--cache', cache,
-                         '--lock', sources / 'openkylin-xr-integration/devices/a081/vendor.lock.json',
-                         '--output', work], env=component_env, stdout=log, stderr=subprocess.STDOUT)
-                for item in work.glob('*.deb'):
-                    shutil.copy2(item, packages / item.name)
-                    command(['dpkg-deb', '-x', packages / item.name, sysroot], stdout=log)
-            else:
-                raise ValueError('Unknown recipe kind for ' + name)
+        try:
+            with (logs / (name + '.log')).open('w') as log:
+                cargo_manifest = repo / recipe.get('cargo_manifest', 'Cargo.toml')
+                if config.get('cargo_fetch', False) and cargo_manifest.is_file():
+                    command(['cargo', 'fetch', '--locked', '--manifest-path', cargo_manifest],
+                            env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                if recipe['kind'] == 'kernel-uapi':
+                    argv = [sys.executable, repo / 'packaging/build-uapi-deb.py', '--output', packages,
+                            '--version', recipe['version']]
+                    command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                elif recipe['kind'] in ('debian', 'mesa'):
+                    source = repo
+                    if recipe['kind'] == 'mesa':
+                        source = out / 'upstream' / name
+                        if not source.exists():
+                            source.parent.mkdir(exist_ok=True)
+                            argv = [sys.executable, repo / 'tools/prepare-source.py', '--output', source]
+                            if component_env.get('XR_MESA_UPSTREAM_CACHE'):
+                                argv += ['--upstream-repo', component_env['XR_MESA_UPSTREAM_CACHE']]
+                            command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                    builds = [source / p for p in recipe.get('directories', ['.'])]
+                    for work in builds:
+                        argv = ['dpkg-buildpackage', '-b', '-us', '-uc']
+                        if config.get('architecture'):
+                            argv.append('-a' + config['architecture'])
+                        if config.get('external_dependency_check') == 'explicit-cross-sysroot':
+                            argv.append('-d')
+                        command(argv, cwd=work, env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                        for item in work.parent.glob('*.deb'):
+                            info = package_info(item)
+                            destination = packages / item.name
+                            if destination.exists() and digest(destination) != info['sha256']:
+                                raise ValueError('Conflicting package payload: ' + item.name)
+                            shutil.copy2(item, destination)
+                            command(['dpkg-deb', '-x', destination, sysroot], stdout=log)
+                elif recipe['kind'] == 'vendor':
+                    cache = component_env.get('XR_VENDOR_CACHE')
+                    if not cache:
+                        raise ValueError('Provide the verified XR_VENDOR_CACHE for OEM package inputs')
+                    work = out / 'vendor-packages'
+                    command([sys.executable, repo / 'tools/build-debs.py', '--cache', cache,
+                             '--lock', sources / 'openkylin-xr-integration/devices/a081/vendor.lock.json',
+                             '--output', work], env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                    for item in work.glob('*.deb'):
+                        shutil.copy2(item, packages / item.name)
+                        command(['dpkg-deb', '-x', packages / item.name, sysroot], stdout=log)
+                else:
+                    raise ValueError('Unknown recipe kind for ' + name)
+        except (subprocess.CalledProcessError, ValueError) as error:
+            receipt.setdefault('failures', {})[name] = str(error)
+            write(receipt_path, receipt)
+            if not args.keep_going:
+                raise
+            print('Failed ' + name + ': ' + str(error), flush=True)
+            continue
+        receipt.setdefault('failures', {}).pop(name, None)
         for item in packages.glob('xr-kernel-uapi-dev_*.deb'):
             command(['dpkg-deb', '-x', item, sysroot], stdout=subprocess.DEVNULL)
         receipt['completed'].append(name)
         write(receipt_path, receipt)
         print('Built ' + name, flush=True)
     command([sys.executable, __file__, 'index', '--output', out])
+    if receipt.get('failures'):
+        raise SystemExit('Failed components: ' + ', '.join(receipt['failures']))
 
 
 if __name__ == '__main__':
