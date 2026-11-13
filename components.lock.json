@@ -29,7 +29,7 @@
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "bdf38242e5c99b8f8bb9baaf3258a9aa1a69fcd5",
+      "commit": "a1b4de40da5377cf95566e671c9ff5a13562542d",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
