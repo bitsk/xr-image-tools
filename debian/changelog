@@ -1,3 +1,9 @@
+xr-image-tools (0.1.36) unstable; urgency=medium
+
+  * Lock the hand backend VTCM budget and exact-failure diagnostic support.
+
+ -- bits <bigbits@hackx.cc>  Fri, 13 Nov 2026 11:20:30 +0800
+
 xr-image-tools (0.1.35) unstable; urgency=medium
 
   * Lock signed head-tracker entropy access in the private FastRPC filesystem.

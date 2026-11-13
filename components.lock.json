@@ -76,7 +76,7 @@
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
-      "commit": "b36016f42d85c33a5834c963a5d3a8c51318f878",
+      "commit": "137cfcaf15695acf499338d39be80355ae50b1f9",
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
         "include/xr/hand/joints.hpp": "245b98db23b3ab1f9450c2059708abac4897acddea6b1bcbe970db4af607af7d",
