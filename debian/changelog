@@ -1,3 +1,9 @@
+xr-image-tools (0.1.39) unstable; urgency=medium
+
+  * Keep live panel state in the private volatile runtime directory.
+
+ -- bits <bigbits@hackx.cc>  Fri, 13 Nov 2026 18:41:23 +0800
+
 xr-image-tools (0.1.38) unstable; urgency=medium
 
   * Default scene, window, input-method and panel diagnostic logs off.

@@ -281,6 +281,8 @@ class Scene:
         # unchanged by Shell. It connects to the already running hardware runtime.
         shell_env = dict(os.environ)
         shell_env['XDG_RUNTIME_DIR'] = str(self.original)
+        if shell_env.get('XR_DIAGNOSTIC_LOGS') != '1':
+            shell_env['RUST_LOG'] = 'off'
         argv = [self.opts.prefix / 'bin/xr-shell', '--components', '--component-socket', shell_socket,
                 '--environment', environment, '--capture-dir', captures,
                 '--ui-anchor', self.opts.ui_anchor]
@@ -300,8 +302,10 @@ class Scene:
         if not self.opts.no_ime:
             self.start_ime(component_env)
         self.start('dock', [self.opts.prefix / 'bin/xr-dock', '--socket', shell_socket], component_env)
+        ui_state = self.private / 'runtime/system-ui-state.json'
+        (self.run / 'system-ui-state.json').symlink_to(ui_state)
         self.start('system-ui', [self.opts.prefix / 'bin/xr-system-ui', 'run', '--socket', shell_socket,
-                   '--state-file', self.run / 'system-ui-state.json', '--isolated-notifications'], component_env)
+                   '--state-file', ui_state, '--isolated-notifications'], component_env)
         self.wait_scenes(shell_socket, shell_env)
         self.result.update(ready=True, ever_ready=True, phase='running',
                            xr_runtime_json=runtime, component_runtime=str(self.private / 'runtime'),
