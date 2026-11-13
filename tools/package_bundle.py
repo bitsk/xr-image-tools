@@ -100,7 +100,8 @@ def export(manifest_path, output, selected, lock_digest, requested, expected_bui
         'repo=$(CDPATH= cd -- "$(dirname -- "$0")/packages" && pwd)\n'
         '(cd "$repo" && sha256sum --quiet -c SHA256SUMS)\n'
         'list=$(mktemp)\ntrap \'rm -f "$list"\' EXIT HUP INT TERM\n'
-        'printf "deb [trusted=yes] file:%s ./\\n" "$repo" > "$list"\n'
+        'if [ -f /etc/apt/sources.list ]; then cat /etc/apt/sources.list > "$list"; fi\n'
+        'printf "\\ndeb [trusted=yes] file:%s ./\\n" "$repo" >> "$list"\n'
         'apt-get -o Dir::Etc::sourcelist="$list" update\n'
         'apt-get -o Dir::Etc::sourcelist="$list" install --no-install-recommends '
         + ' '.join(shlex.quote(pin) for pin in pins) + '\n')
