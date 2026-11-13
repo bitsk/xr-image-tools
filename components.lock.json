@@ -30,14 +30,15 @@
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "1e1744f792797fc8f070446ab68b517a591b346a",
+      "commit": "7f078226e7a501f7aebadd8362cd09a0d190410f",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
         "include/xr/head/a081_tracking_wire.h": "a59d94185675de3196f63ac0d682cb6f26a0d283e2615ddda3cab5671bc36062",
         "include/xr/head/production-v2/a081_qvr_pose.h": "b8b933e80a7d6c5d8f871347a7035cef7de0194b36c7ba6b2f9b2408c0d98d4e",
         "include/xr/head/production-v2/a081_tracking_client.h": "83356b9167f8a6ba7dcefe7a34a9404c38159ce71e46e6739147670fdfdbec8e",
-        "include/xr/head/production-v2/a081_tracking_wire.h": "aed2c177a86ef4f5eeb28b40c45acaf14ff75910f3bc0191c82cbb8339289e2c"
+        "include/xr/head/production-v2/a081_tracking_wire.h": "aed2c177a86ef4f5eeb28b40c45acaf14ff75910f3bc0191c82cbb8339289e2c",
+        "include/xr/head/production-v2/a081_imu_history.h": "ae3f59b407fda04efa97d23493738623334cb2c2f5cfc0636e12b399dd871515"
       }
     },
     "xr-controller-tracking": {
@@ -53,11 +54,11 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "068bdabefc59f789b6da04e2d094878a215da45b"
+      "commit": "8f423a19e2ed0d3f0eb5c80b25c77faa24e20e74"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "d6504341275780ab8891ebe894812c6a6935c858"
+      "commit": "39a34c39fc91b188f30eb55d73609383ff7ec42e"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
