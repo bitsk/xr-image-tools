@@ -7,11 +7,11 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "e32a1ddcfc1937ca9ba3c17c6cea290ba8fa8905",
+      "commit": "29c23accb39c9b91701c1ef56199b386d21eb5a6",
       "public_headers_sha256": {
-        "include/xr/device/a081_camera_capture.hpp": "25152cb58381385055385d1ad38accef696011c408f75238dff120cf25a5dd98",
+        "include/xr/device/a081_camera_capture.hpp": "16509777c5b54e3290ad89f85a972ff1359dfcd608ca70577d3dbe42858ef30f",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
-        "include/xr/device/a081_camera_metadata.hpp": "fdcb0da8e3f36fec380f03e04cc5eff8539c2a4f59e47158f00c5f54a97b5a73",
+        "include/xr/device/a081_camera_metadata.hpp": "e083c615b4b896faa61d789d2917b96b22275b8f32547eff050b5b8a9d706915",
         "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
         "include/xr/device/a081_camera_timing.hpp": "df5bf35c45d527dab98cc8c012e6f346541775c711680308272138ac0b81a4ea",
@@ -24,12 +24,13 @@
         "include/xr/device/abi_reference.hpp": "27d7f773d3b9f94c47d8347129041ab933c83c4cb05cb38561e0707f5a806463",
         "include/xr/device/camera-preview.hpp": "b5971529b1ff6a31131285d2d39dd309088e30eb29e9b1c148f79b464e4c2d5c",
         "include/xr/device/passthrough-capture.hpp": "528aa8d2c911c3cab82c41aced3e971d66313a181d3f94282120c16020a770cb",
-        "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07"
+        "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07",
+        "include/xr/device/a081_recording.h": "d91a3bac2f47a7ee3057ceb4f1622890a165162ecabc52a2174e6bd5cfa67835"
       }
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "a1b4de40da5377cf95566e671c9ff5a13562542d",
+      "commit": "1e1744f792797fc8f070446ab68b517a591b346a",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
@@ -56,7 +57,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "02cccb69d2d8faf9886eac37b1b542ff4d0f485b"
+      "commit": "77d7b48e56e9392229a0285a0023294e8f2fcf30"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
