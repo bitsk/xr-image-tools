@@ -1,3 +1,9 @@
+xr-image-tools (0.1.35) unstable; urgency=medium
+
+  * Lock signed head-tracker entropy access in the private FastRPC filesystem.
+
+ -- bits <bigbits@hackx.cc>  Fri, 13 Nov 2026 10:57:02 +0800
+
 xr-image-tools (0.1.34) unstable; urgency=medium
 
   * Lock the installed camera exposure tuning-table path.
