@@ -1,3 +1,9 @@
+xr-image-tools (0.1.32) unstable; urgency=medium
+
+  * Lock installed controller configuration support for native activation.
+
+ -- bits <bigbits@hackx.cc>  Fri, 13 Nov 2026 10:45:58 +0800
+
 xr-image-tools (0.1.31) unstable; urgency=medium
 
   * Lock the private ICD filename required by installed native profiles.
