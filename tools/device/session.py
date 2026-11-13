@@ -116,7 +116,12 @@ class Scene:
         self.record('private-bus', **row)
 
     def start(self, role, argv, environment):
-        log = (self.run / (role + '.log')).open('wb')
+        if environment.get('XR_DIAGNOSTIC_LOGS') == '1':
+            sys.path.insert(0, '/usr/lib/xr/diagnostics')
+            from log_pipe import open_log
+            log = open_log(self.run / (role + '.log'), env=environment)
+        else:
+            log = open(os.devnull, 'wb')
         self.logs[role] = log
         process = subprocess.Popen([str(p) for p in argv], env=environment,
                                    stdout=log, stderr=subprocess.STDOUT)
@@ -169,6 +174,8 @@ class Scene:
             'XR_SYSTEM_UI_ISOLATED_BUS': '1',
             'XR_SYSTEM_UI_PREFERENCES_FILE': preferences,
         })
+        if env.get('XR_DIAGNOSTIC_LOGS') != '1':
+            env['RUST_LOG'] = 'off'
         pulse = private / 'config/pulse'
         pulse.mkdir()
         (pulse / 'client.conf').write_text('autospawn = no\n')
@@ -476,7 +483,7 @@ def outer(opts):
     bus_wrapper.write_text('#!/bin/sh\n'
         + 'printf \'%s\\n\' "$$" > ' + shlex.quote(str(private / 'dbus-daemon.pid')) + '\n'
         + 'exec /usr/bin/setpriv --inh-caps=-all --ambient-caps=-all /usr/bin/dbus-daemon --address=' + shlex.quote('unix:path=' + str(bus_socket))
-        + ' "$@" 2>>' + shlex.quote(str(run / 'dbus.log')) + '\n')
+        + ' "$@"' + (' 2>/dev/null' if os.environ.get('XR_DIAGNOSTIC_LOGS') != '1' else '') + '\n')
     bus_wrapper.chmod(0o700)
     atomic(run / 'launch.json', {'schema': 1, 'private': str(private),
            'original_runtime': str(original), 'original_bus_id': original_bus,

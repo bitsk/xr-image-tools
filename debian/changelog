@@ -1,3 +1,10 @@
+xr-image-tools (0.1.38) unstable; urgency=medium
+
+  * Default scene, window, input-method and panel diagnostic logs off.
+  * Reuse bounded opt-in diagnostic pipes without starting hardware owners.
+
+ -- bits <bigbits@hackx.cc>  Fri, 13 Nov 2026 18:38:19 +0800
+
 xr-image-tools (0.1.37) unstable; urgency=medium
 
   * Preserve configured distribution sources when installing a local package bundle.
