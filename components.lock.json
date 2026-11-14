@@ -54,7 +54,7 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "8f423a19e2ed0d3f0eb5c80b25c77faa24e20e74"
+      "commit": "116d6943dbfa56295845b9e553d1537f63943695"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
@@ -78,7 +78,7 @@
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
-      "commit": "137cfcaf15695acf499338d39be80355ae50b1f9",
+      "commit": "71cbddce02c8e7b4d06e80777ecc73bf47b9f284",
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
         "include/xr/hand/joints.hpp": "245b98db23b3ab1f9450c2059708abac4897acddea6b1bcbe970db4af607af7d",
