@@ -7,7 +7,7 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "2c635fb50bc90e6edef070a59370ff0eeedf9ba5",
+      "commit": "80b0826876089f5b4ac31fe1461d5cfe91d4dbd3",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "16509777c5b54e3290ad89f85a972ff1359dfcd608ca70577d3dbe42858ef30f",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
@@ -26,12 +26,12 @@
         "include/xr/device/camera-preview.hpp": "b5971529b1ff6a31131285d2d39dd309088e30eb29e9b1c148f79b464e4c2d5c",
         "include/xr/device/passthrough-capture.hpp": "528aa8d2c911c3cab82c41aced3e971d66313a181d3f94282120c16020a770cb",
         "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07",
-        "include/xr/device/see_low_latency.hpp": "4c6d7779367c3e2a1b671106e35ae3fe308bd9d71de5dcca1df61fa01ab31790"
+        "include/xr/device/see_low_latency.hpp": "37cabf18eb78c3b06c45d5baa6af1438d7936fca4034addb1c1d7d8174b03993"
       }
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "c067251dae032f4f4513ece8505173b0a446cdb7",
+      "commit": "d624de95a6a258e2ee6933b8e55555c8213431b3",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
