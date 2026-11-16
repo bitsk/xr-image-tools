@@ -1,3 +1,9 @@
+xr-image-tools (0.1.42) unstable; urgency=medium
+
+  * Allow bounded headset readiness for WiVRn automatic application launch.
+
+ -- bits <bigbits@hackx.cc>  Mon, 16 Nov 2026 15:17:44 +0800
+
 xr-image-tools (0.1.41) unstable; urgency=medium
 
   * Check WiVRn headset connection before entering its blocking OpenXR loader.

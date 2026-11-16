@@ -7,17 +7,29 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import time
 
 
 def main():
-    status = subprocess.run(
-        ['gdbus', 'call', '--session', '--dest', 'io.github.wivrn.Server',
-         '--object-path', '/io/github/wivrn/Server',
-         '--method', 'org.freedesktop.DBus.Properties.Get',
-         'io.github.wivrn.Server', 'HeadsetConnected'],
-        capture_output=True, text=True, timeout=5)
-    if status.returncode or status.stdout.strip() != '(<true>,)':
-        raise RuntimeError('Connect a headset in the WiVRn console before starting the XR desktop.')
+    arguments = sys.argv[1:]
+    wait = '--wait-for-headset' in arguments
+    if wait:
+        arguments.remove('--wait-for-headset')
+    # WiVRn starts the configured application before publishing headset_info
+    # on D-Bus. Only its automatic entry gets a bounded readiness grace period.
+    deadline = time.monotonic() + (15 if wait else 0)
+    while True:
+        status = subprocess.run(
+            ['gdbus', 'call', '--session', '--dest', 'io.github.wivrn.Server',
+             '--object-path', '/io/github/wivrn/Server',
+             '--method', 'org.freedesktop.DBus.Properties.Get',
+             'io.github.wivrn.Server', 'HeadsetConnected'],
+            capture_output=True, text=True, timeout=3)
+        if status.returncode == 0 and status.stdout.strip() == '(<true>,)':
+            break
+        if status.returncode or time.monotonic() >= deadline:
+            raise RuntimeError('Connect a headset in the WiVRn console before starting the XR desktop.')
+        time.sleep(.2)
     if os.environ.get('XR_RUNTIME_JSON'):
         candidates = [Path(os.environ['XR_RUNTIME_JSON'])]
     else:
@@ -50,7 +62,7 @@ def main():
     os.environ['XR_RUNTIME_JSON'] = str(runtime)
     os.environ['XR_SHELL_PRESERVE_HOST_DESKTOP'] = '1'
     print('Using WiVRn runtime: ' + str(runtime), flush=True)
-    os.execv(session, [session, *sys.argv[1:]])
+    os.execv(session, [session, *arguments])
 
 
 if __name__ == '__main__':

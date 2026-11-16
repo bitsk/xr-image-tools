@@ -62,7 +62,8 @@ xr-shell-session --prefix /opt/xr-development --seconds 30
 清单，不安装生成目录中的 A081 会话管理包或镜像制作工具。主机另需 Vulkan 驱动、
 OpenXR loader 与 WiVRn；头显提供跟踪和输入。
 
-XR SIG WiVRn 控制台的“连接后启动应用”可设为 `/usr/bin/xr-shell-wivrn`。
+XR SIG WiVRn 控制台的“连接后启动应用”可设为
+`/usr/bin/xr-shell-wivrn --wait-for-headset`，允许服务发布头显状态前的短暂初始化。
 该入口解析当前 WiVRn manifest 后调用 `xr-shell-session`，保留主机图形环境，
 不启动设备采集、不修改全局 runtime。控制台保留服务、配对与编码配置的所有权。
 断开后的退出由原有 OpenXR 会话生命周期处理；安装与等待连接不表示串流验收通过。
