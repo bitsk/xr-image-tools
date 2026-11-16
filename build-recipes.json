@@ -50,7 +50,8 @@
       ]
     },
     "xr-monado": {
-      "kind": "debian"
+      "kind": "debian",
+      "cargo_manifest": "compat/passthrough/Cargo.toml"
     },
     "xr-shell": {
       "kind": "debian"
