@@ -62,7 +62,7 @@
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
-      "commit": "2d8a88530b49a89d4826f65e2bece2762eed6dc5"
+      "commit": "960efd864437d1f7ff3cc737a82793a1bfd86404"
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
@@ -87,7 +87,7 @@
     },
     "xr-shell": {
       "repository": "https://github.com/bitsk/xr-shell",
-      "commit": "9b328a931e1b2bce4f85018a3f478a9eeb23bd2d"
+      "commit": "75e693087085293de51ef5596ee3cdc59de67b27"
     },
     "xr-system-ui": {
       "repository": "https://github.com/bitsk/xr-system-ui",
