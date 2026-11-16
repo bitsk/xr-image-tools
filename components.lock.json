@@ -7,9 +7,9 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "890249c526528896bd74ead69d532d9d1a32d92f",
+      "commit": "7a0476689f74e46a5de480a4d197b0bb919188d3",
       "public_headers_sha256": {
-        "include/xr/device/a081_camera_capture.hpp": "16509777c5b54e3290ad89f85a972ff1359dfcd608ca70577d3dbe42858ef30f",
+        "include/xr/device/a081_camera_capture.hpp": "d22e98bfca7b1b0ab9e224eab361192ad835a7d4c9444817c5c4faca0f767f46",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
         "include/xr/device/a081_camera_metadata.hpp": "e083c615b4b896faa61d789d2917b96b22275b8f32547eff050b5b8a9d706915",
         "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
@@ -59,7 +59,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "c77fec1f883b7d5be9139ef3d64df32992289bc4"
+      "commit": "3503da5199ef7e2daf9aed65b7dec5639afb4a78"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
@@ -75,7 +75,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "cc38fab607789d0c583da6086a9ba3632b921e2d"
+      "commit": "13dc72811b5fd13f2391150cee9f8f70653e1ff5"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
