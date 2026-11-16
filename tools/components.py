@@ -262,7 +262,11 @@ def main():
         receipt['completed'].append(name)
         write(receipt_path, receipt)
         print('Built ' + name, flush=True)
-    command([sys.executable, __file__, 'index', '--output', out])
+    index_args = [sys.executable, __file__, 'index', '--output', out,
+                  '--profile', args.profile]
+    if builder_commit:
+        index_args += ['--builder-commit', builder_commit]
+    command(index_args)
     if receipt.get('failures'):
         raise SystemExit('Failed components: ' + ', '.join(receipt['failures']))
 
