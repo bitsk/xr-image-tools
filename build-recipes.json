@@ -180,6 +180,13 @@
           "src/xrt/targets/openxr/libopenxr_monado.so": "lib/libopenxr_monado.so"
         }
       }
+    },
+    "vr700-kernel": {
+      "xr-kernel": {
+        "kind": "kernel-device",
+        "device": "vr700",
+        "version": "7.3.0+xr.vr700.1"
+      }
     }
   }
 }

@@ -236,6 +236,28 @@ def main():
                     receipt.setdefault('runtime_artifacts', {})[name] = {
                         str(path.relative_to(stage)): digest(path)
                         for path in sorted(stage.rglob('*')) if path.is_file()}
+                elif recipe['kind'] == 'kernel-device':
+                    device = recipe['device']
+                    if device not in ('a081', 'vr700'):
+                        raise ValueError('Unknown kernel device: ' + device)
+                    kernel_out = out / 'kernel' / name
+                    component_env.update({
+                        'XR_SOURCE_DIR': str(out / 'upstream' / name),
+                        'XR_BUILD_DIR': str(kernel_out / 'build'),
+                        'XR_DEB_VERSION': recipe['version'],
+                        'XR_KERNEL_DEVICE': device,
+                    })
+                    command([repo / 'packaging/build-debs.sh', '--device', device],
+                            env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                    artifacts = list(kernel_out.glob('*.deb'))
+                    artifacts += list((kernel_out / 'packages').glob('*.deb'))
+                    if not artifacts:
+                        raise ValueError('Kernel build produced no Debian packages')
+                    for item in artifacts:
+                        destination = packages / item.name
+                        if destination.exists() and digest(destination) != digest(item):
+                            raise ValueError('Conflicting kernel package: ' + item.name)
+                        shutil.copy2(item, destination)
                 elif recipe['kind'] == 'kernel-uapi':
                     argv = [sys.executable, repo / 'packaging/build-uapi-deb.py', '--output', packages,
                             '--version', recipe['version']]
