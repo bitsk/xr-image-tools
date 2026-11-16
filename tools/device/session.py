@@ -8,7 +8,6 @@ a compositor runtime, hardware capture, radio, tracking producer or audio core.
 import argparse
 import ast
 import ctypes
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -273,8 +272,7 @@ class Scene:
         environment = self.opts.environment or self.opts.prefix / 'share/xr/environments/qingkong/environment.json'
         if not environment.is_file():
             raise RuntimeError('Missing environment descriptor: ' + str(environment))
-        self.result['environment'] = {'path': str(environment),
-                                     'sha256': hashlib.sha256(environment.read_bytes()).hexdigest()}
+        self.result['environment'] = {'path': str(environment)}
         captures = self.run / 'captures'
         captures.mkdir()
         component_env = self.component_environment()
