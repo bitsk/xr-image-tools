@@ -1,3 +1,10 @@
+xr-image-tools (0.1.43) unstable; urgency=medium
+
+  * Route WiVRn desktop PulseAudio clients to headset sink and microphone,
+    including private D-Bus activated clients, preserving host defaults.
+
+ -- bits <bigbits@hackx.cc>  Mon, 16 Nov 2026 16:28:41 +0800
+
 xr-image-tools (0.1.42) unstable; urgency=medium
 
   * Allow bounded headset readiness for WiVRn automatic application launch.

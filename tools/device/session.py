@@ -188,6 +188,7 @@ class Scene:
                 'XMODIFIERS', 'PULSE_SERVER', 'PULSE_RUNTIME_PATH', 'PULSE_CLIENTCONFIG',
                 'PIPEWIRE_RUNTIME_DIR', 'PIPEWIRE_REMOTE', 'XR_SYSTEM_UI_ISOLATED_BUS',
                 'XR_SYSTEM_UI_PREFERENCES_FILE']
+        keys.extend(key for key in ('PULSE_SINK', 'PULSE_SOURCE') if key in env)
         self.record_bus('component-env-before', env)
         try:
             command(['dbus-update-activation-environment', *[key + '=' + env[key] for key in keys]], env)

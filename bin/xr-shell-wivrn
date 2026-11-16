@@ -61,6 +61,10 @@ def main():
         raise RuntimeError('Install xr-shell-session and the streaming desktop components.')
     os.environ['XR_RUNTIME_JSON'] = str(runtime)
     os.environ['XR_SHELL_PRESERVE_HOST_DESKTOP'] = '1'
+    # Route this scene's PulseAudio clients to the headset without changing
+    # the host desktop's default devices. Explicit user choices still win.
+    os.environ.setdefault('PULSE_SINK', 'wivrn.sink')
+    os.environ.setdefault('PULSE_SOURCE', 'wivrn.source')
     print('Using WiVRn runtime: ' + str(runtime), flush=True)
     os.execv(session, [session, *arguments])
 
