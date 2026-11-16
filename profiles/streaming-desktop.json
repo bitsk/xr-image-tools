@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "streaming-desktop",
+  "components": [
+    "xr-spatial-kit",
+    "xr-shell",
+    "xr-environments",
+    "xr-dock",
+    "xr-system-ui",
+    "xr-wayland",
+    "xr-session-manager"
+  ],
+  "packages": [
+    "xr-shell-session",
+    "xr-shell",
+    "xr-window-server",
+    "xr-dock",
+    "xr-system-ui",
+    "xr-environment-qingkong",
+    "xr-spatial-style-ukui",
+    "xr-diagnostic-tools"
+  ],
+  "automatic_service_enable": false,
+  "vendor_bundles": [],
+  "runtime": "Externally installed WiVRn with a connected headset",
+  "graphics": "Host Vulkan driver and streaming encoder"
+}
