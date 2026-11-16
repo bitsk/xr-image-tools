@@ -59,7 +59,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "c8ab5ad5ff2c158662bf05e898f3dd7c89d30f72"
+      "commit": "dc7360e4c15a418d7c24288db6ee8907649168bd"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
