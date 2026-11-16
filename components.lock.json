@@ -71,7 +71,7 @@
     },
     "xr-hexagonrpc": {
       "repository": "https://github.com/bitsk/xr-hexagonrpc",
-      "commit": "2ab33c2a9d4fe1b6fd2d41ff68531f102fdcc738"
+      "commit": "c684ab33e68c86bbe5c9731f8462b7af88039f2f"
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
