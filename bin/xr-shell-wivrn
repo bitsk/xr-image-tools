@@ -39,6 +39,7 @@ def main():
     if session is None:
         raise RuntimeError('Install xr-shell-session and the streaming desktop components.')
     os.environ['XR_RUNTIME_JSON'] = str(runtime)
+    os.environ['XR_SHELL_PRESERVE_HOST_DESKTOP'] = '1'
     print('Using WiVRn runtime: ' + str(runtime), flush=True)
     os.execv(session, [session, *sys.argv[1:]])
 

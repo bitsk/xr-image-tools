@@ -55,7 +55,7 @@ xr-shell-session --prefix /opt/xr-development --seconds 30
 
 外层收到 SIGTERM 后只通知其拥有的内部 helper。helper 先请求 Shell 正常退出并等待 OpenXR/GPU 清理，再回收组件；最后私有 D-Bus 退出并清理身份匹配的激活进程与挂载。正常退出码为零，超时或异常退出会保留失败状态，不将强制终止标为正常。状态默认写入 `~/.local/state/xr-shell-session/run-*`，`latest` 记录最近目录：`ready.json` 和 `startup-snapshot.json` 记录真实组件场景发布，`captures/` 保存 Shell 产物，`summary.json`、`children.json`、`lifecycle.jsonl` 与 `session-result.json` 记录进程、退出顺序和清理结果。运行时本体与跟踪服务不由此入口停止。Fcitx 组配置检查不代表中文预编辑已验收。
 
-## openKylin 3.0 ARM64 基础系统
+## 通用 WiVRn 桌面
 
 通用主机的 WiVRn 桌面可用 `xr-build-components build --profile streaming-desktop
 --output NEW_DIRECTORY` 构建。按目标架构提供工具链，安装该 profile 的 `packages`
@@ -66,6 +66,8 @@ XR SIG WiVRn 控制台的“连接后启动应用”可设为 `/usr/bin/xr-shell
 该入口解析当前 WiVRn manifest 后调用 `xr-shell-session`，保留主机图形环境，
 不启动设备采集、不修改全局 runtime。控制台保留服务、配对与编码配置的所有权。
 断开后的退出由原有 OpenXR 会话生命周期处理；安装与等待连接不表示串流验收通过。
+
+## openKylin 3.0 ARM64 基础系统
 
 `systems/openkylin/source.lock.json` 固定官方桌面 ISO、长度和摘要。下载后核对官方 MD5 及锁定的 SHA-256，并把 SHA-256 写入 ISO 同名的 `.sha256` 文件：
 

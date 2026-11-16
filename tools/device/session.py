@@ -431,6 +431,8 @@ def inside(opts):
 
 def retire_inactive_desktop_status(run):
     """Release the UKUI singleton left on the inactive maintenance bus."""
+    if os.environ.get('XR_SHELL_PRESERVE_HOST_DESKTOP') == '1':
+        return
     original_bus = os.environ.get('DBUS_SESSION_BUS_ADDRESS', '').split(',guid=')[0]
     executable = Path('/usr/bin/kylin-status-manager')
     if not original_bus or not executable.is_file():
