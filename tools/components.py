@@ -91,6 +91,7 @@ def main():
         parser.error('Choose a new output directory, or explicitly resume the same locked build')
     out.mkdir(parents=True, exist_ok=True)
     receipt = dict(schema=1, profile=args.profile,
+                   profile_sha256=digest(ROOT / 'profiles' / (args.profile + '.json')),
                    component_lock_sha256=digest(ROOT / 'components.lock.json'),
                    recipes_sha256=digest(ROOT / 'build-recipes.json'),
                    components={name: lock['components'][name] for name in selected},
@@ -193,7 +194,8 @@ def main():
     for name in order:
         if name in receipt['completed']:
             continue
-        recipe = recipes['components'][name]
+        recipe = recipes.get('profile_recipes', {}).get(args.profile, {}).get(
+            name, recipes['components'][name])
         component_env = dict(env)
         component_env.update(config.get('components', {}).get(name, {}))
         if config.get('architecture'):
@@ -207,7 +209,32 @@ def main():
                 if config.get('cargo_fetch', False) and cargo_manifest.is_file():
                     command(['cargo', 'fetch', '--locked', '--manifest-path', cargo_manifest],
                             env=component_env, stdout=log, stderr=subprocess.STDOUT)
-                if recipe['kind'] == 'kernel-uapi':
+                if recipe['kind'] == 'cmake-runtime':
+                    build = out / 'cmake' / name
+                    stage = out / 'runtime' / name
+                    argv = ['cmake', '-S', repo, '-B', build, '-G', 'Ninja']
+                    argv += recipe['configure']
+                    toolchain = config.get('cmake_toolchain')
+                    if toolchain:
+                        if not any(item['path'] == toolchain for item in config.get('inputs', [])):
+                            raise ValueError('CMake toolchain requires a digest-locked input')
+                        argv.append('-DCMAKE_TOOLCHAIN_FILE=' + toolchain)
+                    command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                    command(['cmake', '--build', build, '--parallel',
+                             str(config.get('jobs', 4)), '--target'] + recipe['targets'],
+                            env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                    for source, destination in recipe['files'].items():
+                        target = stage / destination
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy2(build / source, target)
+                    manifest = stage / 'share/openxr/1/openxr_monado.json'
+                    manifest.parent.mkdir(parents=True, exist_ok=True)
+                    write(manifest, {'file_format_version': '1.0.0', 'runtime': {
+                        'library_path': '../../../lib/libopenxr_monado.so'}})
+                    receipt.setdefault('runtime_artifacts', {})[name] = {
+                        str(path.relative_to(stage)): digest(path)
+                        for path in sorted(stage.rglob('*')) if path.is_file()}
+                elif recipe['kind'] == 'kernel-uapi':
                     argv = [sys.executable, repo / 'packaging/build-uapi-deb.py', '--output', packages,
                             '--version', recipe['version']]
                     command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)

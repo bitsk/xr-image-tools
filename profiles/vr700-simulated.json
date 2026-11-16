@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "id": "vr700-simulated",
+  "components": [
+    "xr-monado",
+    "xr-shell",
+    "xr-system-ui",
+    "xr-spatial-kit",
+    "xr-dock",
+    "xr-environments",
+    "xr-wayland",
+    "xr-mesa",
+    "xr-session-manager"
+  ],
+  "automatic_service_enable": false,
+  "hardware_validated": false,
+  "tracking": "simulated only; no physical headset, controller, hand or camera access",
+  "packages": [
+    "xr-shell",
+    "xr-system-ui",
+    "xr-dock",
+    "xr-window-server",
+    "xr-environment-qingkong",
+    "xr-spatial-style-ukui",
+    "xr-mesa-vulkan-drivers"
+  ]
+}
