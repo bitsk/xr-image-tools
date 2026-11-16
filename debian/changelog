@@ -1,3 +1,10 @@
+xr-image-tools (0.1.41) unstable; urgency=medium
+
+  * Check WiVRn headset connection before entering its blocking OpenXR loader.
+  * Preserve the host desktop status service in streaming sessions.
+
+ -- bits <bigbits@hackx.cc>  Mon, 16 Nov 2026 15:13:21 +0800
+
 xr-image-tools (0.1.40) unstable; urgency=medium
 
   * Add a generic streaming desktop profile and WiVRn application entry.

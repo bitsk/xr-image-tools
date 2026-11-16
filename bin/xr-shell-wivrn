@@ -5,10 +5,19 @@ import json
 import os
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 
 
 def main():
+    status = subprocess.run(
+        ['gdbus', 'call', '--session', '--dest', 'io.github.wivrn.Server',
+         '--object-path', '/io/github/wivrn/Server',
+         '--method', 'org.freedesktop.DBus.Properties.Get',
+         'io.github.wivrn.Server', 'HeadsetConnected'],
+        capture_output=True, text=True, timeout=5)
+    if status.returncode or status.stdout.strip() != '(<true>,)':
+        raise RuntimeError('Connect a headset in the WiVRn console before starting the XR desktop.')
     if os.environ.get('XR_RUNTIME_JSON'):
         candidates = [Path(os.environ['XR_RUNTIME_JSON'])]
     else:
