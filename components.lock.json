@@ -59,7 +59,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "4a31809f4589c9ae56065a19be8c194c639fb730"
+      "commit": "eb0ba05abcc9eec37dbbdcb56c8998209faeef77"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
@@ -75,7 +75,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "42d093d678317b9868bbd9c5a9fa81fbc5b4ad8a"
+      "commit": "41b64f4e2184cd18dea8c0d854a11da9119b47c1"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
