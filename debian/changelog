@@ -1,3 +1,9 @@
+xr-image-tools (0.1.40) unstable; urgency=medium
+
+  * Add a generic streaming desktop profile and WiVRn application entry.
+
+ -- bits <bigbits@hackx.cc>  Mon, 16 Nov 2026 14:58:42 +0800
+
 xr-image-tools (0.1.39) unstable; urgency=medium
 
   * Keep live panel state in the private volatile runtime directory.

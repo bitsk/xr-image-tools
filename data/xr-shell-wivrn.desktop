@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Qingkong XR Desktop
+Name[zh_CN]=晴空 XR 桌面
+Comment=Open the XR desktop after connecting a headset to WiVRn
+Comment[zh_CN]=连接 WiVRn 头显后启动晴空桌面
+Exec=xr-shell-wivrn
+TryExec=xr-shell-wivrn
+Icon=preferences-desktop
+Terminal=false
+Categories=Graphics;
+Keywords=XR;VR;WiVRn;Qingkong;

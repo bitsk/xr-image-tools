@@ -57,6 +57,16 @@ xr-shell-session --prefix /opt/xr-development --seconds 30
 
 ## openKylin 3.0 ARM64 基础系统
 
+通用主机的 WiVRn 桌面可用 `xr-build-components build --profile streaming-desktop
+--output NEW_DIRECTORY` 构建。按目标架构提供工具链，安装该 profile 的 `packages`
+清单，不安装生成目录中的 A081 会话管理包或镜像制作工具。主机另需 Vulkan 驱动、
+OpenXR loader 与 WiVRn；头显提供跟踪和输入。
+
+XR SIG WiVRn 控制台的“连接后启动应用”可设为 `/usr/bin/xr-shell-wivrn`。
+该入口解析当前 WiVRn manifest 后调用 `xr-shell-session`，保留主机图形环境，
+不启动设备采集、不修改全局 runtime。控制台保留服务、配对与编码配置的所有权。
+断开后的退出由原有 OpenXR 会话生命周期处理；安装与等待连接不表示串流验收通过。
+
 `systems/openkylin/source.lock.json` 固定官方桌面 ISO、长度和摘要。下载后核对官方 MD5 及锁定的 SHA-256，并把 SHA-256 写入 ISO 同名的 `.sha256` 文件：
 
 ```sh

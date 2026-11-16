@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Run the desktop in the selected WiVRn runtime without changing global state."""
+import json
+import os
+from pathlib import Path
+import shutil
+import sys
+
+
+def main():
+    if os.environ.get('XR_RUNTIME_JSON'):
+        candidates = [Path(os.environ['XR_RUNTIME_JSON'])]
+    else:
+        config = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
+        candidates = [config / 'openxr/1/active_runtime.json',
+                      Path('/etc/xdg/openxr/1/active_runtime.json'),
+                      Path('/usr/local/share/openxr/1/openxr_wivrn.json'),
+                      Path('/usr/share/openxr/1/openxr_wivrn.json')]
+    runtime = None
+    for candidate in candidates:
+        try:
+            candidate = candidate.resolve(strict=True)
+            info = json.loads(candidate.read_text())['runtime']
+            if 'wivrn' not in (info.get('name', '') + info['library_path']).lower():
+                continue
+            library = Path(info['library_path'])
+            if not library.is_absolute():
+                library = candidate.parent / library
+            if library.is_file():
+                runtime = candidate
+                break
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    if runtime is None:
+        raise RuntimeError('WiVRn runtime unavailable. Start WiVRn and connect the headset, '
+                           'or set XR_RUNTIME_JSON to its installed runtime manifest.')
+    session = shutil.which('xr-shell-session')
+    if session is None:
+        raise RuntimeError('Install xr-shell-session and the streaming desktop components.')
+    os.environ['XR_RUNTIME_JSON'] = str(runtime)
+    print('Using WiVRn runtime: ' + str(runtime), flush=True)
+    os.execv(session, [session, *sys.argv[1:]])
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as error:
+        print('xr-shell-wivrn: ' + str(error), file=sys.stderr)
+        sys.exit(1)

@@ -1,3 +1,5 @@
 bin/xr-shell-session usr/bin/
+bin/xr-shell-wivrn usr/bin/
+data/xr-shell-wivrn.desktop usr/share/applications/
 tools/device/session.py usr/lib/xr/session/
 tools/common/cleanup-private-activation.py usr/lib/xr/session/
