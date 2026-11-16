@@ -1,3 +1,10 @@
+xr-image-tools (0.2.1) unstable; urgency=medium
+
+  * Lock and package XROS runtime passthrough separately from the spatial desktop.
+  * Clear native camera bindings from the WiVRn launcher.
+
+ -- bits <bigbits@hackx.cc>  Mon, 16 Nov 2026 17:31:57 +0800
+
 xr-image-tools (0.2.0) unstable; urgency=medium
 
   * Name the desktop HyperSpace and isolate streaming runtime capabilities from native device services.

@@ -41,7 +41,8 @@
     "xr-hand-backend-quest-dsp",
     "openkylin-xr-debug",
     "xr-debug-video",
-    "xr-debug-tools"
+    "xr-debug-tools",
+    "xr-runtime-passthrough"
   ],
   "private_runtime_inputs": {
     "model_weights": "external digest-locked import",

@@ -62,8 +62,15 @@ def main():
     # The streaming runtime owns tracking and environment composition.
     for key in ('XR_SYSTEM_CONTROLS_COMMAND', 'XR_SESSION_CONTROLS_FILE',
                 'XR_INPUT_STATUS_FILE', 'XR_SCENE_CONTROLS_STATUS_FILE',
-                'XR_CONTROLLER_MODEL_DIR'):
+                'XR_CONTROLLER_MODEL_DIR', 'XROS_PASSTHROUGH_CONFIG',
+                'XR_RUNTIME_PASSTHROUGH_STATUS_FILE', 'XROS_SESSION_TOKEN'):
         os.environ.pop(key, None)
+    layers = [v for v in os.environ.get('XR_ENABLE_API_LAYERS', '').split(os.pathsep)
+              if v and v != 'XR_APILAYER_XROS_passthrough']
+    if layers:
+        os.environ['XR_ENABLE_API_LAYERS'] = os.pathsep.join(layers)
+    else:
+        os.environ.pop('XR_ENABLE_API_LAYERS', None)
     os.environ['XR_RUNTIME_JSON'] = str(runtime)
     # Route this scene's PulseAudio clients to the headset without changing
     # the host desktop's default devices. Explicit user choices still win.
