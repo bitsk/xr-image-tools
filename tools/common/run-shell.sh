@@ -9,7 +9,7 @@ usage() {
 Usage: run-shell.sh [--shell-binary PATH] [--simulator PATH]
        [--environment MANIFEST] [--capture-dir DIR] [--validation]
        [--seconds N] [--renderer venus|freedreno|lavapipe] [--runtime-prefix DIR]
-       [--remote-port PORT] [--headless-input] [--wsi-copy] [--scale 1-200]
+       [--remote-port PORT] [--headless-input|--simulated-input] [--wsi-copy] [--scale 1-200]
        [--presentation auto|wayland|xcb] [--runtime-json FILE]
        [--runtime-lib-dir DIR ...] [--icd FILE] [--native-development]
        [--shell-arg ARG ...]
@@ -37,6 +37,7 @@ while (($#)); do
    shell_args+=("$1" "$2"); shift 2 ;;
   --validation) shell_args+=(--validation); shift ;;
   --headless-input) input_mode=--remote; shift ;;
+  --simulated-input) input_mode=--simulated; shift ;;
   --shell-arg)
    (($# >= 2)) || { echo 'Missing Shell argument' >&2; exit 2; }
    shell_args+=("$2"); shift 2 ;;

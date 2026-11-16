@@ -7,7 +7,7 @@ source "$(dirname -- "$(readlink -f -- "$0")")/development-guard.sh"
 usage() {
  cat <<'EOF'
 Usage: run-desktop.sh [--seconds N] [--capture-dir DIR] [--validation]
-       [--debug-input] [--xwayland] [--no-audio] [--no-ime]
+       [--debug-input] [--simulated-input] [--xwayland] [--no-audio] [--no-ime]
        [--scale 1-200]
        [--environment FILE] [--runtime-prefix DIR] [--remote-port PORT]
        [--renderer venus|freedreno|lavapipe] [--wsi-copy] [--simulator PATH]
@@ -23,6 +23,7 @@ EOF
 original_args=("$@")
 seconds=0 capture_dir= environment= simulator= private=
 validation=false debug_input=false xwayland=false audio=true ime=true
+input_mode=--headless-input
 runtime_args=(--remote-port "${XR_DESKTOP_REMOTE_PORT:-4244}")
 while (($#)); do
  case "$1" in
@@ -35,6 +36,7 @@ while (($#)); do
   --simulator) simulator=${2:?Missing simulator}; shift 2 ;;
   --validation) validation=true; shift ;;
   --debug-input) debug_input=true; shift ;;
+  --simulated-input) input_mode=--simulated-input; shift ;;
   --xwayland) xwayland=true; shift ;;
   --no-audio) audio=false; shift ;;
   --no-ime) ime=false; shift ;;
@@ -267,7 +269,7 @@ cleanup() {
 trap cleanup EXIT
 trap 'exit 0' INT TERM
 
-shell_args=(--headless-input --shell-binary "$prefix/bin/xr-shell" --capture-dir "$capture_dir"
+shell_args=("$input_mode" --shell-binary "$prefix/bin/xr-shell" --capture-dir "$capture_dir"
  --seconds "$seconds" --shell-arg --components "${runtime_args[@]}")
 if [[ $XR_DEVELOPMENT_BACKEND == native ]]; then shell_args+=(--native-development); fi
 [[ -z $environment ]] || shell_args+=(--environment "$environment")

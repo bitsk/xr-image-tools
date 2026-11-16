@@ -6,7 +6,7 @@ native_development=false
 source "$(dirname -- "$(readlink -f -- "$0")")/development-guard.sh"
 usage() {
  cat <<'EOF'
-Usage: run-simulator.sh [--seconds N] [--qwerty|--sliders|--remote]
+Usage: run-simulator.sh [--seconds N] [--simulated|--qwerty|--sliders|--remote]
        [--remote-port PORT] [--wsi-copy] [--renderer venus|freedreno|lavapipe]
        [--runtime-prefix DIR] [--runtime-json FILE] [--runtime-lib-dir DIR ...]
        [--presentation auto|wayland|xcb] [--icd FILE] [--scale 1-200]
@@ -45,6 +45,7 @@ while (($#)); do
   --help|-h) usage; exit 0 ;;
   --native-development) native_development=true; shift ;;
   --seconds) seconds=${2:?Missing duration}; shift 2 ;;
+  --simulated) mode=simulated; controls_gui=false; shift ;;
   --qwerty) mode=qwerty; controls_gui=false; shift ;;
   --sliders) mode=remote; controls_gui=true; shift ;;
   --remote) mode=remote; controls_gui=false; shift ;;

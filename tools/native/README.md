@@ -96,3 +96,11 @@ is XR and that its real group contents contain keyboard-us and pinyin; owning
 the bus name alone is insufficient. The query replies remain in the session
 logs. Group readiness is separate from actual preedit/candidate/Chinese commit
 acceptance in a real application.
+
+VR700 initial graphics bring-up can use `--simulated-input` on `run-desktop.sh`
+or `run-shell.sh`, or `--simulated` on `run-simulator.sh`. The
+`vr700-simulated` build profile compiles only Monado's simulated device driver;
+physical headset, controller, hand and camera drivers are disabled. This verifies
+only application startup and desktop presentation with synthetic poses. It does
+not verify headset tracking, optics, direct scanout, or controller input. No
+physical device service or MIX calibration is installed by this profile.

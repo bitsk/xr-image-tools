@@ -100,6 +100,8 @@ def main():
     receipt_path = out / 'build-manifest.json'
     if args.resume:
         before = read(receipt_path)
+        if before.get('profile_sha256') not in (None, receipt['profile_sha256']):
+            parser.error('Resume would mix different profile inputs')
         for field in ['component_lock_sha256', 'recipes_sha256', 'profile', 'components']:
             if before[field] != receipt[field]:
                 parser.error('Resume would mix different build inputs: ' + field)
