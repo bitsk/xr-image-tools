@@ -1,3 +1,9 @@
+xr-image-tools (0.2.0) unstable; urgency=medium
+
+  * Name the desktop HyperSpace and isolate streaming runtime capabilities from native device services.
+
+ -- bits <bigbits@hackx.cc>  Mon, 16 Nov 2026 16:54:22 +0800
+
 xr-image-tools (0.1.43) unstable; urgency=medium
 
   * Route WiVRn desktop PulseAudio clients to headset sink and microphone,

@@ -1,4 +1,4 @@
-# XR rootfs
+# openKylin XR 空间智能版本 · 系统组装
 
 多系统 rootfs 的准备和组件组装。系统、型号与使用场景分别扩展，首批为 Debian / SteamOS 和 MIX A081。
 
@@ -55,7 +55,7 @@ xr-shell-session --prefix /opt/xr-development --seconds 30
 
 外层收到 SIGTERM 后只通知其拥有的内部 helper。helper 先请求 Shell 正常退出并等待 OpenXR/GPU 清理，再回收组件；最后私有 D-Bus 退出并清理身份匹配的激活进程与挂载。正常退出码为零，超时或异常退出会保留失败状态，不将强制终止标为正常。状态默认写入 `~/.local/state/xr-shell-session/run-*`，`latest` 记录最近目录：`ready.json` 和 `startup-snapshot.json` 记录真实组件场景发布，`captures/` 保存 Shell 产物，`summary.json`、`children.json`、`lifecycle.jsonl` 与 `session-result.json` 记录进程、退出顺序和清理结果。运行时本体与跟踪服务不由此入口停止。Fcitx 组配置检查不代表中文预编辑已验收。
 
-## 通用 WiVRn 桌面
+## HyperSpace 通用 WiVRn 桌面
 
 通用主机的 WiVRn 桌面可用 `xr-build-components build --profile streaming-desktop
 --output NEW_DIRECTORY` 构建。按目标架构提供工具链，安装该 profile 的 `packages`
@@ -93,3 +93,5 @@ Wayland、D-Bus、输入法及其余组件配置仍使用原有私有目录和�
 
 组件锁固定 bitsk GitHub 上的准确提交；公开头文件摘要随对应提交固定。
 `xr-build-components` 从这些 Git 快照构建，工作树中的未提交候选改动不会进入产物。
+
+HyperSpace 是 XR 空间桌面，Vultra 是其空间合成器，晴空是可选空间主题。系统正式名称为 **openKylin XR 空间智能版本**。WiVRn 入口清除本机设备控制提供者与设备资源选择，使用远端 OpenXR 能力；不会把 MIX 的相机或跟踪路径带入串流会话。

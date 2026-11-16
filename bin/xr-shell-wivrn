@@ -59,8 +59,12 @@ def main():
     session = shutil.which('xr-shell-session')
     if session is None:
         raise RuntimeError('Install xr-shell-session and the streaming desktop components.')
+    # The streaming runtime owns tracking and environment composition.
+    for key in ('XR_SYSTEM_CONTROLS_COMMAND', 'XR_SESSION_CONTROLS_FILE',
+                'XR_INPUT_STATUS_FILE', 'XR_SCENE_CONTROLS_STATUS_FILE',
+                'XR_CONTROLLER_MODEL_DIR'):
+        os.environ.pop(key, None)
     os.environ['XR_RUNTIME_JSON'] = str(runtime)
-    os.environ['XR_SHELL_PRESERVE_HOST_DESKTOP'] = '1'
     # Route this scene's PulseAudio clients to the headset without changing
     # the host desktop's default devices. Explicit user choices still win.
     os.environ.setdefault('PULSE_SINK', 'wivrn.sink')
