@@ -7,7 +7,7 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "9b434570fcb7deac8d7ce1bd8eb3f6b145bb740e",
+      "commit": "20c867f9e0a0fb77923994706cbf85d846b206ef",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "16509777c5b54e3290ad89f85a972ff1359dfcd608ca70577d3dbe42858ef30f",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
