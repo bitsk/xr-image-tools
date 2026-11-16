@@ -241,6 +241,7 @@ def main():
                     if device not in ('a081', 'vr700'):
                         raise ValueError('Unknown kernel device: ' + device)
                     kernel_out = out / 'kernel' / name
+                    (out / 'upstream').mkdir(exist_ok=True)
                     component_env.update({
                         'XR_SOURCE_DIR': str(out / 'upstream' / name),
                         'XR_BUILD_DIR': str(kernel_out / 'build'),
