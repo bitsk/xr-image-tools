@@ -7,7 +7,7 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "80b0826876089f5b4ac31fe1461d5cfe91d4dbd3",
+      "commit": "9065ff1f4815bcc703aea44f360abc66aaa12199",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "16509777c5b54e3290ad89f85a972ff1359dfcd608ca70577d3dbe42858ef30f",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
@@ -59,7 +59,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "f3f14ac93cdd83057aa0cf85df6d76ec5951167a"
+      "commit": "15170de45bfe746579e807343a6f02d7fcb62f4d"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
@@ -71,7 +71,7 @@
     },
     "xr-hexagonrpc": {
       "repository": "https://github.com/bitsk/xr-hexagonrpc",
-      "commit": "c684ab33e68c86bbe5c9731f8462b7af88039f2f"
+      "commit": "f1faf2aea47449e35da0886c6fdb6279ee0eec72"
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
