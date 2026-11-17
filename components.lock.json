@@ -7,44 +7,40 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "64c4ee493d5b12af471aa79f3da4aca0c81745d0",
+      "commit": "22ad05c8c944fd7ebdf50a6f9b9d1d41dc24c3a3",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "d22e98bfca7b1b0ab9e224eab361192ad835a7d4c9444817c5c4faca0f767f46",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
-        "include/xr/device/a081_camera_metadata.hpp": "e083c615b4b896faa61d789d2917b96b22275b8f32547eff050b5b8a9d706915",
+        "include/xr/device/a081_camera_metadata.hpp": "5aa27b6c2455a4ea6c07ca85b1516babe805c3ebfef5ca91016bd3ba9cca355c",
         "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
-        "include/xr/device/a081_camera_timing.hpp": "df5bf35c45d527dab98cc8c012e6f346541775c711680308272138ac0b81a4ea",
+        "include/xr/device/a081_camera_timing.hpp": "415200ea91018be4cd4a226453576ae6d1436a91912c791114a2dd187ba9363f",
         "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
-        "include/xr/device/a081_controller_frame_export.hpp": "40b10df44ffe3c127dbff42962ac27fda888b3fad8a1c0096400336cd83a9d0b",
-        "include/xr/device/a081_controller_input_wire.h": "9c129222f1782a9bccaf4e126df438e0e560f5c6438fc647dc1c04bbf4fa32b1",
+        "include/xr/device/a081_controller_frame_export.hpp": "3ab03179a8efa52f1b7d13fe05d34f66b7420bd23578ca37b3c5bbe82357d891",
+        "include/xr/device/a081_controller_input_wire.h": "c3561141a399eb6cb5a0bebf800b23ea896bc919398edda6bcc041ed2aed50e0",
         "include/xr/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
         "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
         "include/xr/device/a081_radio_clock_reference.h": "0f4489e218b9483292ac01b78ed65f02bbfa5dce44e739268f65c3056d8097f0",
         "include/xr/device/a081_recording.h": "d91a3bac2f47a7ee3057ceb4f1622890a165162ecabc52a2174e6bd5cfa67835",
-        "include/xr/device/abi_reference.hpp": "27d7f773d3b9f94c47d8347129041ab933c83c4cb05cb38561e0707f5a806463",
+        "include/xr/device/abi_reference.hpp": "0bda9a30227391e06c9482840ec015299de51ecb6b112d445171e24af0449bb2",
         "include/xr/device/camera-preview.hpp": "b5971529b1ff6a31131285d2d39dd309088e30eb29e9b1c148f79b464e4c2d5c",
         "include/xr/device/passthrough-capture.hpp": "528aa8d2c911c3cab82c41aced3e971d66313a181d3f94282120c16020a770cb",
         "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07",
-        "include/xr/device/see_low_latency.hpp": "86c480afe305464c328b2c16444b946b330ab45b2a28893ce683d1bc575adae9"
+        "include/xr/device/see_low_latency.hpp": "8b3d171789e0118ccf19d58dc1535f8950230a1e41de5c18013b84a8ad5e25a1"
       }
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "b3bf62662ab74ddb62b044795c9fb4b7ee412a3b",
+      "commit": "f1104703f06f48b076f06b249f2095f3e1a775f4",
       "public_headers_sha256": {
-        "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
-        "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
-        "include/xr/head/a081_tracking_wire.h": "a59d94185675de3196f63ac0d682cb6f26a0d283e2615ddda3cab5671bc36062",
-        "include/xr/head/production-v2/a081_imu_history.h": "26feb04e4c8fa37aaed84d78b2de7b91f9d08cd62e02317398d2c23375752e8f",
-        "include/xr/head/production-v2/a081_qvr_pose.h": "1fd176eeea58035bf5650482d92e519a50de857998efd112f540f24704bd69f8",
-        "include/xr/head/production-v2/a081_tracking_client.h": "83356b9167f8a6ba7dcefe7a34a9404c38159ce71e46e6739147670fdfdbec8e",
-        "include/xr/head/production-v2/a081_tracking_wire.h": "aed2c177a86ef4f5eeb28b40c45acaf14ff75910f3bc0191c82cbb8339289e2c"
+        "include/xr/head/production-v2/a081_qvr_pose.h": "482983abb888bead7f9b6f4324eb73c1123d9089d9029298a0e30aa5d66b57d2",
+        "include/xr/head/production-v2/a081_tracking_client.h": "36869aa710f7d61cddde19c336a06cf4707b9bb2ccd978c6bb666ec6c3d2a3ba",
+        "include/xr/head/production-v2/a081_tracking_wire.h": "115c8e053eeba9260a71afdbce0471e70452d0dc78391787906dcf49bd8c23e6"
       }
     },
     "xr-controller-tracking": {
       "repository": "https://github.com/bitsk/xr-controller-tracking",
-      "commit": "ccecedba126594b830fb7a90fe5e7a3ac0600020",
+      "commit": "8d01bb0de0587196482d6b29d6119daf83cb5703",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
@@ -55,11 +51,11 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "deef7268c970fd71f37fe3a303a8a89a51293df7"
+      "commit": "219ce848a3021a90f1e0cccdc405b307d411cf4a"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "c7ec709ac6f532ca62650b2d758a011395133158"
+      "commit": "2be1b40e0cd4776877c98f08ae15d28e0a55f932"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
@@ -79,7 +75,7 @@
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
-      "commit": "016ec4bffc1f7b7c7e97a8481f44278e8f22fc6e",
+      "commit": "f414ccae13faac5588068adb23cf3eecaa0a70ff",
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
         "include/xr/hand/joints.hpp": "245b98db23b3ab1f9450c2059708abac4897acddea6b1bcbe970db4af607af7d",
