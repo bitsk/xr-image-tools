@@ -67,7 +67,7 @@
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
-      "commit": "94c9e43988831df9ad8551e327869e77beac6169"
+      "commit": "cbcd951a3db0d6d0c93d55427f7fa0bb5dd5073e"
     },
     "xr-hexagonrpc": {
       "repository": "https://github.com/bitsk/xr-hexagonrpc",
@@ -75,7 +75,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "02364c852acde9582f07915ae48a80542b70fba7"
+      "commit": "98b0089bffa852f5102e7e2ff8c43d718a116e45"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
