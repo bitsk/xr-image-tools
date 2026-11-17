@@ -44,13 +44,14 @@
     },
     "xr-controller-tracking": {
       "repository": "https://github.com/bitsk/xr-controller-tracking",
-      "commit": "29190a89d6737362010fa19cd4f700d07d74e81f",
+      "commit": "3970b952a68a504aa0c72dbe64a52c6c8a08b902",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
         "include/xr/controller/a081_controller_input_contract.hpp": "b161ff1272af3f2f49416b7065304b2eb86d099f4a001820221ca11bceb6364f",
         "include/xr/controller/a081_controller_pose_wire.h": "2f37564580cd456d0e0700e244a43d80425a827d3ea1dd4e9e68606987fa9526",
-        "include/xr/controller/production-v2/a081_controller_pose_wire.h": "27115c80739c056cb23ec54211112add984a899507bbd0d3377cf747de636ce6"
+        "include/xr/controller/production-v2/a081_controller_pose_wire.h": "27115c80739c056cb23ec54211112add984a899507bbd0d3377cf747de636ce6",
+        "include/xr/controller/a081_controller_pose_controls.h": "cbcf772adc95b6dec3ac1f08f76e06933563cc869c8f42481ebaae6233f64779"
       }
     },
     "xr-monado": {
