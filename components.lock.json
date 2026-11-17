@@ -55,7 +55,7 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "ec126331324aefd295812b8dcd901b3ea01be55d"
+      "commit": "deef7268c970fd71f37fe3a303a8a89a51293df7"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
@@ -63,7 +63,7 @@
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
-      "commit": "45d536300b94568e9831f20b59cfc5959a3eb940"
+      "commit": "63791c8e0934cedd8e5c59ad3dc8fe9297b40555"
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
