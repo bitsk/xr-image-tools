@@ -44,27 +44,26 @@
     },
     "xr-controller-tracking": {
       "repository": "https://github.com/bitsk/xr-controller-tracking",
-      "commit": "3970b952a68a504aa0c72dbe64a52c6c8a08b902",
+      "commit": "37567f56661735e2b62ba4ca2a79b3854071e475",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
         "include/xr/controller/a081_controller_input_contract.hpp": "b161ff1272af3f2f49416b7065304b2eb86d099f4a001820221ca11bceb6364f",
-        "include/xr/controller/a081_controller_pose_wire.h": "2f37564580cd456d0e0700e244a43d80425a827d3ea1dd4e9e68606987fa9526",
-        "include/xr/controller/production-v2/a081_controller_pose_wire.h": "27115c80739c056cb23ec54211112add984a899507bbd0d3377cf747de636ce6",
-        "include/xr/controller/a081_controller_pose_controls.h": "cbcf772adc95b6dec3ac1f08f76e06933563cc869c8f42481ebaae6233f64779"
+        "include/xr/controller/a081_controller_pose_controls.h": "99c252e93c87d7aa58d2c7a6be8aac7579e99bf6bc45c692682f8de6849e87cc",
+        "include/xr/controller/a081_controller_pose_wire.h": "53ec1966259f59d9f1c80acef3af7498b76f6d3d12e7ad38d08e3462076fc9fe"
       }
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "ddefab5a2822100f54aced03e839b4c5ae6a733b"
+      "commit": "a96a01230e12e07d0d6d198009685232a162bb96"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "8d63d33d1f42b513d9e6955c15de05fa65075158"
+      "commit": "b122c14078217461c1b87cce5c6e179a1bbacfab"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
-      "commit": "c876c7506d0c1609334bde02f28e9570e2325bb2"
+      "commit": "45d536300b94568e9831f20b59cfc5959a3eb940"
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
