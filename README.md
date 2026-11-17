@@ -106,3 +106,11 @@ Wayland、D-Bus、输入法及其余组件配置仍使用原有私有目录和�
 HyperSpace 是 XR 空间桌面，Vultra 是其空间合成器，晴空是可选空间主题。系统正式名称为 **openKylin XR 空间智能版本**。WiVRn 入口清除本机设备控制提供者与设备资源选择，使用远端 OpenXR 能力；不会把 MIX 的相机或跟踪路径带入串流会话。
 
 离线缓存可用 `xr-vendor-cache fetch --lock MODEL_LOCK --archives ARCHIVES --output CACHE` 从本地发行归档导入，校验规则与在线下载一致。
+
+## 上层桌面协作开发
+
+从新电脑获取固定提交、开发依赖、按组件构建和选择运行时，见
+[桌面协作开发入口](https://github.com/bitsk/openkylin-xr-docs/blob/main/wiki/desktop-development.md)。
+`streaming-desktop` 只选择上层桌面和通用会话辅助包，不需要 OEM 固件或设备校准。
+`environments/desktop-native.json` 允许按 Cargo.lock 从公开 registry 获取构建依赖；
+首次填充后可以离线复用缓存。源码仍只从组件锁指定的 Git 提交获取。
