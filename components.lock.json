@@ -58,11 +58,11 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "d1564a211cdab4c63482c2a1963e3bc3cecf2cf4"
+      "commit": "163c00031df8a2c8d0787a2abb2e1c7087b67fab"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
-      "commit": "2d8a88530b49a89d4826f65e2bece2762eed6dc5"
+      "commit": "c876c7506d0c1609334bde02f28e9570e2325bb2"
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
@@ -87,19 +87,19 @@
     },
     "xr-shell": {
       "repository": "https://github.com/bitsk/xr-shell",
-      "commit": "9b328a931e1b2bce4f85018a3f478a9eeb23bd2d"
+      "commit": "1a791df98db82e198245ad3986b63b416425416c"
     },
     "xr-system-ui": {
       "repository": "https://github.com/bitsk/xr-system-ui",
-      "commit": "c9d8be34deaf02898e5d2d59b32b85f3a897dc98"
+      "commit": "0de24fce6e0693bfd9d4d62732b221469b829bac"
     },
     "xr-spatial-kit": {
       "repository": "https://github.com/bitsk/xr-spatial-kit",
-      "commit": "820b17b901c2fcbbcd4c69b3596401d6dd06b94f"
+      "commit": "5ea95476c5b5a28280da42b2f301b7d6393011e7"
     },
     "xr-dock": {
       "repository": "https://github.com/bitsk/xr-dock",
-      "commit": "27722187152983eefcea720332ba4a18d6b6c291"
+      "commit": "08f854bfda57821f28baa759e33f835397180f8d"
     },
     "xr-environments": {
       "repository": "https://github.com/bitsk/xr-environments",
@@ -107,7 +107,7 @@
     },
     "xr-wayland": {
       "repository": "https://github.com/bitsk/xr-wayland",
-      "commit": "a51be9650cade657995cc01edd54b1fe7c69f169"
+      "commit": "399109806a7ec5a9f0fe8d234f3393383e300614"
     },
     "xr-vendor-assets": {
       "repository": "https://github.com/bitsk/xr-vendor-assets",
