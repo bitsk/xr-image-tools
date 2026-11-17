@@ -99,7 +99,7 @@ HyperSpace 是 XR 空间桌面，Vultra 是其空间合成器，晴空是可选�
 ## 上层桌面协作开发
 
 从新电脑获取固定提交、开发依赖、按组件构建和选择运行时，见
-[桌面协作开发入口](https://github.com/bitsk/openkylin-xr-docs/blob/main/wiki/desktop-development.md)。
+[桌面协作开发入口](https://github.com/bitsk/openkylin-xr-docs/blob/codex/desktop-collaboration/wiki/desktop-development.md)。
 `streaming-desktop` 只选择上层桌面和通用会话辅助包，不需要 OEM 固件或设备校准。
 `environments/desktop-native.json` 允许按 Cargo.lock 从公开 registry 获取构建依赖；
 首次填充后可以离线复用缓存。源码仍只从组件锁指定的 Git 提交获取。
