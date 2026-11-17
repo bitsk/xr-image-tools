@@ -7,7 +7,7 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "7a0476689f74e46a5de480a4d197b0bb919188d3",
+      "commit": "64c4ee493d5b12af471aa79f3da4aca0c81745d0",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "d22e98bfca7b1b0ab9e224eab361192ad835a7d4c9444817c5c4faca0f767f46",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
@@ -16,8 +16,8 @@
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
         "include/xr/device/a081_camera_timing.hpp": "df5bf35c45d527dab98cc8c012e6f346541775c711680308272138ac0b81a4ea",
         "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
-        "include/xr/device/a081_controller_frame_export.hpp": "7a28844cc393dccc182845ac2b16ee700754b8ad4346fe98a7a1a5e07b89d0f9",
-        "include/xr/device/a081_controller_input_wire.h": "96543c56e3b9f0df3d7b5b40e2f97e7094a6641ac260ede67b394a9b1ba906a7",
+        "include/xr/device/a081_controller_frame_export.hpp": "40b10df44ffe3c127dbff42962ac27fda888b3fad8a1c0096400336cd83a9d0b",
+        "include/xr/device/a081_controller_input_wire.h": "9c129222f1782a9bccaf4e126df438e0e560f5c6438fc647dc1c04bbf4fa32b1",
         "include/xr/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
         "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
         "include/xr/device/a081_radio_clock_reference.h": "0f4489e218b9483292ac01b78ed65f02bbfa5dce44e739268f65c3056d8097f0",
@@ -75,11 +75,11 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "41b64f4e2184cd18dea8c0d854a11da9119b47c1"
+      "commit": "2eab03cca917266ecd77cef35977b4ab2bf54030"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
-      "commit": "8842d9eccea21165f840745d0035c24fe9250247",
+      "commit": "016ec4bffc1f7b7c7e97a8481f44278e8f22fc6e",
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
         "include/xr/hand/joints.hpp": "245b98db23b3ab1f9450c2059708abac4897acddea6b1bcbe970db4af607af7d",
