@@ -56,6 +56,8 @@ def arguments():
     parser.add_argument('--environment', type=Path)
     parser.add_argument('--state-directory', type=Path)
     parser.add_argument('--seconds', type=int, default=0)
+    parser.add_argument('--view-scale', type=float, default=1.0,
+                        help='Eye render size scale passed to Shell (0.1..1.0)')
     parser.add_argument('--debug-input', action='store_true')
     parser.add_argument('--validation', action='store_true')
     parser.add_argument('--no-xwayland', action='store_true')
@@ -65,6 +67,8 @@ def arguments():
     opts = parser.parse_args()
     if opts.seconds < 0:
         parser.error('--seconds must be nonnegative')
+    if not 0.1 <= opts.view_scale <= 1.0:
+        parser.error('--view-scale must be in 0.1..1.0')
     return opts
 
 
@@ -74,7 +78,7 @@ class Scene:
         self.processes, self.logs, self.records = {}, {}, {}
         self.events = run / 'lifecycle.jsonl'
         self.result = {'schema': 1, 'kind': 'native-openxr-scene', 'ready': False,
-                       'ui_anchor_mode': opts.ui_anchor,
+                       'ui_anchor_mode': opts.ui_anchor, 'view_scale': opts.view_scale,
                        'runtime_started': False, 'hardware_producer_started': False,
                        'audio_core_started': False, 'errors': [], 'children': {}}
         self.stopping = False
@@ -284,7 +288,7 @@ class Scene:
             shell_env['RUST_LOG'] = 'off'
         argv = [self.opts.prefix / 'bin/xr-shell', '--components', '--component-socket', shell_socket,
                 '--environment', environment, '--capture-dir', captures,
-                '--ui-anchor', self.opts.ui_anchor]
+                '--ui-anchor', self.opts.ui_anchor, '--view-scale', str(self.opts.view_scale)]
         if self.opts.debug_input:
             argv.append('--debug-input')
         if self.opts.validation:

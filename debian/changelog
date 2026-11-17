@@ -1,3 +1,10 @@
+xr-image-tools (0.2.3) unstable; urgency=medium
+
+  * Pass the eye render scale through the native scene launcher for measured
+    rendering budget comparisons.
+
+ -- bits <bigbits@hackx.cc>  Tue, 17 Nov 2026 19:47:41 +0800
+
 xr-image-tools (0.2.2) unstable; urgency=medium
 
   * Remove content digests from spatial scene diagnostic state.
