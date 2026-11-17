@@ -7,14 +7,14 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "22ad05c8c944fd7ebdf50a6f9b9d1d41dc24c3a3",
+      "commit": "65ed9b1123906f2151a7be50f7e0ee5b818dc510",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "d22e98bfca7b1b0ab9e224eab361192ad835a7d4c9444817c5c4faca0f767f46",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
         "include/xr/device/a081_camera_metadata.hpp": "5aa27b6c2455a4ea6c07ca85b1516babe805c3ebfef5ca91016bd3ba9cca355c",
         "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
-        "include/xr/device/a081_camera_timing.hpp": "415200ea91018be4cd4a226453576ae6d1436a91912c791114a2dd187ba9363f",
+        "include/xr/device/a081_camera_timing.hpp": "9269cb96cb8f8e005b0979e7db7d4efdac7eb7fb037b483ba73e757fbc65ba52",
         "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
         "include/xr/device/a081_controller_frame_export.hpp": "3ab03179a8efa52f1b7d13fe05d34f66b7420bd23578ca37b3c5bbe82357d891",
         "include/xr/device/a081_controller_input_wire.h": "c3561141a399eb6cb5a0bebf800b23ea896bc919398edda6bcc041ed2aed50e0",
