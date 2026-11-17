@@ -31,13 +31,13 @@
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "106025a1b850b271f13ebf599e8b55f218e59902",
+      "commit": "b3bf62662ab74ddb62b044795c9fb4b7ee412a3b",
       "public_headers_sha256": {
         "include/xr/head/a081_qvr_pose.h": "0f840776aa6916b4334d6f47db25be4e3d74fa034e322672f9026ec4fa1feddf",
         "include/xr/head/a081_tracking_client.h": "805ed5ae9f8148ddbb319b8a109026ab317923dd5af7dc43b72a5caedcd1a0e0",
         "include/xr/head/a081_tracking_wire.h": "a59d94185675de3196f63ac0d682cb6f26a0d283e2615ddda3cab5671bc36062",
         "include/xr/head/production-v2/a081_imu_history.h": "26feb04e4c8fa37aaed84d78b2de7b91f9d08cd62e02317398d2c23375752e8f",
-        "include/xr/head/production-v2/a081_qvr_pose.h": "b8b933e80a7d6c5d8f871347a7035cef7de0194b36c7ba6b2f9b2408c0d98d4e",
+        "include/xr/head/production-v2/a081_qvr_pose.h": "1fd176eeea58035bf5650482d92e519a50de857998efd112f540f24704bd69f8",
         "include/xr/head/production-v2/a081_tracking_client.h": "83356b9167f8a6ba7dcefe7a34a9404c38159ce71e46e6739147670fdfdbec8e",
         "include/xr/head/production-v2/a081_tracking_wire.h": "aed2c177a86ef4f5eeb28b40c45acaf14ff75910f3bc0191c82cbb8339289e2c"
       }
@@ -55,7 +55,7 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "83efee21c22d234ef43da55a6c7710d28819455f"
+      "commit": "ec126331324aefd295812b8dcd901b3ea01be55d"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
