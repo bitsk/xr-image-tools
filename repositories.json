@@ -157,7 +157,8 @@
         "openkylin-xr-debug",
         "openkylin-xr-steamvr",
         "openkylin-xr-hands",
-        "openkylin-xr-native"
+        "openkylin-xr-native",
+        "rvvr-saberv"
       ],
       "local_path": "openkylin-xr-integration"
     },

@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "id": "saberv",
+  "components": [
+    "xr-monado",
+    "xr-session-manager",
+    "openkylin-xr-integration"
+  ],
+  "packages": [
+    "rvvr-saberv",
+    "xr-session-manager"
+  ],
+  "automatic_service_enable": false
+}

@@ -192,6 +192,15 @@
         "device": "vr700",
         "version": "7.3.0+xr.vr700.1"
       }
+    },
+    "saberv": {
+      "xr-monado": {
+        "kind": "source"
+      },
+      "openkylin-xr-integration": {
+        "kind": "component-script",
+        "script": "applications/rvvr-saberv/build.py"
+      }
     }
   }
 }

@@ -300,6 +300,16 @@ def main():
                     argv = [sys.executable, repo / 'packaging/build-uapi-deb.py', '--output', packages,
                             '--version', recipe['version']]
                     command(argv, env=component_env, stdout=log, stderr=subprocess.STDOUT)
+                elif recipe['kind'] == 'source':
+                    # Locked dependency recipes consumed by a later component.
+                    pass
+                elif recipe['kind'] == 'component-script':
+                    script = repo / recipe['script']
+                    if not script.resolve().is_relative_to(repo.resolve()):
+                        raise ValueError('Component build script escapes its source owner')
+                    command([sys.executable, script, '--output', out / 'component-build' / name,
+                             '--packages', packages, '--sources', sources],
+                            env=component_env, stdout=log, stderr=subprocess.STDOUT)
                 elif recipe['kind'] in ('debian', 'mesa'):
                     source = repo
                     if recipe['kind'] == 'mesa':
