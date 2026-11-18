@@ -51,7 +51,7 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "56f9d63bdf2ba0e2fc4c935eb37780ff0efcea0f"
+      "commit": "39d8b7f65d6f7de0d7ebff4c71e12d97ccdeaf9c"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",

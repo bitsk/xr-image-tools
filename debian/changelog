@@ -1,3 +1,10 @@
+xr-image-tools (0.2.4) unstable; urgency=medium
+
+  * Keep current build contracts ahead of component SDK flags and verify actual
+    compiler-read XR header paths and checksums against the source lock.
+
+ -- bits <bigbits@hackx.cc>  Wed, 18 Nov 2026 23:33:35 +0800
+
 xr-image-tools (0.2.3) unstable; urgency=medium
 
   * Pass the eye render scale through the native scene launcher for measured

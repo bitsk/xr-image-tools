@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import subprocess
 import sys
 
@@ -41,6 +42,34 @@ def package_info(path):
     return dict(package=info['Package'], version=info['Version'],
                 architecture=info['Architecture'], file=path.name,
                 sha256=digest(path), bytes=path.stat().st_size)
+
+
+def audit_project_headers(repo, sources, prefix, lock, required=()):
+    """Verify compiler-read XR contracts, including their actual paths."""
+    expected = {}
+    for owner, entry in lock['components'].items():
+        for path, checksum in entry.get('public_headers_sha256', {}).items():
+            if path.startswith('include/xr/'):
+                expected[path.removeprefix('include/')] = (owner, checksum)
+    observed = {}
+    for depfile in repo.rglob('*.o.d'):
+        for token in shlex.split(depfile.read_text().replace('\\\n', ' ')):
+            if not token.startswith('/') or '/include/xr/' not in token:
+                continue
+            path = Path(token).resolve()
+            if not (path.is_relative_to(prefix.resolve()) or path.is_relative_to(sources.resolve())):
+                raise ValueError('Compiler consumed XR headers outside this locked build: ' + str(path))
+            contract = 'xr/' + str(path).rsplit('/include/xr/', 1)[1]
+            checksum = digest(path)
+            owner, wanted = expected.get(contract, (None, None))
+            if wanted is not None and checksum != wanted:
+                raise ValueError('Compiler-read XR contract differs from source lock: ' + contract)
+            observed[contract] = dict(path=str(path.relative_to(sources.parent)),
+                                      sha256=checksum, owner=owner)
+    if set(required) - observed.keys():
+        raise ValueError('Missing compiler dependency evidence for XR contracts: ' +
+                         ', '.join(sorted(set(required) - observed.keys())))
+    return observed
 
 
 def main():
@@ -200,6 +229,14 @@ def main():
             name, recipes['components'][name])
         component_env = dict(env)
         component_env.update(config.get('components', {}).get(name, {}))
+        # Component SDK flags may extend the build, but cannot replace its
+        # current contracts with headers from another checkout or sysroot.
+        for flag in ('DEB_CFLAGS_MAINT_APPEND', 'DEB_CXXFLAGS_MAINT_APPEND'):
+            component_env[flag] = '-I' + str(prefix / 'include') + ' ' + component_env.get(flag, '')
+        for key in ('XR_DEVICE_PREFIX', 'XR_DEVICE_INCLUDE_DIR', 'XR_KERNEL_UAPI_DIR',
+                    'XR_HEXAGONRPC_SOURCE', 'XR_OPENVR_INCLUDE_DIR'):
+            component_env[key] = env[key]
+        component_env['CMAKE_PREFIX_PATH'] = str(prefix) + ':' + component_env.get('CMAKE_PREFIX_PATH', '')
         if config.get('architecture'):
             component_env.setdefault('XR_CARGO_TARGET', 'aarch64-unknown-linux-gnu')
             component_env.setdefault('CARGO_BUILD_TARGET', 'aarch64-unknown-linux-gnu')
@@ -308,6 +345,8 @@ def main():
                 raise
             print('Failed ' + name + ': ' + str(error), flush=True)
             continue
+        receipt.setdefault('compiler_project_headers', {})[name] = audit_project_headers(
+            repo, sources, prefix, lock, recipe.get('required_compiler_headers', []))
         receipt.setdefault('failures', {}).pop(name, None)
         for item in packages.glob('xr-kernel-uapi-dev_*.deb'):
             command(['dpkg-deb', '-x', item, sysroot], stdout=subprocess.DEVNULL)
