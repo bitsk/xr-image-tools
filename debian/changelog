@@ -1,3 +1,9 @@
+xr-image-tools (0.2.5) unstable; urgency=medium
+
+  * Keep private bus activation and direct application display environments consistent.
+
+ -- bits <bigbits@hackx.cc>  Thu, 19 Nov 2026 00:23:15 +0800
+
 xr-image-tools (0.2.4) unstable; urgency=medium
 
   * Keep current build contracts ahead of component SDK flags and verify actual

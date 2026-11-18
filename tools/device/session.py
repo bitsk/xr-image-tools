@@ -169,6 +169,8 @@ class Scene:
             'XDG_DATA_HOME': str(private / 'data'), 'XDG_CURRENT_DESKTOP': 'UKUI',
             'XDG_SESSION_TYPE': 'wayland', 'WAYLAND_DISPLAY': 'xr-wayland-0',
             'GDK_BACKEND': 'wayland', 'QT_QPA_PLATFORM': 'wayland', 'GTK_CSD': '0',
+            'QT_WAYLAND_SHELL_INTEGRATION': 'xdg-shell', 'QT_QUICK_BACKEND': 'software',
+            'GSK_RENDERER': 'cairo',
             'GTK_IM_MODULE': 'wayland', 'QT_IM_MODULE': '', 'XMODIFIERS': '',
             'PIPEWIRE_RUNTIME_DIR': str(self.original),
             'PIPEWIRE_REMOTE': os.environ.get('PIPEWIRE_REMOTE', 'pipewire-0'),
@@ -187,7 +189,7 @@ class Scene:
         keys = ['DBUS_SESSION_BUS_ADDRESS', 'PATH', 'DISPLAY', 'XAUTHORITY', 'SESSION_MANAGER', 'DESKTOP_STARTUP_ID',
                 'XDG_RUNTIME_DIR', 'XDG_CONFIG_HOME', 'XDG_STATE_HOME', 'XDG_CACHE_HOME',
                 'XDG_DATA_HOME', 'XDG_CURRENT_DESKTOP', 'XDG_SESSION_TYPE', 'WAYLAND_DISPLAY',
-                'GDK_BACKEND', 'QT_QPA_PLATFORM', 'GTK_CSD', 'GTK_IM_MODULE', 'QT_IM_MODULE',
+                'GDK_BACKEND', 'QT_QPA_PLATFORM', 'QT_WAYLAND_SHELL_INTEGRATION', 'QT_QUICK_BACKEND', 'GSK_RENDERER', 'GTK_CSD', 'GTK_IM_MODULE', 'QT_IM_MODULE',
                 'XMODIFIERS', 'PULSE_SERVER', 'PULSE_RUNTIME_PATH', 'PULSE_CLIENTCONFIG',
                 'PIPEWIRE_RUNTIME_DIR', 'PIPEWIRE_REMOTE', 'XR_SYSTEM_UI_ISOLATED_BUS',
                 'XR_SYSTEM_UI_PREFERENCES_FILE']

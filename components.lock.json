@@ -104,7 +104,7 @@
     },
     "xr-wayland": {
       "repository": "https://github.com/bitsk/xr-wayland",
-      "commit": "4979b0db5e1db0a54b481ea07a2b6f4c4377a42c"
+      "commit": "ccbae92d6d7b3bb098a0f0d12740e03593eb588c"
     },
     "xr-vendor-assets": {
       "repository": "https://github.com/bitsk/xr-vendor-assets",
