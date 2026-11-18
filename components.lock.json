@@ -63,7 +63,7 @@
     },
     "xr-mesa": {
       "repository": "https://github.com/bitsk/xr-mesa",
-      "commit": "fe46bc686cbd2ce87d9fee3dd4ef704348ad311d"
+      "commit": "c7e6ab5ec1778594a38dc73846610ca05e004dc6"
     },
     "xr-hexagonrpc": {
       "repository": "https://github.com/bitsk/xr-hexagonrpc",
