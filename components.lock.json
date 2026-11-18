@@ -96,7 +96,7 @@
     },
     "xr-dock": {
       "repository": "https://github.com/bitsk/xr-dock",
-      "commit": "a27d346cf92cc7c152e7388301d6accbb14ecb95"
+      "commit": "0e17a8d71c34ba228f67287c7d6da89b44f5ee94"
     },
     "xr-environments": {
       "repository": "https://github.com/bitsk/xr-environments",

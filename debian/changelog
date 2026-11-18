@@ -1,3 +1,9 @@
+xr-image-tools (0.2.7) unstable; urgency=medium
+
+  * Pin application activation and visible startup failure fixes.
+
+ -- bits <bigbits@hackx.cc>  Thu, 19 Nov 2026 00:38:54 +0800
+
 xr-image-tools (0.2.6) unstable; urgency=medium
 
   * Pin the fully verified desktop application backend policies.
