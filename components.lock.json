@@ -96,7 +96,7 @@
     },
     "xr-dock": {
       "repository": "https://github.com/bitsk/xr-dock",
-      "commit": "27722187152983eefcea720332ba4a18d6b6c291"
+      "commit": "a27d346cf92cc7c152e7388301d6accbb14ecb95"
     },
     "xr-environments": {
       "repository": "https://github.com/bitsk/xr-environments",
@@ -104,7 +104,7 @@
     },
     "xr-wayland": {
       "repository": "https://github.com/bitsk/xr-wayland",
-      "commit": "a51be9650cade657995cc01edd54b1fe7c69f169"
+      "commit": "4979b0db5e1db0a54b481ea07a2b6f4c4377a42c"
     },
     "xr-vendor-assets": {
       "repository": "https://github.com/bitsk/xr-vendor-assets",
