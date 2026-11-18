@@ -29,6 +29,21 @@ def export(manifest_path, output, selected, lock_digest, requested, expected_bui
     for name, entry in selected.items():
         if manifest['components'].get(name, {}).get('commit') != entry['commit']:
             raise ValueError('Package source commit mismatch: ' + name)
+    audits = manifest.get('compiler_project_headers', {})
+    if set(expected_build_order) - audits.keys():
+        raise ValueError('Package manifest lacks actual compiler input audits')
+    recipes = json.loads((Path(__file__).resolve().parents[1] / 'build-recipes.json').read_text())
+    if manifest['recipes_sha256'] != digest(Path(__file__).resolve().parents[1] / 'build-recipes.json'):
+        raise ValueError('Package compiler requirements and composition recipes differ')
+    for name in expected_build_order:
+        recipe = recipes.get('profile_recipes', {}).get(manifest['profile'], {}).get(
+            name, recipes['components'][name])
+        for contract in recipe.get('required_compiler_headers', []):
+            record = audits[name].get(contract, {})
+            owner = selected.get(record.get('owner'), {})
+            wanted = owner.get('public_headers_sha256', {}).get('include/' + contract)
+            if not wanted or record.get('sha256') != wanted:
+                raise ValueError('Required compiler-read contract not verified: ' + contract)
     repository = output / 'packages'
     repository.mkdir()
     payload_owners = {}

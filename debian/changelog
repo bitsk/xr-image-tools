@@ -2,6 +2,7 @@ xr-image-tools (0.2.4) unstable; urgency=medium
 
   * Keep current build contracts ahead of component SDK flags and verify actual
     compiler-read XR header paths and checksums against the source lock.
+  * Require compiler-input audit evidence when exporting deployment bundles.
 
  -- bits <bigbits@hackx.cc>  Wed, 18 Nov 2026 23:33:35 +0800
 
