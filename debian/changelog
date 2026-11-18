@@ -1,3 +1,9 @@
+xr-image-tools (0.2.6) unstable; urgency=medium
+
+  * Pin the fully verified desktop application backend policies.
+
+ -- bits <bigbits@hackx.cc>  Thu, 19 Nov 2026 00:35:32 +0800
+
 xr-image-tools (0.2.5) unstable; urgency=medium
 
   * Keep private bus activation and direct application display environments consistent.
