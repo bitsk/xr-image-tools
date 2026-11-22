@@ -51,7 +51,7 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "054abb28756c2fbcbaf41aa2d327d04378b14f07"
+      "commit": "06363e2d0e729c39c2abd9350ea909e41d851138"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
@@ -71,7 +71,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "197f8a9cb2758426f42999ffe2b83a383f8052ed"
+      "commit": "2e64b3bd01b6a4faedeb20e707f40f49a0c84b57"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
