@@ -55,7 +55,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "81501fef9930b3ce3f043823f8047180b45b1810"
+      "commit": "66f4217945864efc29a6680956797ec8b448843a"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
@@ -88,7 +88,7 @@
     },
     "xr-system-ui": {
       "repository": "https://github.com/bitsk/xr-system-ui",
-      "commit": "6c51c951085c558de83a5d7df808ba569e510f5c"
+      "commit": "6fb932458d566e8a6bc5e8868164b78b72034246"
     },
     "xr-spatial-kit": {
       "repository": "https://github.com/bitsk/xr-spatial-kit",
