@@ -55,7 +55,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "66f4217945864efc29a6680956797ec8b448843a"
+      "commit": "96ef3b79c77855de36b00fe453ab000fedcf4c59"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
@@ -71,7 +71,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "5962b38ba1985dddaefbd8d8da01f2e262d4fec6"
+      "commit": "197f8a9cb2758426f42999ffe2b83a383f8052ed"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
@@ -84,7 +84,7 @@
     },
     "xr-shell": {
       "repository": "https://github.com/bitsk/xr-shell",
-      "commit": "3db022d2f91b77f98acddbbdbf93144fc204918d"
+      "commit": "5ad3015d79d600f67e80daa83b9856d3d42626ff"
     },
     "xr-system-ui": {
       "repository": "https://github.com/bitsk/xr-system-ui",
@@ -104,7 +104,7 @@
     },
     "xr-wayland": {
       "repository": "https://github.com/bitsk/xr-wayland",
-      "commit": "76243922d6a1d103cea6081fa4d21cb4ee8e5e1e"
+      "commit": "a25ff1520aa0582de722289df09fe437de517e0d"
     },
     "xr-vendor-assets": {
       "repository": "https://github.com/bitsk/xr-vendor-assets",

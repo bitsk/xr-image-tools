@@ -1,3 +1,9 @@
+xr-image-tools (0.2.9) unstable; urgency=medium
+
+  * Launch installed immersive applications in the active native scene.
+
+ -- bits <bigbits@hackx.cc>  Sun, 22 Nov 2026 23:36:48 +0800
+
 xr-image-tools (0.2.8) unstable; urgency=medium
 
   * Pin application content refresh handling.

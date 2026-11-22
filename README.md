@@ -55,6 +55,13 @@ xr-shell-session --prefix /opt/xr-development --seconds 30
 
 外层收到 SIGTERM 后只通知其拥有的内部 helper。helper 先请求 Shell 正常退出并等待 OpenXR/GPU 清理，再回收组件；最后私有 D-Bus 退出并清理身份匹配的激活进程与挂载。正常退出码为零，超时或异常退出会保留失败状态，不将强制终止标为正常。状态默认写入 `~/.local/state/xr-shell-session/run-*`，`latest` 记录最近目录：`ready.json` 和 `startup-snapshot.json` 记录真实组件场景发布，`captures/` 保存 Shell 产物，`summary.json`、`children.json`、`lifecycle.jsonl` 与 `session-result.json` 记录进程、退出顺序和清理结果。运行时本体与跟踪服务不由此入口停止。Fcitx 组配置检查不代表中文预编辑已验收。
 
+沉浸式应用的安装描述位于 `/usr/share/xr/applications/<id>.json`，包含
+`schema: 1` 和绝对路径的 `argv`。在应用库使用 `X-XR-Immersive=true`，
+入口执行 `xr-shell-session --launch-application <id>`。场景管理进程等
+Shell 释放自己的 OpenXR 会话后，以当前用户启动游戏。退出后 Shell
+在同一个运行时恢复显示，桌面连接、窗口与布局保留。
+
+
 ## HyperSpace 通用 WiVRn 桌面
 
 通用主机的 WiVRn 桌面可用 `xr-build-components build --profile streaming-desktop

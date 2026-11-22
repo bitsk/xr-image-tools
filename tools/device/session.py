@@ -10,10 +10,12 @@ import ast
 import ctypes
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import shlex
 import signal
+import socket
 import stat
 import subprocess
 import sys
@@ -63,6 +65,7 @@ def arguments():
     parser.add_argument('--no-xwayland', action='store_true')
     parser.add_argument('--no-ime', action='store_true')
     parser.add_argument('--ui-anchor', choices=('stage', 'head'), default='stage')
+    parser.add_argument('--launch-application', metavar='ID')
     parser.add_argument('--inside-private-bus', type=Path, help=argparse.SUPPRESS)
     opts = parser.parse_args()
     if opts.seconds < 0:
@@ -70,6 +73,119 @@ def arguments():
     if not 0.1 <= opts.view_scale <= 1.0:
         parser.error('--view-scale must be in 0.1..1.0')
     return opts
+
+
+def launch_application(application):
+    address = os.environ.get('XR_SCENE_APPLICATION_SOCKET')
+    if not address:
+        raise RuntimeError('Start this application from the XR desktop library')
+    with socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET) as client:
+        client.settimeout(15)
+        client.connect(address)
+        client.sendall(application.encode('ascii'))
+        result = json.loads(client.recv(4096))
+    if not result['started']:
+        raise RuntimeError(result['error'])
+    return 0
+
+
+class Applications:
+    def __init__(self, private, run, environment):
+        self.directory = private / 'foreground'
+        self.directory.mkdir(mode=0o700)
+        self.run = run
+        self.environment = environment
+        self.listener = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
+        self.address = str(self.directory / 'launch.sock')
+        self.listener.bind(self.address)
+        self.listener.listen(4)
+        self.listener.setblocking(False)
+        self.pending = None
+        self.process = None
+
+    def reply(self, client, **result):
+        try:
+            client.sendall(json.dumps(result).encode())
+        except OSError:
+            pass
+        finally:
+            client.close()
+
+    def accept(self):
+        try:
+            client, _ = self.listener.accept()
+        except BlockingIOError:
+            return
+        try:
+            client.settimeout(.1)
+            identifier = client.recv(65).decode('ascii')
+            if not re.fullmatch('[a-z][a-z0-9-]{0,63}', identifier):
+                raise ValueError('Invalid XR application ID')
+            if self.pending or self.process or (self.directory / 'released').exists():
+                raise RuntimeError('An XR application is already switching or running')
+            definition = Path('/usr/share/xr/applications') / (identifier + '.json')
+            info = definition.lstat()
+            if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
+                raise ValueError('Expected an installed root-owned application descriptor')
+            spec = json.loads(definition.read_text())
+            argv = spec.get('argv')
+            if (spec.get('schema') != 1 or not isinstance(argv, list) or not argv or
+                    not all(isinstance(arg, str) for arg in argv) or not Path(argv[0]).is_absolute()):
+                raise ValueError('Invalid installed XR application descriptor')
+            environment = dict(self.environment)
+            icd = environment.pop('XR_SCENE_APPLICATION_ICD', None)
+            if not icd or not Path(icd).is_file() or not environment.get('DISPLAY'):
+                raise RuntimeError('Native scene lacks an X11 display or application Vulkan ICD')
+            environment.update(VK_DRIVER_FILES=icd, VK_ICD_FILENAMES=icd, XR_APPLICATION_ID=identifier)
+            (self.directory / 'yield').touch()
+            self.pending = (client, identifier, argv, environment, time.monotonic() + 10)
+        except (ValueError, OSError, RuntimeError) as error:
+            self.reply(client, started=False, error=str(error))
+
+    def tick(self, record):
+        if self.process and self.process.poll() is not None:
+            record('application-exit', pid=self.process.pid, status=self.process.returncode)
+            self.process = None
+            (self.directory / 'yield').unlink(missing_ok=True)
+        if self.pending:
+            client, identifier, argv, environment, deadline = self.pending
+            if (self.directory / 'released').is_file():
+                self.pending = None
+                try:
+                    with (self.run / (identifier + '.log')).open('ab') as log:
+                        # The application is a regular login user. Do not carry
+                        # the native desktop's ambient display capabilities.
+                        self.process = subprocess.Popen(
+                            ['setpriv', '--inh-caps=-all', '--ambient-caps=-all', '--', *argv],
+                            env=environment, stdout=log, stderr=subprocess.STDOUT,
+                            stdin=subprocess.DEVNULL, process_group=0)
+                except OSError as error:
+                    (self.directory / 'yield').unlink(missing_ok=True)
+                    self.reply(client, started=False, error=str(error))
+                else:
+                    record('application-start', application=identifier, pid=self.process.pid)
+                    self.reply(client, started=True, pid=self.process.pid)
+            elif time.monotonic() >= deadline:
+                self.pending = None
+                (self.directory / 'yield').unlink(missing_ok=True)
+                self.reply(client, started=False, error='XR desktop did not release the headset')
+        self.accept()
+
+    def close(self):
+        self.listener.close()
+        if self.pending:
+            self.reply(self.pending[0], started=False, error='XR desktop is stopping')
+        if self.process and self.process.poll() is None:
+            try:
+                os.killpg(self.process.pid, signal.SIGTERM)
+                self.process.wait(timeout=5)
+            except ProcessLookupError:
+                self.process.wait()
+            except subprocess.TimeoutExpired:
+                os.killpg(self.process.pid, signal.SIGKILL)
+                self.process.wait()
+                return False
+        return True
 
 
 class Scene:
@@ -82,6 +198,7 @@ class Scene:
                        'runtime_started': False, 'hardware_producer_started': False,
                        'audio_core_started': False, 'errors': [], 'children': {}}
         self.stopping = False
+        self.applications = None
 
     def record(self, event, **values):
         row = {'event': event, 'monotonic_ns': time.monotonic_ns(), **values}
@@ -286,6 +403,10 @@ class Scene:
         # unchanged by Shell. It connects to the already running hardware runtime.
         shell_env = dict(os.environ)
         shell_env['XDG_RUNTIME_DIR'] = str(self.original)
+        if shell_env.get('XR_SCENE_APPLICATION_ICD'):
+            self.applications = Applications(self.private, self.run, shell_env.copy())
+            shell_env['XR_SHELL_FOREGROUND_DIR'] = str(self.applications.directory)
+            component_env['XR_SCENE_APPLICATION_SOCKET'] = self.applications.address
         if shell_env.get('XR_DIAGNOSTIC_LOGS') != '1':
             shell_env['RUST_LOG'] = 'off'
         argv = [self.opts.prefix / 'bin/xr-shell', '--components', '--component-socket', shell_socket,
@@ -336,6 +457,8 @@ class Scene:
                         self.result['stop_reason'] = 'shell-exited'
                         return
                 raise RuntimeError(role + ' exited unexpectedly: ' + str(process.returncode))
+            if self.applications:
+                self.applications.tick(self.record)
             time.sleep(.1)
         self.result['stop_reason'] = 'signal' if STOP else 'duration'
 
@@ -344,6 +467,8 @@ class Scene:
         self.result['ready'] = False
         self.result['phase'] = 'draining-shell'
         atomic(self.run / 'ready.json', self.result)
+        if self.applications and not self.applications.close():
+            self.result['errors'].append('Foreground XR application needed SIGKILL')
         shell = self.processes.get('shell')
         if shell is not None:
             if shell.poll() is None:
@@ -540,6 +665,8 @@ def main():
     if opts.state_directory:
         opts.state_directory = opts.state_directory.resolve()
     try:
+        if opts.launch_application:
+            return launch_application(opts.launch_application)
         return inside(opts) if opts.inside_private_bus else outer(opts)
     except Exception as error:
         print('XR_SHELL_SESSION_ERROR=' + str(error), file=sys.stderr, flush=True)
