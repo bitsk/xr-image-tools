@@ -1,3 +1,9 @@
+xr-image-tools (0.2.10) unstable; urgency=medium
+
+  * Pass the foreground recenter mailbox and native audio endpoint to XR applications.
+
+ -- bits <bigbits@hackx.cc>  Mon, 23 Nov 2026 01:00:44 +0800
+
 xr-image-tools (0.2.9) unstable; urgency=medium
 
   * Launch installed immersive applications in the active native scene.

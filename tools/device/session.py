@@ -136,7 +136,10 @@ class Applications:
             icd = environment.pop('XR_SCENE_APPLICATION_ICD', None)
             if not icd or not Path(icd).is_file() or not environment.get('DISPLAY'):
                 raise RuntimeError('Native scene lacks an X11 display or application Vulkan ICD')
-            environment.update(VK_DRIVER_FILES=icd, VK_ICD_FILENAMES=icd, XR_APPLICATION_ID=identifier)
+            recenter = self.directory / 'recenter'
+            recenter.unlink(missing_ok=True)
+            environment.update(VK_DRIVER_FILES=icd, VK_ICD_FILENAMES=icd, XR_APPLICATION_ID=identifier,
+                               XR_APPLICATION_RECENTER_FILE=str(recenter))
             (self.directory / 'yield').touch()
             self.pending = (client, identifier, argv, environment, time.monotonic() + 10)
         except (ValueError, OSError, RuntimeError) as error:
@@ -404,7 +407,12 @@ class Scene:
         shell_env = dict(os.environ)
         shell_env['XDG_RUNTIME_DIR'] = str(self.original)
         if shell_env.get('XR_SCENE_APPLICATION_ICD'):
-            self.applications = Applications(self.private, self.run, shell_env.copy())
+            application_env = shell_env.copy()
+            for key in ('PULSE_SERVER', 'PULSE_RUNTIME_PATH', 'PULSE_CLIENTCONFIG',
+                        'PULSE_SINK', 'PIPEWIRE_RUNTIME_DIR', 'PIPEWIRE_REMOTE'):
+                if key in component_env:
+                    application_env[key] = component_env[key]
+            self.applications = Applications(self.private, self.run, application_env)
             shell_env['XR_SHELL_FOREGROUND_DIR'] = str(self.applications.directory)
             component_env['XR_SCENE_APPLICATION_SOCKET'] = self.applications.address
         if shell_env.get('XR_DIAGNOSTIC_LOGS') != '1':
