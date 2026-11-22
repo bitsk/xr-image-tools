@@ -71,7 +71,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "4a9e19030374e0405bf81d5396678a825241bc15"
+      "commit": "105a00622b7ab98e58d01e2337e5fda0fb50c3a9"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
