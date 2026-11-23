@@ -3,7 +3,7 @@
   "components": {
     "xr-kernel": {
       "repository": "https://github.com/bitsk/xr-kernel",
-      "commit": "17c485dd61c0708c3dd4ec7e9580fb527878129d"
+      "commit": "d1b890179227117d45757c6144af7c4e26b04ba1"
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
@@ -71,7 +71,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "1f2ba22b3fb4d41185b80b274689f595d96c073a"
+      "commit": "7af0b68ea846957ab372d2cf0be9b7464aa284c9"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
