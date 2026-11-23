@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "id": "a081-kernel",
+  "components": [
+    "xr-kernel",
+    "openkylin-xr-integration"
+  ],
+  "automatic_service_enable": false,
+  "automatic_device_install": false,
+  "hardware_validated": false
+}

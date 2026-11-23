@@ -98,10 +98,10 @@ def unpack(archive, destination, bundle):
             with output.open('xb') as target:
                 shutil.copyfileobj(data, target)
             output.chmod(entry['mode'] & 0o755)
-    if seen != {*expected, 'bundle.json'}:
+    if seen - {'bundle.json'} != set(expected):
         raise ValueError('Incomplete vendor archive')
 
-def fetch(lock_path, output, selected):
+def fetch(lock_path, output, selected, archives=None):
     lock = load_lock(lock_path)
     selected = selected or list(lock['bundles'])
     if len(selected) != len(set(selected)) or set(selected) - set(lock['bundles']):
@@ -122,7 +122,11 @@ def fetch(lock_path, output, selected):
             if relative(asset).name != asset:
                 raise ValueError('Invalid asset name')
             archive = downloads / asset
-            if lock.get('platform') == 'gitee':
+            if archives is not None:
+                archive = archives / asset
+                if not archive.is_file():
+                    raise ValueError('Missing offline vendor archive: ' + asset)
+            elif lock.get('platform') == 'gitee':
                 url = bundle['download_url']
                 if not url.startswith('https://gitee.com/'):
                     raise ValueError('Unsupported vendor download origin')
@@ -155,11 +159,12 @@ def main():
     parser.add_argument('--output', type=Path)
     parser.add_argument('--cache', type=Path)
     parser.add_argument('--bundle', action='append')
+    parser.add_argument('--archives', type=Path, help='Import pinned archives locally without downloading')
     args = parser.parse_args()
     if args.command == 'fetch':
         if args.output is None:
             parser.error('fetch requires --output')
-        artifacts = fetch(args.lock, args.output, args.bundle)
+        artifacts = fetch(args.lock, args.output, args.bundle, args.archives)
     else:
         if args.cache is None:
             parser.error('verify requires --cache')

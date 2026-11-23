@@ -73,8 +73,8 @@ XR SIG WiVRn 控制台的“连接后启动应用”可设为
 `systems/openkylin/source.lock.json` 固定官方桌面 ISO、长度和摘要。下载后核对官方 MD5 及锁定的 SHA-256，并把 SHA-256 写入 ISO 同名的 `.sha256` 文件：
 
 ```sh
-python3 tools/rootfs.py prepare --system openkylin --profile maintenance --source /archives/openkylin-arm64.iso --output /new/prepared
-python3 tools/rootfs.py assemble --system openkylin --profile maintenance --base-archive /new/prepared/rootfs.tar --package-manifest /new/mix-build/build-manifest.json --vendor-cache /new/mix-vendor-cache --output /new/bundle
+python3 tools/rootfs.py prepare --system openkylin --profile a081-kernel --source /archives/openkylin-arm64.iso --output /new/prepared
+python3 tools/rootfs.py assemble --system openkylin --profile a081-kernel --base-archive /new/prepared/rootfs.tar --package-manifest /new/mix-build/build-manifest.json --vendor-cache /new/mix-vendor-cache --output /new/bundle
 ```
 
 VR700 组装使用 `--device vr700`，默认选择 `vr700-kernel`。先用相应 profile 构建组件，再用所选型号的 `vendor.lock.json` 准备缓存。组装会检查内核包型号，并校验、装入该型号的功放和 ADSP 固件。
@@ -97,3 +97,5 @@ Wayland、D-Bus、输入法及其余组件配置仍使用原有私有目录和�
 `xr-build-components` 从这些 Git 快照构建，工作树中的未提交候选改动不会进入产物。
 
 HyperSpace 是 XR 空间桌面，Vultra 是其空间合成器，晴空是可选空间主题。系统正式名称为 **openKylin XR 空间智能版本**。WiVRn 入口清除本机设备控制提供者与设备资源选择，使用远端 OpenXR 能力；不会把 MIX 的相机或跟踪路径带入串流会话。
+
+离线缓存可用 `xr-vendor-cache fetch --lock MODEL_LOCK --archives ARCHIVES --output CACHE` 从本地发行归档导入，校验规则与在线下载一致。
