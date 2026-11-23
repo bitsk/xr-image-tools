@@ -7,7 +7,7 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "65ed9b1123906f2151a7be50f7e0ee5b818dc510",
+      "commit": "508d8fbea46eeb8ae101cf9b80d06bd775c14f90",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "d22e98bfca7b1b0ab9e224eab361192ad835a7d4c9444817c5c4faca0f767f46",
         "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
@@ -51,11 +51,11 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "470ae729da9870a6e64baea264ea00220f085e6e"
+      "commit": "2e665ee9c501e4384ebcf4d77053dd2de9fdcdd3"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "96ef3b79c77855de36b00fe453ab000fedcf4c59"
+      "commit": "94f0b3c5072c472acec9b34b679ffa87767fc614"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",
