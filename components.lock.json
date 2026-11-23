@@ -84,11 +84,11 @@
     },
     "xr-shell": {
       "repository": "https://github.com/bitsk/xr-shell",
-      "commit": "c734c622cf9942244d508966f8f6f71772c10272"
+      "commit": "9bcc6c3e5aa3f2016274cdf102ab92c9980bd322"
     },
     "xr-system-ui": {
       "repository": "https://github.com/bitsk/xr-system-ui",
-      "commit": "c9d8be34deaf02898e5d2d59b32b85f3a897dc98"
+      "commit": "9720e89e3bbf3492f154e62afe42c739d4706990"
     },
     "xr-spatial-kit": {
       "repository": "https://github.com/bitsk/xr-spatial-kit",
