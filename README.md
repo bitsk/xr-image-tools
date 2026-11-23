@@ -74,8 +74,10 @@ XR SIG WiVRn 控制台的“连接后启动应用”可设为
 
 ```sh
 python3 tools/rootfs.py prepare --system openkylin --profile maintenance --source /archives/openkylin-arm64.iso --output /new/prepared
-python3 tools/rootfs.py assemble --system openkylin --profile maintenance --base-archive /new/prepared/rootfs.tar --output /new/bundle
+python3 tools/rootfs.py assemble --system openkylin --profile maintenance --base-archive /new/prepared/rootfs.tar --package-manifest /new/mix-build/build-manifest.json --vendor-cache /new/mix-vendor-cache --output /new/bundle
 ```
+
+VR700 组装使用 `--device vr700`，默认选择 `vr700-kernel`。先用相应 profile 构建组件，再用所选型号的 `vendor.lock.json` 准备缓存。组装会检查内核包型号，并校验、装入该型号的功放和 ADSP 固件。
 
 主机需要 `xorriso` 与 `squashfs-tools-ng` 的 `sqfs2tar`。直接转换保留数值所有权、硬链接、权限和扩展属性，无需 root 或 fakeroot，也不会漏掉普通用户不可读取的源文件。官方 ARM64 ISO 的 ISO9660 大文件长度有 4 GiB 截断；适配器检查 squashfs 头和边界，恢复连续数据区后强制校验 ISO 内 SHA-256，任何不一致均停止。
 

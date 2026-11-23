@@ -2,7 +2,8 @@
   "schema": 1,
   "id": "vr700-kernel",
   "components": [
-    "xr-kernel"
+    "xr-kernel",
+    "openkylin-xr-integration"
   ],
   "automatic_service_enable": false,
   "automatic_device_install": false,

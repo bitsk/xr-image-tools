@@ -18,10 +18,22 @@ def key(s):
 integration_default=r.parent/'openkylin-xr-integration'
 if not integration_default.is_dir():integration_default=Path('/usr/lib/xr/openkylin-xr-integration')
 p=argparse.ArgumentParser();p.add_argument('--integration-root',type=Path,default=integration_default);p.add_argument('command',choices=['plan','prepare','assemble']);p.add_argument('--system',required=True,type=key);p.add_argument('--device',default='a081',type=key);p.add_argument('--profile',default='vr',type=key);p.add_argument('--source',help='prepare: mirror URL or existing source archive');p.add_argument('--base-archive',type=Path);p.add_argument('--artifacts',type=Path,help='JSON list of {source, destination, sha256} local artifacts');p.add_argument('--package-manifest',type=Path,help='Exact Git/deb manifest produced by xr-build-components');p.add_argument('--vendor-cache',type=Path,help='Verified cache downloaded with tools/vendor.py');p.add_argument('--output',type=Path);a=p.parse_args()
-adapter_path=r/'systems'/a.system;adapter=load(adapter_path/'adapter.json');model=load(a.integration_root/'devices'/a.device/'model.json');profile=load(r/'profiles'/(a.profile+'.json'));locks=load(r/'components.lock.json')
+adapter_path=r/'systems'/a.system
+adapter=load(adapter_path/'adapter.json')
+board=a.integration_root/'devices'/a.device
+model=load(board/'model.json')
 if a.system not in model['systems']:p.error('Model does not list this system adapter')
+is_openkylin=a.system=='openkylin'
+profile_id=key(a.profile or (model.get('openkylin_profile','vr') if is_openkylin else 'vr'))
+profile=load(r/'profiles'/(profile_id+'.json'))
+locks=load(r/'components.lock.json')
+recipes=load(r/'build-recipes.json')
 selected={n:locks['components'][n] for n in profile['components']}
-manifest={'schema':1,'system':adapter,'device':model,'profile':profile,'components':selected,'hardware_validated':False,'device_write_performed':False,'vendor_requirements':{'lock':str(Path('devices')/a.device/'vendor.lock.json'),'bundles':profile.get('vendor_bundles',[])},'vendor_included':False}
+board_packages=model.get('openkylin_packages',[]) if is_openkylin else []
+board_bundles=model.get('openkylin_vendor_bundles',[]) if is_openkylin else []
+vendor_bundles=list(dict.fromkeys([*profile.get('vendor_bundles',[]),*board_bundles]))
+vendor_lock=board/'vendor.lock.json'
+manifest={'schema':1,'system':adapter,'device':model,'profile':profile,'components':selected,'hardware_validated':False,'device_write_performed':False,'vendor_requirements':{'lock':str(Path('devices')/a.device/'vendor.lock.json'),'bundles':vendor_bundles},'vendor_included':False}
 if a.command=='plan':print(json.dumps(manifest,indent=2,ensure_ascii=False));sys.exit(0)
 if a.output is None or a.output.exists() or a.output.is_symlink():p.error('Choose a new output directory')
 if a.command=='prepare':
@@ -31,9 +43,17 @@ if a.command=='prepare':
 if a.base_archive is None or not a.base_archive.is_file():p.error('assemble requires an existing base archive')
 for name,lock in selected.items():
  if len(lock.get('commit',''))!=40:p.error('Need exact component commits: '+name)
+if board_packages:
+ kernel_recipe=recipes.get('profile_recipes',{}).get(profile_id,{}).get('xr-kernel',recipes['components']['xr-kernel'])
+ if 'xr-kernel' not in selected or kernel_recipe.get('device')!=a.device:p.error('Select a kernel profile for '+a.device)
+ if not a.package_manifest:p.error('Provide the locked board kernel and integration package manifest')
+if board_bundles and not a.vendor_cache:p.error('Provide a verified vendor cache for the board audio firmware')
+if a.package_manifest and board_packages:
+ package_build=load(a.package_manifest)
+ if package_build['profile']!=profile_id:p.error('Package manifest uses a different board build profile')
 items=load(a.artifacts) if a.artifacts else []
 if a.vendor_cache:
- items+=verify_cache(a.vendor_cache,a.integration_root/'devices'/a.device/'vendor.lock.json',profile.get('vendor_bundles',[]));manifest['vendor_included']=True;manifest['vendor_receipt']=load(a.vendor_cache/'receipt.json')
+ items+=verify_cache(a.vendor_cache,vendor_lock,vendor_bundles);manifest['vendor_included']=True;manifest['vendor_receipt']=load(a.vendor_cache/'receipt.json')
 validated=[]
 for item in items:
  src=Path(item['source']);dest=PurePosixPath(item['destination'])
@@ -41,9 +61,15 @@ for item in items:
  if not src.is_file() or src.is_symlink() or digest(src)!=item['sha256']:p.error('Artifact missing, symlink, or checksum mismatch')
  validated.append((src,str(dest),item['sha256']))
 a.output.mkdir(parents=True);base=a.output/('base'+''.join(a.base_archive.suffixes));shutil.copyfile(a.base_archive,base);members={}
-overlay_root=a.integration_root/'devices'/a.device/model['overlay']
-for q in overlay_root.rglob('*'):
- if q.is_file() and not q.is_symlink():members[str(q.relative_to(overlay_root))]=q
+overlay_roots=[board/model['overlay']]
+if model.get('shared_overlay'):
+ overlay_roots.insert(0,board.parent/model['shared_overlay'])
+for overlay_root in overlay_roots:
+ for q in overlay_root.rglob('*'):
+  if q.is_file() and not q.is_symlink():
+   dest=str(q.relative_to(overlay_root))
+   if dest in members:p.error('Duplicate overlay destination '+dest)
+   members[dest]=q
 for q,dest,_ in validated:
  if dest in members:p.error('Duplicate overlay destination '+dest)
  members[dest]=q
@@ -51,6 +77,6 @@ with tarfile.open(a.output/'overlay.tar','w',format=tarfile.PAX_FORMAT) as tf:
  for dest,q in sorted(members.items()):
   data=q.read_bytes();ti=tarfile.TarInfo(dest);ti.mode=q.stat().st_mode&0o777;ti.size=len(data);ti.uid=ti.gid=0;ti.mtime=0;tf.addfile(ti,io.BytesIO(data))
 if a.package_manifest:
- manifest['package_repository']=export_packages(a.package_manifest,a.output,selected,digest(r/'components.lock.json'),profile.get('packages',[]),[n for n in load(r/'build-recipes.json')['order'] if n in selected or n=='xr-image-tools'])
+ manifest['package_repository']=export_packages(a.package_manifest,a.output,selected,digest(r/'components.lock.json'),list(dict.fromkeys([*profile.get('packages',[]),*board_packages])),[n for n in recipes['order'] if n in selected or n=='xr-image-tools'])
 manifest.update(base_archive={'name':base.name,'sha256':digest(base),'metadata_preservation':'input archive copied byte-for-byte'},overlay={'name':'overlay.tar','sha256':digest(a.output/'overlay.tar')},artifacts=[{'destination':d,'sha256':h} for _,d,h in validated],status='composition bundle; system-specific preparation, native board packages, kernel image and device acceptance are separate gates')
 (a.output/'manifest.json').write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'bundle':str(a.output),'hardware_validated':False}))

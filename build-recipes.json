@@ -23,9 +23,9 @@
   ],
   "components": {
     "xr-kernel": {
-      "kind": "kernel-uapi",
-      "version": "7.3.0+xr3",
-      "kernel_release": "7.3.0-qiyu-mix-scheduling"
+      "kind": "kernel-device",
+      "device": "a081",
+      "version": "7.3.0+xr4"
     },
     "xr-hexagonrpc": {
       "kind": "debian"
@@ -190,7 +190,7 @@
       "xr-kernel": {
         "kind": "kernel-device",
         "device": "vr700",
-        "version": "7.3.0+xr.vr700.1"
+        "version": "7.3.0+xr.vr700.2"
       }
     }
   }
