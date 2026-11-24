@@ -17,6 +17,7 @@
         "include/xr/device/a081_camera_timing.hpp": "9269cb96cb8f8e005b0979e7db7d4efdac7eb7fb037b483ba73e757fbc65ba52",
         "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
         "include/xr/device/a081_controller_frame_export.hpp": "3ab03179a8efa52f1b7d13fe05d34f66b7420bd23578ca37b3c5bbe82357d891",
+        "include/xr/device/a081_controller_haptics.h": "830807999dc348a7be467b4c65ec0955d806b75c4507288ce755782e41a34765",
         "include/xr/device/a081_controller_input_wire.h": "c3561141a399eb6cb5a0bebf800b23ea896bc919398edda6bcc041ed2aed50e0",
         "include/xr/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
         "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
