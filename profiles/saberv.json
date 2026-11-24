@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "id": "saberv",
+  "components": [
+    "xr-spatial-kit",
+    "xr-monado",
+    "xr-shell",
+    "xr-wayland",
+    "xr-session-manager",
+    "openkylin-xr-integration"
+  ],
+  "packages": [
+    "rvvr-saberv",
+    "xr-shell",
+    "xr-window-server",
+    "xr-shell-session",
+    "xr-session-manager"
+  ],
+  "automatic_service_enable": false
+}

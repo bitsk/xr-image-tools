@@ -55,7 +55,8 @@
       "required_compiler_headers": [
         "xr/head/production-v2/a081_qvr_pose.h",
         "xr/head/production-v2/a081_tracking_wire.h",
-        "xr/head/production-v2/a081_tracking_client.h"
+        "xr/head/production-v2/a081_tracking_client.h",
+        "xr/device/a081_controller_haptics.h"
       ]
     },
     "xr-shell": {
@@ -191,6 +192,15 @@
         "kind": "kernel-device",
         "device": "vr700",
         "version": "7.3.0+xr.vr700.2"
+      }
+    },
+    "saberv": {
+      "xr-monado": {
+        "kind": "source"
+      },
+      "openkylin-xr-integration": {
+        "kind": "component-script",
+        "script": "applications/rvvr-saberv/build.py"
       }
     }
   }

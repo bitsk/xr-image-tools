@@ -181,13 +181,13 @@ activation_env=(
  "XDG_RUNTIME_DIR=$component_runtime" "XDG_CONFIG_HOME=$private/config"
  "XDG_STATE_HOME=$private/state" "XDG_CACHE_HOME=$private/cache"
  WAYLAND_DISPLAY=xr-wayland-0 XDG_SESSION_TYPE=wayland XDG_CURRENT_DESKTOP=UKUI
- QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland "QT_IM_MODULE=$qt_im_module" "GTK_IM_MODULE=$gtk_im_module" XMODIFIERS=
+ QT_QPA_PLATFORM=wayland QT_WAYLAND_SHELL_INTEGRATION=xdg-shell QT_QUICK_BACKEND=software GSK_RENDERER=cairo GTK_CSD=0 GDK_BACKEND=wayland "QT_IM_MODULE=$qt_im_module" "GTK_IM_MODULE=$gtk_im_module" XMODIFIERS=
  "PIPEWIRE_RUNTIME_DIR=$component_runtime" PIPEWIRE_REMOTE=pipewire-0
  "PULSE_RUNTIME_PATH=$component_runtime/pulse" "PULSE_SERVER=unix:$component_runtime/pulse/native" PULSE_COOKIE=
  "PULSE_CLIENTCONFIG=$private/config/pulse/client.conf" XR_SYSTEM_UI_ISOLATED_BUS=1
  "XR_SYSTEM_UI_PREFERENCES_FILE=$taskbar_preferences")
 dbus-update-activation-environment "${activation_env[@]}"
-record "XR_DESKTOP_ACTIVATION_ENV_PRIVATE=1 XR_DESKTOP_GTK_IM_MODULE=$gtk_im_module QT_QPA_PLATFORM=wayland GDK_BACKEND=wayland"
+record "XR_DESKTOP_ACTIVATION_ENV_PRIVATE=1 XR_DESKTOP_GTK_IM_MODULE=$gtk_im_module QT_QPA_PLATFORM=wayland QT_WAYLAND_SHELL_INTEGRATION=xdg-shell QT_QUICK_BACKEND=software GSK_RENDERER=cairo GTK_CSD=0 GDK_BACKEND=wayland"
 
 for binary in xr-shell xr-window-server xr-dock xr-system-ui; do
  [[ -x $prefix/bin/$binary ]] || { record "Missing component: $prefix/bin/$binary"; exit 1; }

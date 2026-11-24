@@ -1,3 +1,39 @@
+xr-image-tools (0.2.10) unstable; urgency=medium
+
+  * Pass the foreground recenter mailbox and native audio endpoint to XR applications.
+
+ -- bits <bigbits@hackx.cc>  Mon, 23 Nov 2026 01:00:44 +0800
+
+xr-image-tools (0.2.9) unstable; urgency=medium
+
+  * Launch installed immersive applications in the active native scene.
+
+ -- bits <bigbits@hackx.cc>  Sun, 22 Nov 2026 23:36:48 +0800
+
+xr-image-tools (0.2.8) unstable; urgency=medium
+
+  * Pin application content refresh handling.
+
+ -- bits <bigbits@hackx.cc>  Thu, 19 Nov 2026 00:51:17 +0800
+
+xr-image-tools (0.2.7) unstable; urgency=medium
+
+  * Pin application activation and visible startup failure fixes.
+
+ -- bits <bigbits@hackx.cc>  Thu, 19 Nov 2026 00:38:54 +0800
+
+xr-image-tools (0.2.6) unstable; urgency=medium
+
+  * Pin the fully verified desktop application backend policies.
+
+ -- bits <bigbits@hackx.cc>  Thu, 19 Nov 2026 00:35:32 +0800
+
+xr-image-tools (0.2.5) unstable; urgency=medium
+
+  * Keep private bus activation and direct application display environments consistent.
+
+ -- bits <bigbits@hackx.cc>  Thu, 19 Nov 2026 00:23:15 +0800
+
 xr-image-tools (0.2.4) unstable; urgency=medium
 
   * Keep current build contracts ahead of component SDK flags and verify actual
