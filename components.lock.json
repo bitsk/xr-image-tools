@@ -92,7 +92,7 @@
     },
     "xr-spatial-kit": {
       "repository": "https://github.com/bitsk/xr-spatial-kit",
-      "commit": "b60cf4f0aeaa59b7ca67f4ce171ecb7ee4807f25"
+      "commit": "2e0b821434de74b140ccbf009355f8ba77488681"
     },
     "xr-dock": {
       "repository": "https://github.com/bitsk/xr-dock",
