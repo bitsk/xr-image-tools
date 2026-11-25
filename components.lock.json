@@ -3,7 +3,7 @@
   "components": {
     "xr-kernel": {
       "repository": "https://github.com/bitsk/xr-kernel",
-      "commit": "4d069c82a71a33e263730aaad51954d4bc6a5a84"
+      "commit": "5696b3e2c9c3819826b4490d7daa585aed5cf56a"
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
