@@ -1,0 +1,9 @@
+Package: xr-slicer-virtualreality
+Version: 0.1.0~candidate7-ok1
+Architecture: arm64
+Section: science
+Priority: optional
+Maintainer: openKylin XR Demo Packaging <packaging@lists.openkylin.top>
+Depends: xr-slicer-spine (= 0.1.0~candidate1-ok1), libopenxr-loader1
+Description: SlicerVirtualReality OpenXR backend for the ARM64 spine CT demo
+ Includes SlicerVirtualReality and its matching VTK 9.6 OpenXR render modules.

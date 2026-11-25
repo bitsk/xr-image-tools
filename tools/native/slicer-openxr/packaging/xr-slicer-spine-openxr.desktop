@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=3D Slicer Spine CT OpenXR
+Name[zh_CN]=3D Slicer 脊柱 CT OpenXR
+Exec=/usr/bin/xr-shell-session --launch-application xr-slicer-spine-openxr
+Categories=Science;MedicalSoftware;
+X-XR-Immersive=true
+Terminal=false

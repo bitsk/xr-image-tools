@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+test -r "${XR_RUNTIME_JSON:?Launch from HyperSpace}"
+root=/usr/lib/xr-slicer-virtualreality
+export QT_QPA_PLATFORM=offscreen
+export PYTHONUNBUFFERED=1
+export XR_ENABLE_API_LAYERS=XR_APILAYER_QIYU_lifecycle
+export LD_LIBRARY_PATH="$root/lib/Slicer-5.11:$root/lib/Slicer-5.11/qt-loadable-modules${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+exec /usr/lib/xr-slicer-spine/runtime/Slicer --no-splash \
+ --additional-module-paths "$root/lib/Slicer-5.11/qt-loadable-modules" \
+ --python-script /usr/share/xr-slicer-virtualreality/OpenSpineXR.py

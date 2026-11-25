@@ -1,0 +1,14 @@
+--- a/Rendering/OpenXR/vtkOpenXRRenderWindow.cxx
++++ b/Rendering/OpenXR/vtkOpenXRRenderWindow.cxx
+@@ -278,0 +279,6 @@
++  this->MakeCurrent();
++  this->ReleaseGraphicsResources(this);
++
++  // The runtime retains the GLX display and context until session destruction.
++  vtkOpenXRManager::GetInstance().Finalize();
++
+@@ -283,4 +288,0 @@
+-
+-  vtkOpenXRManager::GetInstance().Finalize();
+-
+-  this->ReleaseGraphicsResources(this);

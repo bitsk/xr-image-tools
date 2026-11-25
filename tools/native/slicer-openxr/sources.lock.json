@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "inputs": [
+    {
+      "name": "Slicer",
+      "url": "https://github.com/guozijn/Slicer/archive/a087af0.tar.gz",
+      "sha256": "85e3195ba7d75e16d2acb71dd7e65a8f3fdc905bc0b585a31cc1efd151aa706e"
+    },
+    {
+      "name": "VTK",
+      "url": "https://github.com/Slicer/VTK/archive/a0bea7a6f58008e3599142594d9f9c8845618645.tar.gz",
+      "sha256": "900151cb923d96777d6d62efd2db2f3f3a515957d1a20d6a63edba87b6da2155"
+    },
+    {
+      "name": "CTK",
+      "url": "https://github.com/commontk/CTK/archive/549a5b7b72f7b63a70ad91f6d183c7728511f794.tar.gz",
+      "sha256": "8700148e8cc0e7dd1aa301a875513777bccf4e2b3c1ebaed4647307f8fab2321"
+    },
+    {
+      "name": "vtkAddon",
+      "url": "https://github.com/Slicer/vtkAddon/archive/2ed3e2226cf25958b4dbf8bf917b2f7793ecd6a2.tar.gz",
+      "sha256": "e9f9a46f991413f37e666feb06ebe3608aa62651d29e42226a63227906a517d6"
+    },
+    {
+      "name": "SlicerVirtualReality",
+      "git": "https://github.com/KitwareMedical/SlicerVirtualReality.git",
+      "commit": "20bfed075f519aab84e295a73507ef9811061194"
+    },
+    {
+      "name": "Slicer ARM64 runtime",
+      "url": "https://github.com/guozijn/Slicer/releases/download/v5.11.0-2026-04-28-linux-aarch64/Slicer-5.11.0-2026-04-28-linux-aarch64.tar.gz",
+      "sha256": "944f3031f1c4840f08eb72edcdc17fb56b6f9ee82dd468a88636a46b64d17359"
+    }
+  ]
+}
