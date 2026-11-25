@@ -19,9 +19,14 @@
     "xr-session-manager",
     "xr-debug-console",
     "xr-image-tools",
-    "openkylin-xr-integration"
+    "openkylin-xr-integration",
+    "xr-cinema"
   ],
   "components": {
+    "xr-cinema": {
+      "kind": "component-script",
+      "script": "packaging/build-component.py"
+    },
     "xr-kernel": {
       "kind": "kernel-device",
       "device": "a081",

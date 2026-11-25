@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "id": "cinema",
+  "components": ["xr-cinema"],
+  "packages": ["xr-cinema"],
+  "automatic_service_enable": false
+}
