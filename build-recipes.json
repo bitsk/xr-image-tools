@@ -30,7 +30,7 @@
     "xr-kernel": {
       "kind": "kernel-device",
       "device": "a081",
-      "version": "7.3.0+xr6"
+      "version": "7.3.0+xr7"
     },
     "xr-hexagonrpc": {
       "kind": "debian"
