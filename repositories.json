@@ -275,6 +275,18 @@
         "xr-window-server"
       ],
       "local_path": "xr-wayland"
+    },
+    {
+      "repository": "xr-cinema",
+      "url": "https://github.com/bitsk/xr-cinema",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-cinema"
+      ],
+      "binary_packages": [
+        "xr-cinema"
+      ],
+      "local_path": "xr-cinema"
     }
   ]
 }

@@ -110,6 +110,10 @@
     "xr-vendor-assets": {
       "repository": "https://github.com/bitsk/xr-vendor-assets",
       "commit": "ec89d3abde457308f57acc1e51be6a59f82889fc"
+    },
+    "xr-cinema": {
+      "repository": "https://github.com/bitsk/xr-cinema",
+      "commit": "16ca8d36e9453e85f65295879dca6221484af3d0"
     }
   }
 }
