@@ -27,3 +27,5 @@ profile['runtime_environment'].update(TU_DEBUG='a081-ccu-depth',
 path.write_text(json.dumps(profile, indent=2) + '\n')
 PY
 systemctl set-default mix-alpha-xr.target
+# The distribution package hooks can log the build container's hostname.
+find /var/log -type f -delete
