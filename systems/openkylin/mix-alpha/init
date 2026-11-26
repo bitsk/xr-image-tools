@@ -61,6 +61,18 @@ setup_usb() (
 )
 setup_usb || echo 'MIX Alpha: USB console unavailable' >/dev/kmsg
 
+# Preserve a small executable initramfs for shutting the nested filesystems down.
+mkdir -p /run/initramfs
+mount -t tmpfs -o mode=0755 tmpfs /run/initramfs || fail 'shutdown tmpfs'
+for dir in bin lib dev proc sys run oldroot store; do mkdir "/run/initramfs/$dir" || fail 'shutdown directories'; done
+cp /bin/busybox /run/initramfs/bin/ && ln -s busybox /run/initramfs/bin/sh &&
+    cp /lib/ld-linux-aarch64.so.1 /lib/libc.so.6 /lib/libresolv.so.2 /run/initramfs/lib/ &&
+    cp /shutdown /run/initramfs/shutdown || fail 'shutdown payload'
+echo "$loop" >/run/initramfs/root-loop
+cat "/sys/class/block/${store##*/}/dev" >/run/initramfs/store-devnum || fail 'osstore block identity'
+# osstore remains busy as long as loop0 has its backing file open.
+mkdir -p /run/systemd/system/osstore.mount.d
+printf '[Unit]\nDefaultDependencies=no\n' >/run/systemd/system/osstore.mount.d/10-initrd.conf
 mount --move /store /newroot/osstore || fail osstore
 for fs in dev sys proc run; do
     mount --move "/$fs" "/newroot/$fs" || fail "$fs"

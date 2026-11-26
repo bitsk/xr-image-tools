@@ -1,6 +1,6 @@
 # A081 Alpha distribution layout
 
-The installation consists of a writable 24 GiB ext4 image in an existing ext4 GPT partition named `osstore`, and an A081 Android-format recovery image in `recovery_b`. The boot script resolves the partition by name. The end-user instructions are in [the installation guide](https://github.com/bitsk/openkylin-xr-docs/blob/main/wiki/mix-spatial-alpha.md).
+The installation consists of a writable 24 GiB ext4 image in an existing ext4 GPT partition named `osstore`, and an A081 Android-format recovery image in `recovery_b`. The boot script resolves the partition by name. A shutdown initramfs moves the backing mount out of the old root by its block device number, unmounts the inner root, detaches the loop and unmounts osstore before poweroff or reboot. The end-user instructions are in [the installation guide](https://github.com/bitsk/openkylin-xr-docs/blob/main/wiki/mix-spatial-alpha.md).
 
 Build in a disposable ARM64 root extracted with numeric ownership, hard links and xattrs from the desktop ISO pinned in `../source.lock.json`. Stage the release packages exported by the component builder for the vr-hands, cinema and saberv profiles. Use the package receipts and compiler-header audits for the selected source commits. Keep the matching system Mesa, kbd, v4l-utils and ARM64 Vulkan loader installed.
 

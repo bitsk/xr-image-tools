@@ -1,0 +1,37 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Called by systemd-shutdown after switching from the ext4 root to this tmpfs.
+export PATH=/bin
+/bin/busybox --install -s /bin
+[ -r /proc/mounts ] || mount -t proc proc /proc
+[ -d /sys/class ] || mount -t sysfs sysfs /sys
+[ -c /dev/null ] || mount -t devtmpfs devtmpfs /dev
+finish() {
+    sync
+    case "$1" in
+        poweroff) poweroff -f ;;
+        halt) halt -f ;;
+        *) reboot -f ;;
+    esac
+    while :; do sleep 60; done
+}
+cd /
+mount --make-rprivate /
+# systemd may have moved the busy backing mount under /run/shutdown/mounts.
+# Its kernel device number remains stable across this pivot.
+outer=$(awk -v dev="$(cat /store-devnum)" '$3 == dev && $5 ~ /^\/oldroot\// {print $5; exit}' /proc/self/mountinfo)
+if [ -z "$outer" ] || ! mount --move "$outer" /store; then
+    echo 'MIX Alpha: cannot transfer osstore to shutdown initramfs' >/dev/console
+    finish "$1"
+fi
+# Release submounts from the deepest down before unmounting the loop root.
+awk '$2 ~ /^\/oldroot\// {n=split($2,p,"/"); print n, $2}' /proc/mounts |
+    sort -rn | while read -r depth path; do umount "$(printf '%b' "$path")"; done
+sync
+if umount /oldroot && losetup -d "$(cat /root-loop)" && umount /store; then
+    echo 'MIX Alpha: root loop and osstore unmounted cleanly' >/dev/console
+else
+    echo 'MIX Alpha: incomplete shutdown of storage' >/dev/console
+    awk '$5 == "/oldroot" || $5 == "/store" || $5 ~ /^\/oldroot\//' /proc/self/mountinfo >/dev/console
+fi
+finish "$1"

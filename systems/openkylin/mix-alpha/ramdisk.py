@@ -16,6 +16,7 @@ a = p.parse_args()
 root = a.root.resolve()
 files = {
     '/init': (Path(__file__).with_name('init').resolve(), '0755'),
+    '/shutdown': (Path(__file__).with_name('shutdown').resolve(), '0755'),
     '/bin/busybox': (root / 'usr/bin/busybox', '0755'),
     '/lib/ld-linux-aarch64.so.1': (root / 'usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1', '0755'),
 }
