@@ -1,0 +1,78 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -eu
+[ "${MIX_IMAGE_BUILD:-}" = 1 ] && [ ! -d /run/systemd/system ] || exit 1
+seed=/opt/mix-vr-shell-controller
+capsule=/opt/mix-alpha-xr
+stock=/opt/mix-controller-pose-stock
+vendor=/usr/lib/aarch64-linux-gnu/xr/vendor/a081
+mkdir -p "$seed/tracking/stock-runtime" "$seed/plans" /etc/xr
+cp -a "$vendor/tracking/qcom" "$seed/tracking/stock-runtime/"
+cp /usr/share/xr/session-manager/plans/controller-snpe-dsp.json "$seed/plans/"
+sed '/<SFConfig>/a\    <CvpConfig enable="false" />' /usr/share/xr/a081/tracking/config6.xml >"$seed/tracking/config6-cvp-disabled.xml"
+python3 - <<'PY'
+import json
+from pathlib import Path
+p = json.loads(Path('/usr/share/xr/session-manager/profiles/openkylin-xr.example.json').read_text())
+icds = list(Path('/usr/share/vulkan/icd.d').glob('freedreno_icd*.json'))
+assert len(icds) == 1, icds
+p.update(system_icd=str(icds[0]), runtime_library_paths=['/usr/lib/aarch64-linux-gnu/xr-mesa'],
+         kms_icd='/usr/lib/aarch64-linux-gnu/xr-mesa/icd.d/freedreno_icd.aarch64.json')
+assert Path(p['kms_icd']).is_file()
+for key in ('example_not_device_verified', 'deployment_note'):
+    p.pop(key, None)
+Path('/tmp/mix-source-profile.json').write_text(json.dumps(p))
+PY
+xr-session configure --profile /tmp/mix-source-profile.json --output /etc/xr/session.json --capsule "$capsule"
+rm -r "$seed"
+mkdir -p "$capsule/tracking/input-config" "$capsule/tracking/stock-runtime/qcom/dsp/slpi"
+cp -a "$vendor/controller-root" "$stock"
+mkdir -p "$stock/proc" "$stock/dev" "$stock/sys/firmware/devicetree/base" "$stock/data/local/tmp" "$stock/tmp" "$stock/mnt/vendor/persist/qvr" "$stock/system/bin" /opt/mix-steamvr
+touch "$stock/system/bin/a081-controller-sdk-probe"
+printf '%s\n' '{"source":"firmware-xr-a081-tracking","calibration":"local-device"}' >"$stock/manifest.json"
+printf '%s\n' '{"steamvr":{"forcedDriver":"monado","requireHmd":true}}' >/opt/mix-steamvr/settings.json
+install -d /etc/systemd/system/a081-sensors-files.service.d /usr/local/libexec
+cat >/etc/systemd/system/a081-sensors-files.service.d/10-mix-alpha.conf <<'UNIT'
+[Unit]
+After=mix-alpha-calibration.service
+ConditionPathExists=/usr/share/qcom/sm8250/iqiyi/a081/sensors/registry
+[Service]
+ExecStart=
+ExecStart=/usr/bin/xr-hexagonrpcd -f /dev/fastrpc-sdsp -s -R /usr/share/qcom/sm8250/iqiyi/a081
+UNIT
+cat >/usr/local/libexec/mix-alpha-calibration <<'SCRIPT'
+#!/bin/sh
+set -eu
+src=/osstore/systems/openkylin-alpha/local-device
+dst=/usr/share/qcom/sm8250/iqiyi/a081
+if [ -s "$src/device_calibration.xml" ]; then
+    install -m 0600 "$src/device_calibration.xml" /opt/mix-alpha-xr/tracking/input-config/calibration.xml
+    install -m 0600 "$src/device_calibration.xml" /opt/mix-controller-pose-stock/mnt/vendor/persist/qvr/device_calibration.xml
+fi
+if [ -d "$src/slpi" ]; then
+    for name in libsns_low_lat_stream_skel.so fastrpc_shell_2; do
+        if [ -s "$src/slpi/$name" ]; then
+            install -m 0644 "$src/slpi/$name" "/opt/mix-alpha-xr/tracking/stock-runtime/qcom/dsp/slpi/$name"
+        fi
+    done
+fi
+if [ -d "$src/sensors/registry" ]; then
+    install -d -m 0755 "$dst/sensors/registry" "$dst/socinfo"
+    cp -a "$src/sensors/registry/." "$dst/sensors/registry/"
+    [ ! -d "$src/socinfo" ] || cp -a "$src/socinfo/." "$dst/socinfo/"
+fi
+SCRIPT
+chmod 0755 /usr/local/libexec/mix-alpha-calibration
+cat >/etc/systemd/system/mix-alpha-calibration.service <<'UNIT'
+[Unit]
+Description=Load this headset's local factory calibration
+After=local-fs.target
+Before=a081-sensors-files.service
+ConditionPathIsDirectory=/osstore/systems/openkylin-alpha/local-device
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/mix-alpha-calibration
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl enable mix-alpha-calibration.service a081-sensors-files.service

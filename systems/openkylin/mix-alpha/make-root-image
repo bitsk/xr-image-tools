@@ -1,0 +1,22 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -eu
+if [ "$#" -ne 2 ] || [ "$(id -u)" -ne 0 ]; then
+    echo "Usage (as root): make-root-image SEALED_ARM64_ROOT NEW_IMAGE" >&2
+    exit 2
+fi
+root=$(realpath "$1")
+destination=$(realpath -m "$2")
+case "$destination" in "$root"|"$root"/*) exit 2;; esac
+[ "$root" != / ] && [ ! -e "$destination" ] && [ ! -L "$destination" ] || exit 1
+grep -qx a081-openkylin-3.0-arm64 "$root/etc/a081-rootfs-id"
+[ ! -s "$root/etc/machine-id" ] && [ ! -d "$root/sysroot/ostree" ] || exit 1
+[ ! -e "$root/opt/mix-alpha-xr/tracking/input-config/calibration.xml" ]
+work=$(mktemp -d "$(dirname "$destination")/.mix-alpha-image.XXXXXX")
+trap 'rm -f "$work/root.img"; rmdir "$work"' EXIT
+truncate -s 24G "$work/root.img"
+mke2fs -qF -t ext4 -b 4096 -L MIX-ALPHA -m 1 \
+    -E lazy_itable_init=0,lazy_journal_init=0 -d "$root" "$work/root.img"
+e2fsck -fn "$work/root.img"
+chmod 0644 "$work/root.img"
+ln "$work/root.img" "$destination"

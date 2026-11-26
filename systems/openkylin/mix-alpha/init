@@ -1,0 +1,68 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# The Alpha recovery boots its own image on an existing A081 osstore.
+export PATH=/bin
+/bin/busybox --install -s /bin
+fail() {
+    echo "MIX Alpha: $*" >/dev/kmsg
+    sync
+    sleep 8
+    reboot -f
+    while :; do sleep 60; done
+}
+mount -t devtmpfs devtmpfs /dev || exit 1
+mount -t proc proc /proc || fail proc
+mount -t sysfs sysfs /sys || fail sysfs
+mount -t tmpfs -o mode=0755 tmpfs /run || fail run
+tr '\000' '\n' </proc/device-tree/compatible | grep -qx 'iqiyi,a081' || fail 'model mismatch'
+
+# Use the GPT partition name. Filesystem and partition UUIDs vary by installation.
+store=
+tries=0
+while [ -z "$store" ] && [ "$tries" -lt 60 ]; do
+    for entry in /sys/class/block/*/uevent; do
+        grep -qx 'PARTNAME=osstore' "$entry" || continue
+        [ -z "$store" ] || fail 'multiple osstore partitions'
+        name=${entry%/uevent}
+        store=/dev/${name##*/}
+    done
+    [ -n "$store" ] || sleep 1
+    tries=$((tries+1))
+done
+[ -b "$store" ] || fail 'osstore unavailable'
+mount -t ext4 -o noatime "$store" /store || fail 'cannot mount osstore'
+payload=/store/systems/openkylin-alpha/rootfs.img
+[ -f "$payload" ] && [ ! -L "$payload" ] || fail 'missing rootfs.img'
+loop=$(losetup -f) || fail 'no loop device'
+losetup "$loop" "$payload" || fail 'cannot attach root image'
+mount -t ext4 -o noatime "$loop" /newroot || fail 'invalid root filesystem'
+[ "$(cat /newroot/etc/a081-rootfs-id)" = a081-openkylin-3.0-arm64 ] &&
+    [ -x /newroot/sbin/init ] || fail 'wrong root image'
+
+# A local login console for setup. Authentication is handled by agetty/login.
+setup_usb() (
+    set -e
+    mount -t configfs configfs /sys/kernel/config
+    g=/sys/kernel/config/usb_gadget/a081
+    [ -d /sys/kernel/config/usb_gadget ] || exit 1
+    mkdir "$g"
+    cd "$g"
+    echo 0x18d1 > idVendor
+    echo 0x4ee7 > idProduct
+    mkdir -p strings/0x409 configs/c.1 functions/acm.usb0
+    echo 'MIX' > strings/0x409/manufacturer
+    echo 'openKylin MIX Alpha' > strings/0x409/product
+    ln -s "$g/functions/acm.usb0" configs/c.1/acm.usb0
+    for ctl in /sys/class/udc/*; do
+        [ -e "$ctl" ] || continue
+        echo "${ctl##*/}" > UDC
+        break
+    done
+)
+setup_usb || echo 'MIX Alpha: USB console unavailable' >/dev/kmsg
+
+mount --move /store /newroot/osstore || fail osstore
+for fs in dev sys proc run; do
+    mount --move "/$fs" "/newroot/$fs" || fail "$fs"
+done
+exec switch_root /newroot /sbin/init

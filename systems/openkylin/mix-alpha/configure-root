@@ -1,0 +1,76 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Run in the disposable official filesystem, before packing its ext4 image.
+set -eu
+[ "${MIX_IMAGE_BUILD:-}" = 1 ] && [ ! -d /run/systemd/system ] &&
+    [ "$(dpkg --print-architecture)" = arm64 ] &&
+    grep -qx 'ID=openkylin' /usr/lib/os-release &&
+    grep -qx 'VERSION_ID="3.0"' /usr/lib/os-release || exit 1
+board=/usr/lib/xr/openkylin-xr-integration/devices/a081
+[ -f "$board/model.json" ]
+[ ! -e /etc/a081-rootfs-id ]
+printf '%s\n' a081-openkylin-3.0-arm64 >/etc/a081-rootfs-id
+printf '%s\n' mix-openkylin >/etc/hostname
+printf '%s\n' '127.0.0.1 localhost' '127.0.1.1 mix-openkylin' '::1 localhost ip6-localhost' >/etc/hosts
+printf '%s\n' '# Root and /osstore are mounted by the MIX Alpha ramdisk.' >/etc/fstab
+mkdir -p /osstore /etc/lightdm/lightdm.conf.d /etc/systemd/system /etc/NetworkManager/conf.d
+cp "$board/network/10-a081-wlan.link" /etc/systemd/network/
+printf '[main]\ndns=systemd-resolved\nrc-manager=symlink\n' >/etc/NetworkManager/conf.d/10-a081-dns.conf
+ln -sfn ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+if getent passwd 1000 >/dev/null; then echo 'Unexpected desktop account in base' >&2; exit 1; fi
+useradd -m -U -u 1000 -s /bin/bash -G sudo,audio,input,render,video mix
+passwd -l root
+install -d /usr/local/libexec
+cat > /usr/local/libexec/mix-alpha-account <<'SCRIPT'
+#!/bin/sh
+set -eu
+file=/osstore/systems/openkylin-alpha/mix-password.sha512
+[ -f "$file" ] && [ ! -L "$file" ]
+[ "$(wc -l <"$file")" -eq 1 ]
+LC_ALL=C grep -Eq '^\$6\$[./0-9A-Za-z]{1,16}\$[./0-9A-Za-z]{86}$' "$file"
+{ printf 'mix:'; cat "$file"; } | chpasswd -e
+rm "$file"
+SCRIPT
+chmod 0755 /usr/local/libexec/mix-alpha-account
+cat > /etc/systemd/system/mix-alpha-account.service <<'UNIT'
+[Unit]
+Description=Apply the password chosen during MIX installation
+After=local-fs.target
+Before=display-manager.service serial-getty@ttyGS0.service
+ConditionPathExists=/osstore/systems/openkylin-alpha/mix-password.sha512
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/mix-alpha-account
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl enable mix-alpha-account.service
+printf '[Seat:*]\nautologin-user=mix\nautologin-user-timeout=0\nuser-session=kylin-wlcom\nautologin-session=kylin-wlcom\n' >/etc/lightdm/lightdm.conf.d/90-mix-alpha.conf
+for path in /usr/lib/systemd/system/casper*.service /usr/lib/systemd/system/ostree-*.service /usr/lib/systemd/system/ostree-*.path; do
+    [ ! -e "$path" ] || ln -sfn /dev/null "/etc/systemd/system/${path##*/}"
+done
+for unit in grub-common.service grub-initrd-fallback.service kylin-fix-boot-grub.service kylin-os-installer.service open-vm-tools.service vgauth.service dnsmasq.service smartmontools.service a081-usb-console.service; do
+    ln -sfn /dev/null "/etc/systemd/system/$unit"
+done
+systemctl enable NetworkManager.service systemd-resolved.service a081-thermal-profile.service bluetooth.service serial-getty@ttyGS0.service
+systemctl set-default graphical.target
+# The ISO's second, immutable desktop deployment is unused by the writable ext4 root.
+rm -rf /sysroot/ostree
+: >/etc/machine-id
+mkdir -p /var/lib/dbus
+ln -sfn /etc/machine-id /var/lib/dbus/machine-id
+rm -f /var/lib/systemd/random-seed /var/lib/systemd/credential.secret /var/lib/NetworkManager/secret_key /etc/ssh/ssh_host_* /var/cache/apt/archives/*.deb
+find /var/log -type f -delete
+find /tmp /var/tmp -mindepth 1 -delete
+rm -rf /root/.ssh /root/.cache /var/lib/apt/lists/* /var/log/journal/* /root/.bash_history /eth/ostree
+rm -f /ostree /usr/sbin/policy-rc.d /etc/rc.local
+find /run -mindepth 1 -delete
+find /etc/NetworkManager/system-connections /var/lib/NetworkManager -type f -delete
+# Keep the normal signed distribution repositories. Proposed was used for a matched Mesa/media set.
+rm -f /etc/apt/sources.list.d/mix-build.list /etc/apt/preferences.d/mix-build
+printf '%s\n' 'update_initramfs=yes' >/etc/initramfs-tools/update-initramfs.conf
+# The desktop base permits the syslog group to create files in /var/log.
+sed -i '/^include \/etc\/logrotate.d/i su root syslog' /etc/logrotate.conf
+if grep -qx 'ENABLED=0' /etc/default/motd-news; then
+    systemctl mask motd-news.timer motd-news.service
+fi
