@@ -287,6 +287,18 @@
         "xr-cinema"
       ],
       "local_path": "xr-cinema"
+    },
+    {
+      "repository": "xr-files",
+      "url": "https://github.com/bitsk/xr-files",
+      "maintenance": "component",
+      "source_packages": [
+        "xr-files"
+      ],
+      "binary_packages": [
+        "xr-files"
+      ],
+      "local_path": "xr-files"
     }
   ]
 }

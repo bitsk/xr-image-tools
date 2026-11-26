@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "id": "files",
+  "components": ["xr-files"],
+  "packages": ["xr-files"],
+  "automatic_service_enable": false
+}

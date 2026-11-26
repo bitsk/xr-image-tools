@@ -20,10 +20,15 @@
     "xr-debug-console",
     "xr-image-tools",
     "openkylin-xr-integration",
-    "xr-cinema"
+    "xr-cinema",
+    "xr-files"
   ],
   "components": {
     "xr-cinema": {
+      "kind": "component-script",
+      "script": "packaging/build-component.py"
+    },
+    "xr-files": {
       "kind": "component-script",
       "script": "packaging/build-component.py"
     },
