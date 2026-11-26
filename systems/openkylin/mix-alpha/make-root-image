@@ -12,6 +12,10 @@ case "$destination" in "$root"|"$root"/*) exit 2;; esac
 grep -qx a081-openkylin-3.0-arm64 "$root/etc/a081-rootfs-id"
 [ ! -s "$root/etc/machine-id" ] && [ ! -d "$root/sysroot/ostree" ] || exit 1
 [ ! -e "$root/opt/mix-alpha-xr/tracking/input-config/calibration.xml" ]
+[ "$(readlink "$root/etc/systemd/system/default.target")" = /etc/systemd/system/mix-alpha-xr.target ]
+[ -x "$root/var/opt/steamvr/bin/linuxarm64/vrcompositor" ]
+[ -x "$root/usr/bin/gamescope" ] && [ -x "$root/usr/bin/gamescopereaper" ] || exit 1
+[ -x "$root/usr/lib/aarch64-linux-gnu/xr/monado/pose-watch" ]
 work=$(mktemp -d "$(dirname "$destination")/.mix-alpha-image.XXXXXX")
 trap 'rm -f "$work/root.img"; rmdir "$work"' EXIT
 truncate -s 24G "$work/root.img"

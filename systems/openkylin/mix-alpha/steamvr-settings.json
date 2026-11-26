@@ -1,0 +1,21 @@
+{
+  "steamvr": {
+    "forcedDriver": "monado",
+    "requireHmd": true,
+    "activateMultipleDrivers": false,
+    "enableHomeApp": false,
+    "enableLinuxVulkanAsync": true,
+    "allowFallbackMirrorWindowLinux": true,
+    "displayDebug": true,
+    "displayDebugX": 0,
+    "displayDebugY": 0,
+    "preferredRefreshRate": 72,
+    "motionSmoothing": false
+  },
+  "driver_monado": {"enable": true},
+  "driver_cv": {"enable": false},
+  "driver_deckard": {"enable": false},
+  "driver_frame_hmd": {"enable": false},
+  "driver_frame_controller": {"enable": false},
+  "power": {"pauseCompositorOnStandby": false}
+}

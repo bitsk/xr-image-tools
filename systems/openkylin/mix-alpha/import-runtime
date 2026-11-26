@@ -1,0 +1,25 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Import the matched ARM64 userspace from the clean, verified upstream archive.
+set -eu
+[ "$#" -eq 2 ] && [ "$(id -u)" -eq 0 ] || exit 2
+adapter=$(dirname "$(realpath "$0")")
+archive=$(realpath "$1")
+root=$(realpath "$2")
+[ "$root" != / ] && [ -d "$root/usr/lib/aarch64-linux-gnu" ] || exit 2
+echo "fbee6c8ec2c3e388686d34a27511e2f9561499239f1452e1f64f9ad6fa67fe2f  $archive" | sha256sum -c -
+private="$root/usr/lib/aarch64-linux-gnu/mix-xr-runtime"
+mkdir -p "$private"
+tar --zstd --warning=no-unknown-keyword -xf "$archive" -C "$root" --transform='flags=r;s,^opt/steamvr,var/opt/steamvr,' \
+    opt/steamvr usr/bin/gamescope usr/bin/gamescopereaper usr/share/gamescope \
+    usr/share/licenses/libavif usr/share/licenses/luajit usr/share/licenses/rav1e \
+    usr/share/licenses/libyuv usr/share/licenses/pixman
+install -D -m 0644 "$adapter/gamescope.LICENSE" "$root/usr/share/licenses/gamescope/LICENSE"
+# The runtime needs older ABIs than the desktop provides. Keep these local to the XR session.
+set -- libavif.so.16.0.4 libluajit-5.1.so.2.1.1713773202 librav1e.so.0.7.1 libyuv.so libpixman-1.so.0.46.4
+tar --zstd --warning=no-unknown-keyword -xf "$archive" -C "$private" --strip-components=2 \
+    "usr/lib/$1" "usr/lib/$2" "usr/lib/$3" "usr/lib/$4" "usr/lib/$5"
+ln -sfn "$1" "$private/libavif.so.16"
+ln -sfn "$2" "$private/libluajit-5.1.so.2"
+ln -sfn "$3" "$private/librav1e.so.0.7"
+ln -sfn "$5" "$private/libpixman-1.so.0"

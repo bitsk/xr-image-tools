@@ -30,7 +30,6 @@ cp -a "$vendor/controller-root" "$stock"
 mkdir -p "$stock/proc" "$stock/dev" "$stock/sys/firmware/devicetree/base" "$stock/data/local/tmp" "$stock/tmp" "$stock/mnt/vendor/persist/qvr" "$stock/system/bin" /opt/mix-steamvr
 touch "$stock/system/bin/a081-controller-sdk-probe"
 printf '%s\n' '{"source":"firmware-xr-a081-tracking","calibration":"local-device"}' >"$stock/manifest.json"
-printf '%s\n' '{"steamvr":{"forcedDriver":"monado","requireHmd":true}}' >/opt/mix-steamvr/settings.json
 install -d /etc/systemd/system/a081-sensors-files.service.d /usr/local/libexec
 cat >/etc/systemd/system/a081-sensors-files.service.d/10-mix-alpha.conf <<'UNIT'
 [Unit]

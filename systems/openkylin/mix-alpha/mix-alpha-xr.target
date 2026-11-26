@@ -1,0 +1,6 @@
+[Unit]
+Description=MIX spatial desktop
+Requires=multi-user.target
+Wants=mix-alpha-xr.service
+After=multi-user.target
+AllowIsolate=yes

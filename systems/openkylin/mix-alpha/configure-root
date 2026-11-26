@@ -53,7 +53,7 @@ for unit in grub-common.service grub-initrd-fallback.service kylin-fix-boot-grub
     ln -sfn /dev/null "/etc/systemd/system/$unit"
 done
 systemctl enable NetworkManager.service systemd-resolved.service a081-thermal-profile.service bluetooth.service serial-getty@ttyGS0.service
-systemctl set-default graphical.target
+# enable-xr selects the spatial boot target once its runtime has been installed.
 # The ISO's second, immutable desktop deployment is unused by the writable ext4 root.
 rm -rf /sysroot/ostree
 : >/etc/machine-id

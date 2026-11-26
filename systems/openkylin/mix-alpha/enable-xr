@@ -1,0 +1,29 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Run inside the staged ARM64 filesystem after importing external runtime files.
+set -eu
+[ "${MIX_IMAGE_BUILD:-}" = 1 ] && [ ! -d /run/systemd/system ] || exit 1
+cd "$(dirname "$0")"
+test -x /opt/steamvr/bin/linuxarm64/vrcompositor
+test -x /usr/bin/gamescope
+test -x /usr/bin/gamescopereaper
+test -x /usr/lib/aarch64-linux-gnu/xr/monado/pose-watch
+install -m 0644 steamvr-settings.json /opt/mix-steamvr/settings.json
+install -m 0755 start-xr /usr/local/libexec/mix-alpha-start-xr
+install -m 0644 mix-alpha-xr.service mix-alpha-xr.target /etc/systemd/system/
+python3 - <<'PY'
+import json
+from pathlib import Path
+path = Path('/etc/xr/session.json')
+profile = json.loads(path.read_text())
+private = '/usr/lib/aarch64-linux-gnu/mix-xr-runtime'
+if private not in profile['runtime_library_paths']:
+    profile['runtime_library_paths'].insert(0, private)
+profile.update(tracking_recovery_display_guard=True,
+               controller_render_models={'left': '{monado}a081_controller_left',
+                                         'right': '{monado}a081_controller_right'})
+profile['runtime_environment'].update(TU_DEBUG='a081-ccu-depth',
+                                      TU_A081_QUERY_SLEEP_US='20', TU_A081_THREE_IMAGES='1')
+path.write_text(json.dumps(profile, indent=2) + '\n')
+PY
+systemctl set-default mix-alpha-xr.target

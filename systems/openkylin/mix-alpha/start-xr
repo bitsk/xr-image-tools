@@ -1,0 +1,20 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+set -eu
+# The shared tracker owns these devices after the session takes over.
+# Wait for the panel and DSPs without opening either camera or sensor nodes.
+if ! tr '\000' '\n' </proc/device-tree/compatible | grep -qx 'iqiyi,a081'; then
+    echo 'Direct XR boot requires a Qiyu MIX (A081)' >&2
+    exit 1
+fi
+for file in /opt/mix-alpha-xr/tracking/input-config/calibration.xml /opt/mix-controller-pose-stock/mnt/vendor/persist/qvr/device_calibration.xml; do
+    [ -s "$file" ] || { echo "Headset calibration is missing: $file" >&2; exit 1; }
+done
+attempt=0
+until [ -c /dev/fastrpc-cdsp ] && [ -c /dev/fastrpc-sdsp ] && grep -qsx connected /sys/class/drm/card*-*/status; do
+    attempt=$((attempt + 1))
+    if [ "$attempt" -ge 75 ]; then echo 'MIX panel or DSP not ready for XR' >&2; exit 1; fi
+    sleep 1
+done
+systemctl start a081-sensors-files.service
+exec /usr/bin/xr-session start --seconds 0

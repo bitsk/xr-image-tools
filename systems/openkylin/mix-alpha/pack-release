@@ -1,0 +1,20 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Input is the directory containing the final images and user documentation.
+set -euo pipefail
+if [[ $# != 2 ]]; then echo 'Usage: pack-release PAYLOAD_DIRECTORY OUTPUT_DIRECTORY' >&2; exit 2; fi
+payload=$(realpath "$1")
+output=$(realpath "$2")
+base=openKylin-3.0-Spatial-Alpha-MIX
+[[ ${payload##*/} == "$base" && "$output" != "$payload" && "$output" != "$payload/"* ]]
+members=("$base-arm64.img" "$base-recovery.img" install-mix.py INSTALL.zh-CN.md RELEASE-NOTES.zh-CN.md PACKAGES.tsv release-manifest.json)
+( cd "$payload"; sha256sum "${members[@]}" > SHA256SUMS )
+members+=(SHA256SUMS)
+temp=$(mktemp -d "$output/.compress.XXXXXX")
+trap 'rm -f "$temp/$base.tar.xz"; rmdir "$temp"' EXIT
+tar --sort=name --format=pax --pax-option=delete=atime,delete=ctime --sparse --sparse-version=1.0 \
+    --owner=0 --group=0 -C "$(dirname "$payload")" -cf - "${members[@]/#/$base/}" |
+    xz -2 -T8 -c > "$temp/$base.tar.xz"
+xz -t "$temp/$base.tar.xz"
+mv "$temp/$base.tar.xz" "$output/$base.tar.xz"
+( cd "$output"; sha256sum "$base.tar.xz" > "$base.tar.xz.sha256" )

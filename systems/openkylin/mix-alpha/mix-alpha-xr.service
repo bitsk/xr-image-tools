@@ -1,0 +1,11 @@
+[Unit]
+Description=Enter the MIX spatial desktop
+Requires=user@1000.service
+Wants=mix-alpha-account.service mix-alpha-calibration.service systemd-logind.service
+After=user@1000.service mix-alpha-account.service mix-alpha-calibration.service systemd-logind.service systemd-user-sessions.service
+
+[Service]
+Type=oneshot
+Environment=QIYU_VR_SESSION_PROFILE=/etc/xr/session.json
+ExecStart=/usr/local/libexec/mix-alpha-start-xr
+TimeoutStartSec=210

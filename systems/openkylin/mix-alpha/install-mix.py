@@ -99,6 +99,8 @@ def main():
              f'mount -t ext4 -o {opts} /dev/block/by-name/osstore {STORE}')
         mounted = True
         print(query('df -h ' + STORE))
+        root('test -s /mnt/vendor/persist/qvr/device_calibration.xml; '
+             'test -n "$(find /mnt/vendor/persist/sensors/registry/registry -type f | head -n 1)"')
         if a.action == 'check':
             available = int(query(f'df -k {STORE} | tail -1').split()[-3]) * 1024
             if available < (24 * 1024 + 64) * 1024 * 1024:
@@ -183,6 +185,8 @@ if test -d "$reg"; then
     done
 fi''')
         dest = TARGET if ready else staging
+        root(f'test -s {dest}/local-device/device_calibration.xml; '
+             f'test -n "$(find {dest}/local-device/sensors/registry -type f | head -n 1)"')
         root(f'umask 077; cat > {dest}/mix-password.sha512', input=hashed + b'\n')
         if not ready:
             root(f'mv {staging} {TARGET}; sync')
