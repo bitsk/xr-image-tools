@@ -7,7 +7,7 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "7f4afee7736b553868cbb18face23c44ae5602f1",
+      "commit": "50ee83c85a7e6c668e1f135d2964d89d8806ae2a",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "d7f2b6986b32f90864cdc84082f06d21d1c5fa5d923fcd7c27f65ed85b01c0eb",
         "include/xr/device/a081_camera_groups.hpp": "f2780f093a71771561d810851d02635e9698de92d140c4b00aade6278ed24630",
@@ -16,9 +16,9 @@
         "include/xr/device/a081_camera_pixels.hpp": "b8b04fd721385a86cd820d5c8a6312d3dc44aa5e0fd27af6bdf0bc7a33a3ec21",
         "include/xr/device/a081_camera_timing.hpp": "9269cb96cb8f8e005b0979e7db7d4efdac7eb7fb037b483ba73e757fbc65ba52",
         "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
-        "include/xr/device/a081_controller_frame_export.hpp": "993d6fa3d3d1277a573a972446ef80ee0bd68999b5bb0edf2f240fbb54588d0b",
+        "include/xr/device/a081_controller_frame_export.hpp": "866e858a3a57f3e166bed5eb63485a70a9aed3474287a8e5d08d695a955f85b9",
         "include/xr/device/a081_controller_haptics.h": "830807999dc348a7be467b4c65ec0955d806b75c4507288ce755782e41a34765",
-        "include/xr/device/a081_controller_input_wire.h": "c3561141a399eb6cb5a0bebf800b23ea896bc919398edda6bcc041ed2aed50e0",
+        "include/xr/device/a081_controller_input_wire.h": "6c6de7968a661e8636af440f25639beb4edde5e52bf3eebfc716d0af5dff1ab3",
         "include/xr/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
         "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
         "include/xr/device/a081_radio_clock_reference.h": "0f4489e218b9483292ac01b78ed65f02bbfa5dce44e739268f65c3056d8097f0",
@@ -32,7 +32,7 @@
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "b467b1e7fb4d7abd858ad429efac3bb5b69c21de",
+      "commit": "91aaea554ec0db18825427de8e231d7fbd744b8a",
       "public_headers_sha256": {
         "include/xr/head/production-v2/a081_qvr_pose.h": "482983abb888bead7f9b6f4324eb73c1123d9089d9029298a0e30aa5d66b57d2",
         "include/xr/head/production-v2/a081_tracking_client.h": "36869aa710f7d61cddde19c336a06cf4707b9bb2ccd978c6bb666ec6c3d2a3ba",
@@ -41,7 +41,7 @@
     },
     "xr-controller-tracking": {
       "repository": "https://github.com/bitsk/xr-controller-tracking",
-      "commit": "8d01bb0de0587196482d6b29d6119daf83cb5703",
+      "commit": "d93f418f4dfba8706aaf69a92e10a522b3e64d9d",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
@@ -76,7 +76,7 @@
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
-      "commit": "f414ccae13faac5588068adb23cf3eecaa0a70ff",
+      "commit": "ab8d3c8aee2f656ef4817fc3a47a02b1d2d8c00e",
       "public_headers_sha256": {
         "include/xr/hand/client.hpp": "adf595ac8edab93a29eb0d2ef5eab91f6bd8349248f921d78bd74efc77857f9d",
         "include/xr/hand/joints.hpp": "245b98db23b3ab1f9450c2059708abac4897acddea6b1bcbe970db4af607af7d",
