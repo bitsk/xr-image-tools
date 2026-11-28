@@ -85,7 +85,7 @@
     },
     "xr-shell": {
       "repository": "https://github.com/bitsk/xr-shell",
-      "commit": "b05cc4452317bf54a889563fedae0c628b35b8da"
+      "commit": "61f8aab34941600e9f1ee7c1d5d8651dd1cb958a"
     },
     "xr-system-ui": {
       "repository": "https://github.com/bitsk/xr-system-ui",
