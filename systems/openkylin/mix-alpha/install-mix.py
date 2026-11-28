@@ -28,7 +28,7 @@ def sha(path):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('action', choices=('check', 'install', 'restore'))
+    p.add_argument('action', choices=('check', 'install', 'repair', 'update-recovery', 'restore'))
     p.add_argument('--serial', help='ADB serial when several devices are connected')
     p.add_argument('--backup', type=Path, default=Path('mix-device-backup'))
     a = p.parse_args()
@@ -88,7 +88,60 @@ def main():
             sys.exit('备份的设备或槽位与当前 Android 不符。请核对备份目录。')
         return record
 
-    if a.action != 'check':
+    def import_factory(dest):
+        # Copy from this Android installation. A retry also refreshes any partial import.
+        root(f'''umask 077
+localdir={dest}/local-device
+mkdir -p "$localdir/sensors/registry" "$localdir/socinfo"
+getprop ro.serialno > "$localdir/usb-serial"
+cp /mnt/vendor/persist/qvr/device_calibration.xml "$localdir/device_calibration.xml"
+for name in libsns_low_lat_stream_skel.so fastrpc_shell_2; do
+    for dir in /vendor/dsp/sdsp /vendor/dsp/slpi /vendor/lib/rfsa/adsp /system/lib/rfsa/adsp; do
+        if test -s "$dir/$name"; then
+            mkdir -p "$localdir/slpi"; cp "$dir/$name" "$localdir/slpi/$name"; break
+        fi
+    done
+done
+reg=/mnt/vendor/persist/sensors/registry
+for file in "$reg/registry/"*; do
+    if test -f "$file" && test ! -L "$file"; then cp "$file" "$localdir/sensors/registry/"; fi
+done
+if test -s "$reg/sns_reg_version"; then cp "$reg/sns_reg_version" "$localdir/sensors/"; fi
+if test -s /vendor/etc/sensors/sns_reg_config; then cp /vendor/etc/sensors/sns_reg_config "$localdir/sensors/sns_reg.conf"; fi
+if test -d /vendor/etc/sensors/config; then
+    mkdir -p "$localdir/sensors/config"
+    cp -R /vendor/etc/sensors/config/. "$localdir/sensors/config/"
+fi
+for name in platform_version platform_subtype_id platform_subtype revision hw_platform soc_id; do
+    file=/sys/devices/soc0/$name
+    if test -r "$file"; then cat "$file" > "$localdir/socinfo/$name"; fi
+done
+''')
+        root(f'test -s {dest}/local-device/device_calibration.xml; '
+             f'test -n "$(find {dest}/local-device/sensors/registry -type f | head -n 1)"')
+
+    def write_recovery(recovery, new_digest):
+        # Bind subsequent restore to this installation, also when reusing a backup.
+        record = backup_record()
+        record.update(slot=slot, installed_sha256=new_digest)
+        with tempfile.NamedTemporaryFile(mode='w', dir=a.backup, delete=False) as updated:
+            json.dump(record, updated)
+            updated.write('\n')
+        os.replace(updated.name, recorded)
+        pending.write_text(new_digest)
+        try:
+            put(recovery, recovery_dev)
+            if remote_sha(recovery_dev) != new_digest:
+                raise ValueError('recovery verification failed')
+        except (OSError, subprocess.CalledProcessError, ValueError):
+            put(backup, recovery_dev)
+            if remote_sha(recovery_dev) != record['sha256']:
+                sys.exit('恢复原 recovery 后仍未通过读回。请留在 Android 并运行 restore。')
+            pending.unlink(missing_ok=True)
+            sys.exit('已恢复并读回原 recovery。')
+        pending.unlink()
+
+    if a.action in ('install', 'restore', 'update-recovery'):
         old = remote_sha(recovery_dev)
         sums = {}
         sums_file = base / 'SHA256SUMS'
@@ -99,6 +152,32 @@ def main():
             sums[name.strip().lstrip('*')] = digest
         if BOOT not in sums or ROOTFS not in sums:
             sys.exit('SHA256SUMS 缺少本版镜像条目，请重新解压配套文档脚本包。')
+    if a.action in ('update-recovery', 'repair'):
+        info = base / 'mix-alpha-repair.json'
+        if not info.is_file():
+            sys.exit('请使用包含修复材料的配套文档脚本包。')
+        repair_info = json.loads(info.read_text())
+    if a.action == 'update-recovery':
+        record = backup_record()
+        recovery = base / BOOT
+        new = repair_info['recovery_sha256']
+        if not recovery.is_file() or sha(recovery) != new:
+            sys.exit('请把修订版 recovery IMG 放到安装器目录，核对版本后重试。')
+        size = int(query('blockdev --getsize64 ' + recovery_dev))
+        if recovery.stat().st_size != size or not backup.is_file() or backup.stat().st_size != size or sha(backup) != record['sha256']:
+            sys.exit('本机原 recovery 备份或分区长度不匹配。')
+        if old == new:
+            print('本槽已使用修订版 recovery。')
+            return
+        if old not in (record['sha256'], record.get('installed_sha256'), repair_info['previous_recovery_sha256']):
+            sys.exit('当前 recovery 来源不明，已停止。')
+        if input(f'输入 UPDATE 更新 {part} 并保留原备份：') != 'UPDATE':
+            sys.exit('已取消。')
+        if remote_sha(recovery_dev) != old:
+            sys.exit('确认期间 recovery 已改变。')
+        write_recovery(recovery, new)
+        print(f'{part} 已更新并读回校验。')
+        return
     if a.action == 'restore':
         record = backup_record()
         if (not backup.is_file() or sha(backup) != record['sha256']
@@ -109,6 +188,10 @@ def main():
             print('原 recovery 已在位。')
             return
         known = {sums[BOOT], record.get('installed_sha256')}
+        repair_manifest = base / 'mix-alpha-repair.json'
+        if repair_manifest.is_file():
+            releases = json.loads(repair_manifest.read_text())
+            known.update((releases['previous_recovery_sha256'], releases['recovery_sha256']))
         if old not in known and not (pending.is_file() and pending.read_text() in known):
             sys.exit('当前 recovery 与此版本不同，请先确认它的来源。')
         if input(f'输入 RESTORE 恢复这台设备的 {part}：') != 'RESTORE':
@@ -140,9 +223,53 @@ def main():
              '{ echo "当前 Android 缺少传感器注册表。" >&2; exit 1; }')
         if a.action == 'check':
             available = int(query(f'df -k {STORE} | tail -1').split()[-3]) * 1024
-            if available < (24 * 1024 + 64) * 1024 * 1024:
+            if query(f'if test -f {TARGET}/rootfs.img; then echo yes; fi'):
+                print('已发现现有 Alpha 系统。保留用户数据进行修复时请使用 repair。')
+            elif available < (24 * 1024 + 64) * 1024 * 1024:
                 sys.exit('osstore 可用空间不足 24 GiB + 64 MiB。')
             print(f'A081、当前槽位、root、{part}、本机标定和 ext4 osstore 已确认。')
+            return
+        if a.action == 'repair':
+            payload = base / 'mix-alpha-repair.tar'
+            unit = base / 'mix-alpha-repair.service'
+            for path, key in ((payload, 'payload_sha256'), (unit, 'unit_sha256')):
+                if not path.is_file() or sha(path) != repair_info[key]:
+                    sys.exit('修复材料不完整，请重新解压文档脚本包。')
+            root(f'test ! -L {STORE}/systems; test ! -L {TARGET}; test -f {TARGET}/rootfs.img; test ! -L {TARGET}/rootfs.img')
+            if input('输入 REPAIR 更新已有 Alpha 并保留账户、应用和当前槽位：') != 'REPAIR':
+                sys.exit('已取消。')
+            scratch = query(f'umask 077; mktemp -d {STORE}/.alpha-repair.XXXXXXXX')
+            if not scratch.startswith(STORE + '/.alpha-repair.') or '/' in scratch[len(STORE) + 1:]:
+                sys.exit('无法创建修复临时目录。')
+            try:
+                put(payload, scratch + '/payload.tar')
+                put(unit, scratch + '/mix-alpha-repair.service')
+                if remote_sha(scratch + '/payload.tar') != repair_info['payload_sha256'] or remote_sha(scratch + '/mix-alpha-repair.service') != repair_info['unit_sha256']:
+                    sys.exit('修复文件传输校验失败。')
+                import_factory(TARGET)
+                root(f'''umask 077
+work={scratch}
+r="$work/root"
+mkdir "$r"
+mount -t ext4 -o loop,rw,noatime {TARGET}/rootfs.img "$r"
+trap 'umount "$r"' EXIT
+test "$(cat "$r/etc/a081-rootfs-id")" = a081-openkylin-3.0-arm64
+test -f "$r/etc/xr/session.json"
+dest="$r/var/lib/mix-alpha-repair"
+units="$r/etc/systemd/system"
+test ! -L "$dest"
+mkdir -p "$dest"
+cp "$work/payload.tar" "$dest/incoming.tar"
+cp "$work/mix-alpha-repair.service" "$units/mix-alpha-repair.service.tmp"
+chmod 0644 "$units/mix-alpha-repair.service.tmp"
+mv "$units/mix-alpha-repair.service.tmp" "$units/mix-alpha-repair.service"
+ln -sfn ../mix-alpha-repair.service "$units/multi-user.target.wants/mix-alpha-repair.service"
+sync
+mv "$dest/incoming.tar" "$dest/payload.tar"
+sync''')
+            finally:
+                root(f'rm -f {scratch}/payload.tar {scratch}/mix-alpha-repair.service; rmdir {scratch}/root 2>/dev/null || :; rmdir {scratch}')
+            print('已准备本机修复。执行 adb reboot recovery；首次启动会安装更新。')
             return
         image = base / ROOTFS
         recovery = base / BOOT
@@ -160,10 +287,13 @@ def main():
         existing = query(f'if test -d {TARGET}; then echo yes; fi')
         if existing and (not recorded.is_file() or
                          query(f'cat {TARGET}/release.sha256') != sums[ROOTFS]):
-            sys.exit('目标目录已被占用。')
+            sys.exit('目标目录已有安装。如需保留现有 Alpha，请使用 repair。')
+        if existing and old == sums[BOOT]:
+            sys.exit('本槽已有 Alpha。保留可写系统和用户数据，请使用 repair。')
+        # A retry before writing recovery can reuse a previously verified pristine transfer.
         ready = bool(existing and remote_sha(TARGET + '/rootfs.img') == sums[ROOTFS])
         if existing and not ready:
-            sys.exit('现有根镜像已改变，请先备份或移走该目录。')
+            sys.exit('已使用的根镜像包含本机修改。请使用 repair 保留其中的数据。')
         available = int(query(f'df -k {STORE} | tail -1').split()[-3]) * 1024
         partial = int(query(f'if test -f {staging}/rootfs.img && test ! -L {staging}/rootfs.img; '
                             f'then du -k {staging}/rootfs.img | cut -f1; else echo 0; fi')) * 1024
@@ -201,60 +331,13 @@ def main():
             if remote_sha(staging + '/rootfs.img') != sums[ROOTFS]:
                 sys.exit('系统文件读回失败，原 recovery 仍在位。')
         dest = TARGET if ready else staging
-        # Copy from this Android installation. A retry also refreshes any partial import.
-        root(f'''umask 077
-localdir={dest}/local-device
-mkdir -p "$localdir/sensors/registry" "$localdir/socinfo"
-getprop ro.serialno > "$localdir/usb-serial"
-cp /mnt/vendor/persist/qvr/device_calibration.xml "$localdir/device_calibration.xml"
-for name in libsns_low_lat_stream_skel.so fastrpc_shell_2; do
-    for dir in /vendor/dsp/sdsp /vendor/dsp/slpi /vendor/lib/rfsa/adsp /system/lib/rfsa/adsp; do
-        if test -s "$dir/$name"; then
-            mkdir -p "$localdir/slpi"; cp "$dir/$name" "$localdir/slpi/$name"; break
-        fi
-    done
-done
-reg=/mnt/vendor/persist/sensors/registry
-for file in "$reg/registry/"*; do
-    if test -f "$file" && test ! -L "$file"; then cp "$file" "$localdir/sensors/registry/"; fi
-done
-if test -s "$reg/sns_reg_version"; then cp "$reg/sns_reg_version" "$localdir/sensors/"; fi
-if test -s /vendor/etc/sensors/sns_reg_config; then cp /vendor/etc/sensors/sns_reg_config "$localdir/sensors/sns_reg.conf"; fi
-if test -d /vendor/etc/sensors/config; then
-    mkdir -p "$localdir/sensors/config"
-    cp -R /vendor/etc/sensors/config/. "$localdir/sensors/config/"
-fi
-for name in platform_version platform_subtype_id platform_subtype revision hw_platform soc_id; do
-    file=/sys/devices/soc0/$name
-    if test -r "$file"; then cat "$file" > "$localdir/socinfo/$name"; fi
-done
-''')
-        root(f'test -s {dest}/local-device/device_calibration.xml; '
-             f'test -n "$(find {dest}/local-device/sensors/registry -type f | head -n 1)"')
+        import_factory(dest)
         root(f'umask 077; cat > {dest}/mix-password.sha512', input=hashed + b'\n')
         if not ready:
             root(f'mv {staging} {TARGET}; sync')
         if remote_sha(recovery_dev) != old:
             sys.exit('安装过程中 recovery 发生变化。')
-        # Bind subsequent restore to this installation, also when reusing a backup.
-        record = backup_record()
-        record.update(slot=slot, installed_sha256=sums[BOOT])
-        with tempfile.NamedTemporaryFile(mode='w', dir=a.backup, delete=False) as updated:
-            json.dump(record, updated)
-            updated.write('\n')
-        os.replace(updated.name, recorded)
-        pending.write_text(sums[BOOT])
-        try:
-            put(recovery, recovery_dev)
-            if remote_sha(recovery_dev) != sums[BOOT]:
-                raise ValueError('recovery verification failed')
-        except (OSError, subprocess.CalledProcessError, ValueError):
-            put(backup, recovery_dev)
-            if remote_sha(recovery_dev) != old:
-                sys.exit('恢复原 recovery 后仍未通过读回。请留在 Android 并运行 restore。')
-            pending.unlink(missing_ok=True)
-            sys.exit('已恢复并读回原 recovery。')
-        pending.unlink()
+        write_recovery(recovery, sums[BOOT])
         print('系统和 recovery 均已读回校验。可执行 adb reboot recovery。')
     finally:
         if mounted:

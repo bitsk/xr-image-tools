@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+src=/osstore/systems/openkylin-alpha/local-device
+dst=/usr/share/qcom/sm8250/iqiyi/a081
+if [ -s "$src/device_calibration.xml" ]; then
+    install -m 0600 "$src/device_calibration.xml" /opt/mix-alpha-xr/tracking/input-config/calibration.xml
+    install -m 0600 "$src/device_calibration.xml" /opt/mix-controller-pose-stock/mnt/vendor/persist/qvr/device_calibration.xml
+fi
+if [ -d "$src/slpi" ]; then
+    for name in libsns_low_lat_stream_skel.so fastrpc_shell_2; do
+        if [ -s "$src/slpi/$name" ]; then
+            install -m 0644 "$src/slpi/$name" "/opt/mix-alpha-xr/tracking/stock-runtime/qcom/dsp/slpi/$name"
+        fi
+    done
+fi
+if [ -d "$src/sensors/registry" ]; then
+    # Materialize factory data with Linux ownership even on older osstore installs.
+    cd "$src"
+    for tree in sensors socinfo; do
+        [ -d "$tree" ] && [ ! -L "$tree" ] || continue
+        find "$tree" -type d -exec sh -ec '
+            dst=$1; shift
+            for dir do install -d -o root -g root -m 0755 "$dst/$dir"; done
+        ' sh "$dst" {} +
+        find "$tree" -type f -exec sh -ec '
+            dst=$1; shift
+            for file do install -o root -g root -m 0644 "$file" "$dst/$file"; done
+        ' sh "$dst" {} +
+    done
+fi

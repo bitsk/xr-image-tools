@@ -1,0 +1,19 @@
+#!/bin/sh
+# Run in the installed openKylin root, also used when preparing the revised IMG.
+set -eu
+cd "$(dirname "$0")"
+[ "$(id -u)" = 0 ] && grep -qx a081-openkylin-3.0-arm64 /etc/a081-rootfs-id
+[ "$(dpkg --print-architecture)" = arm64 ]
+[ -f /etc/xr/session.json ] && [ -d /opt/mix-alpha-xr/tracking ]
+sha256sum -c payload.sha256
+dpkg -i ./packages/*.deb
+tracking=/opt/mix-alpha-xr/tracking
+lib=/usr/lib/aarch64-linux-gnu/xr/head-tracking
+install -m 0755 "$lib/a081-qvr-stock-live-stream" "$tracking/a081-qvr-stock-live-stream"
+install -m 0644 "$lib/liba081-qvr-client-live-stream.so" "$tracking/liba081-qvr-client-live-stream.so"
+install -m 0755 /usr/bin/xr-head-observe "$tracking/a081-tracking-observe"
+python3 ./make-tracker-config.py "$tracking/config6-cvp-disabled.xml"
+install -m 0755 mix-alpha-calibration mix-alpha-account /usr/local/libexec/
+install -m 0755 start-xr /usr/local/libexec/mix-alpha-start-xr
+install -m 0644 mix-alpha-xr.service /etc/systemd/system/
+install -D -m 0644 10-mix-alpha.conf /etc/systemd/system/a081-sensors-files.service.d/10-mix-alpha.conf

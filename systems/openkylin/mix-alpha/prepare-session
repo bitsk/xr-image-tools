@@ -1,6 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: GPL-3.0-or-later
 set -eu
+adapter=$(cd "$(dirname "$0")" && pwd)
 [ "${MIX_IMAGE_BUILD:-}" = 1 ] && [ ! -d /run/systemd/system ] || exit 1
 seed=/opt/mix-vr-shell-controller
 capsule=/opt/mix-alpha-xr
@@ -9,17 +10,7 @@ vendor=/usr/lib/aarch64-linux-gnu/xr/vendor/a081
 mkdir -p "$seed/tracking/stock-runtime" "$seed/plans" /etc/xr
 cp -a "$vendor/tracking/qcom" "$seed/tracking/stock-runtime/"
 cp /usr/share/xr/session-manager/plans/controller-snpe-dsp.json "$seed/plans/"
-python3 - <<'PYCONFIG'
-from pathlib import Path
-import re
-
-source = Path('/usr/share/xr/a081/tracking/config6.xml').read_bytes()
-# Keep the vendor XML (including comments and line endings) intact.
-config, count = re.subn(rb'(<SFConfig>)(\r?\n)', rb'\1\2    <CvpConfig enable="false" />\2', source)
-if count != 1:
-    raise ValueError('Expected one SFConfig section in A081 tracking configuration')
-Path('/opt/mix-vr-shell-controller/tracking/config6-cvp-disabled.xml').write_bytes(config)
-PYCONFIG
+python3 "$adapter/make-tracker-config.py" "$seed/tracking/config6-cvp-disabled.xml"
 python3 - <<'PY'
 import json
 from pathlib import Path
@@ -41,49 +32,8 @@ mkdir -p "$stock/proc" "$stock/dev" "$stock/sys/firmware/devicetree/base" "$stoc
 touch "$stock/system/bin/a081-controller-sdk-probe"
 printf '%s\n' '{"source":"firmware-xr-a081-tracking","calibration":"local-device"}' >"$stock/manifest.json"
 install -d /etc/systemd/system/a081-sensors-files.service.d /usr/local/libexec
-cat >/etc/systemd/system/a081-sensors-files.service.d/10-mix-alpha.conf <<'UNIT'
-[Unit]
-After=mix-alpha-calibration.service
-ConditionPathExists=
-ConditionPathExists=/usr/share/qcom/sm8250/iqiyi/a081/sensors/registry
-[Service]
-Restart=always
-RestartSec=3
-ExecStart=
-ExecStart=/usr/bin/xr-hexagonrpcd -f /dev/fastrpc-sdsp -s -R /usr/share/qcom/sm8250/iqiyi/a081
-UNIT
-cat >/usr/local/libexec/mix-alpha-calibration <<'SCRIPT'
-#!/bin/sh
-set -eu
-src=/osstore/systems/openkylin-alpha/local-device
-dst=/usr/share/qcom/sm8250/iqiyi/a081
-if [ -s "$src/device_calibration.xml" ]; then
-    install -m 0600 "$src/device_calibration.xml" /opt/mix-alpha-xr/tracking/input-config/calibration.xml
-    install -m 0600 "$src/device_calibration.xml" /opt/mix-controller-pose-stock/mnt/vendor/persist/qvr/device_calibration.xml
-fi
-if [ -d "$src/slpi" ]; then
-    for name in libsns_low_lat_stream_skel.so fastrpc_shell_2; do
-        if [ -s "$src/slpi/$name" ]; then
-            install -m 0644 "$src/slpi/$name" "/opt/mix-alpha-xr/tracking/stock-runtime/qcom/dsp/slpi/$name"
-        fi
-    done
-fi
-if [ -d "$src/sensors/registry" ]; then
-    # Materialize factory data with Linux ownership even on older osstore installs.
-    cd "$src"
-    for tree in sensors socinfo; do
-        [ -d "$tree" ] && [ ! -L "$tree" ] || continue
-        find "$tree" -type d -exec sh -ec '
-            dst=$1; shift
-            for dir do install -d -o root -g root -m 0755 "$dst/$dir"; done
-        ' sh "$dst" {} +
-        find "$tree" -type f -exec sh -ec '
-            dst=$1; shift
-            for file do install -o root -g root -m 0644 "$file" "$dst/$file"; done
-        ' sh "$dst" {} +
-    done
-fi
-SCRIPT
+install -m 0644 "$adapter/10-mix-alpha.conf" /etc/systemd/system/a081-sensors-files.service.d/10-mix-alpha.conf
+install -m 0755 "$adapter/mix-alpha-calibration" /usr/local/libexec/mix-alpha-calibration
 chmod 0755 /usr/local/libexec/mix-alpha-calibration
 cat >/etc/systemd/system/mix-alpha-calibration.service <<'UNIT'
 [Unit]

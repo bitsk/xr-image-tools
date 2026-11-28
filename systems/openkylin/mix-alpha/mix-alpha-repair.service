@@ -1,0 +1,12 @@
+[Unit]
+Description=Apply the MIX Alpha offline installation repair
+After=local-fs.target
+Before=mix-alpha-account.service mix-alpha-calibration.service a081-sensors-files.service mix-alpha-xr.service
+ConditionPathExists=/var/lib/mix-alpha-repair/payload.tar
+
+[Service]
+Type=oneshot
+WorkingDirectory=/var/lib/mix-alpha-repair
+ExecStart=/usr/bin/tar -xf payload.tar
+ExecStart=/bin/sh ./apply-alpha-update
+ExecStart=/usr/bin/mv -f payload.tar applied.tar

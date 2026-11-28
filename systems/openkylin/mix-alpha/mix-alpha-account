@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+file=/osstore/systems/openkylin-alpha/mix-password.sha512
+[ -f "$file" ] && [ ! -L "$file" ]
+[ "$(wc -l <"$file")" -eq 1 ]
+LC_ALL=C grep -Eq '^\$6\$(rounds=[1-9][0-9]{3,8}\$)?[./0-9A-Za-z]{1,16}\$[./0-9A-Za-z]{86}$' "$file"
+{ printf 'mix:'; cat "$file"; } | chpasswd -e
+rm "$file"

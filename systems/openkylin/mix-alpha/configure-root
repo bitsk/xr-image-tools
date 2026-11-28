@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Run in the disposable official filesystem, before packing its ext4 image.
 set -eu
+adapter=$(cd "$(dirname "$0")" && pwd)
 [ "${MIX_IMAGE_BUILD:-}" = 1 ] && [ ! -d /run/systemd/system ] &&
     [ "$(dpkg --print-architecture)" = arm64 ] &&
     grep -qx 'ID=openkylin' /usr/lib/os-release &&
@@ -21,16 +22,7 @@ if getent passwd 1000 >/dev/null; then echo 'Unexpected desktop account in base'
 useradd -m -U -u 1000 -s /bin/bash -G sudo,audio,input,render,video mix
 passwd -l root
 install -d /usr/local/libexec
-cat > /usr/local/libexec/mix-alpha-account <<'SCRIPT'
-#!/bin/sh
-set -eu
-file=/osstore/systems/openkylin-alpha/mix-password.sha512
-[ -f "$file" ] && [ ! -L "$file" ]
-[ "$(wc -l <"$file")" -eq 1 ]
-LC_ALL=C grep -Eq '^\$6\$(rounds=[1-9][0-9]{3,8}\$)?[./0-9A-Za-z]{1,16}\$[./0-9A-Za-z]{86}$' "$file"
-{ printf 'mix:'; cat "$file"; } | chpasswd -e
-rm "$file"
-SCRIPT
+install -m 0755 "$adapter/mix-alpha-account" /usr/local/libexec/mix-alpha-account
 chmod 0755 /usr/local/libexec/mix-alpha-account
 cat > /etc/systemd/system/mix-alpha-account.service <<'UNIT'
 [Unit]
