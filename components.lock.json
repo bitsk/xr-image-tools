@@ -41,7 +41,7 @@
     },
     "xr-controller-tracking": {
       "repository": "https://github.com/bitsk/xr-controller-tracking",
-      "commit": "d93f418f4dfba8706aaf69a92e10a522b3e64d9d",
+      "commit": "7e748f8a4815d38818c493df57cbdc4f92482fb3",
       "public_headers_sha256": {
         "include/xr/controller/a081_controller_controls.h": "aa8307a8a72750890b57c2253b038d5936b7ff3668a7322aed3b96113de7d0ea",
         "include/xr/controller/a081_controller_image_abi.hpp": "0d6d75883df02e60bfce071629f5721d7770df5eb1150c579598b974c9ab71a0",
