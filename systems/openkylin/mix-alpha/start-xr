@@ -17,4 +17,11 @@ until [ -c /dev/fastrpc-cdsp ] && [ -c /dev/fastrpc-sdsp ] && grep -qsx connecte
     sleep 1
 done
 systemctl start a081-sensors-files.service
+attempt=0
+until grep -qsx qcom-see-accel /sys/bus/iio/devices/iio:device*/name &&
+      grep -qsx qcom-see-gyro /sys/bus/iio/devices/iio:device*/name; do
+    attempt=$((attempt + 1))
+    if [ "$attempt" -ge 150 ]; then echo 'MIX SEE accelerometer or gyroscope did not register' >&2; exit 1; fi
+    sleep 1
+done
 exec /usr/bin/xr-session start --seconds 0

@@ -52,6 +52,20 @@ setup_usb() (
     mkdir -p strings/0x409 configs/c.1 functions/acm.usb0
     echo 'MIX' > strings/0x409/manufacturer
     echo 'openKylin MIX Alpha' > strings/0x409/product
+    # Reuse an identifier from this unit for Windows CDC port enumeration.
+    serial=$(cat /store/systems/openkylin-alpha/local-device/usb-serial 2>/dev/null) || serial=
+    if [ -z "$serial" ]; then
+        serial=$(cat /sys/devices/soc0/serial_number 2>/dev/null) || serial=
+    fi
+    if [ -z "$serial" ]; then
+        serial=$(tr -d '\000' </proc/device-tree/serial-number 2>/dev/null) || serial=
+    fi
+    if [ -z "$serial" ]; then
+        serial=$(cat /newroot/etc/machine-id 2>/dev/null) || serial=
+    fi
+    echo "A081-${serial:-MIX}" > strings/0x409/serialnumber
+    echo 250 > configs/c.1/MaxPower
+    echo 0x80 > configs/c.1/bmAttributes
     ln -s "$g/functions/acm.usb0" configs/c.1/acm.usb0
     for ctl in /sys/class/udc/*; do
         [ -e "$ctl" ] || continue

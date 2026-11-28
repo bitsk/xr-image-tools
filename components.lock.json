@@ -32,7 +32,7 @@
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "858ccf9611d9af86cb7cf82a4551677ef0e8b602",
+      "commit": "cd8f910bd45eb2bc05dae904a89f2c0bc2094d0a",
       "public_headers_sha256": {
         "include/xr/head/production-v2/a081_qvr_pose.h": "482983abb888bead7f9b6f4324eb73c1123d9089d9029298a0e30aa5d66b57d2",
         "include/xr/head/production-v2/a081_tracking_client.h": "36869aa710f7d61cddde19c336a06cf4707b9bb2ccd978c6bb666ec6c3d2a3ba",
@@ -56,7 +56,7 @@
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
-      "commit": "764bf1097315fa648e6b8ffa1a6422dcc9bc89fc"
+      "commit": "00d82d23f9aa6e403cf587fd1928ebb46a5bf43b"
     },
     "xr-debug-console": {
       "repository": "https://github.com/bitsk/xr-debug-console",

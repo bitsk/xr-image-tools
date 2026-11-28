@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install or restore the MIX Alpha recovery from rooted Android B over USB ADB."""
+"""Install or restore the MIX Alpha recovery from the current rooted Android slot over USB ADB."""
 import argparse
 import getpass
 import hashlib
@@ -7,13 +7,13 @@ import json
 import os
 from pathlib import Path
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
 
 ROOTFS = 'openKylin-3.0-Spatial-Alpha-MIX-arm64.img'
 BOOT = 'openKylin-3.0-Spatial-Alpha-MIX-recovery.img'
-RECOVERY = '/dev/block/by-name/recovery_b'
 STORE = '/mnt/mix-alpha-install'
 TARGET = STORE + '/systems/openkylin-alpha'
 
@@ -33,11 +33,18 @@ def main():
     p.add_argument('--backup', type=Path, default=Path('mix-device-backup'))
     a = p.parse_args()
     base = Path(__file__).resolve().parent
-    transport = a.serial or subprocess.check_output(['adb', 'get-serialno'], text=True).strip()
+    try:
+        transport = a.serial or subprocess.check_output(['adb', 'get-serialno'], text=True).strip()
+    except FileNotFoundError:
+        sys.exit('找不到 adb。请安装 Android Platform Tools，并将 adb 加入 PATH。')
+    except subprocess.CalledProcessError:
+        sys.exit('请用 adb devices -l 确认设备已授权；多台设备连接时请指定 --serial。')
     adb = ['adb', '-s', transport]
 
+    guard = ''
+
     def root(script, **kwargs):
-        cmd = 'su -mm -c ' + shlex.quote('set -eu\n' + script)
+        cmd = 'su -mm -c ' + shlex.quote('set -eu\n' + guard + script)
         return subprocess.run(adb + ['shell', '-T', cmd], check=True, **kwargs)
 
     def query(script):
@@ -50,44 +57,72 @@ def main():
         with source.open('rb') as stream:
             root('umask 077; cat > ' + shlex.quote(path) + '; sync', stdin=stream)
 
-    root(f'test "$(id -u)" = 0; test "$(getprop ro.product.model)" = A081; '
-         f'test "$(getprop ro.boot.slot_suffix)" = _b; test -b {RECOVERY}')
+    try:
+        root('test "$(id -u)" = 0')
+    except subprocess.CalledProcessError:
+        sys.exit('请在当前 Android 槽位授权 USB 调试和 Magisk root，然后重试。')
+    if query('getprop ro.product.model') != 'A081':
+        sys.exit('此安装器仅适用于奇遇 MIX A081。')
     serial = query('getprop ro.serialno')
-    if not serial:
-        sys.exit('无法读取本机身份。')
+    slot = query('getprop ro.boot.slot_suffix')
+    if not serial or slot not in ('_a', '_b'):
+        sys.exit('无法确认设备身份或当前 A/B 槽位。')
+    # Bind each privileged command (including a write or rollback) to this boot slot.
+    guard = (f'test "$(getprop ro.serialno)" = {shlex.quote(serial)} && '
+             f'test "$(getprop ro.boot.slot_suffix)" = {slot} || '
+             '{ echo "设备或槽位已变化，操作已停止。" >&2; exit 1; }\n')
+    part = 'recovery' + slot
+    recovery_dev = '/dev/block/by-name/' + part
+    root(f'test -b {recovery_dev} || {{ echo "缺少 {part} 分区" >&2; exit 1; }}')
+    print(f'当前 Android {slot[-1].upper()} 槽，目标 {part}。')
     recorded = a.backup / 'device.json'
-    backup = a.backup / 'recovery_b.original.img'
+    backup = a.backup / (part + '.original.img')
     pending = a.backup / 'write-pending'
-    def same_device():
-        if query('getprop ro.serialno') != serial:
-            sys.exit('USB 设备身份已变化。')
 
-    old = remote_sha(RECOVERY)
-    sums = {}
-    for line in (base / 'SHA256SUMS').read_text().splitlines():
-        digest, name = line.split(maxsplit=1)
-        sums[name.strip().lstrip('*')] = digest
-    if a.action == 'restore':
+    def backup_record():
+        if not recorded.is_file():
+            sys.exit('备份目录缺少 device.json，请选择这台头显对应槽位的备份目录。')
         record = json.loads(recorded.read_text())
-        if (record['serial'] != serial or sha(backup) != record['sha256']
-                or backup.stat().st_size != int(query('blockdev --getsize64 ' + RECOVERY))):
+        # The original installer supported only slot B and recorded no slot field.
+        if record.get('slot', '_b') != slot or record.get('serial') != serial:
+            sys.exit('备份的设备或槽位与当前 Android 不符。请核对备份目录。')
+        return record
+
+    if a.action != 'check':
+        old = remote_sha(recovery_dev)
+        sums = {}
+        sums_file = base / 'SHA256SUMS'
+        if not sums_file.is_file():
+            sys.exit('请将同版本文档脚本包和镜像包解压到同一目录。')
+        for line in sums_file.read_text().splitlines():
+            digest, name = line.split(maxsplit=1)
+            sums[name.strip().lstrip('*')] = digest
+        if BOOT not in sums or ROOTFS not in sums:
+            sys.exit('SHA256SUMS 缺少本版镜像条目，请重新解压配套文档脚本包。')
+    if a.action == 'restore':
+        record = backup_record()
+        if (not backup.is_file() or sha(backup) != record['sha256']
+                or backup.stat().st_size != int(query('blockdev --getsize64 ' + recovery_dev))):
             sys.exit('设备或本机备份校验失败。')
         if old == record['sha256']:
+            pending.unlink(missing_ok=True)
             print('原 recovery 已在位。')
             return
-        if old != sums[BOOT] and not (pending.is_file() and pending.read_text() == sums[BOOT]):
+        known = {sums[BOOT], record.get('installed_sha256')}
+        if old not in known and not (pending.is_file() and pending.read_text() in known):
             sys.exit('当前 recovery 与此版本不同，请先确认它的来源。')
-        if input('输入 RESTORE 恢复这台设备的 recovery_b：') != 'RESTORE':
+        if input(f'输入 RESTORE 恢复这台设备的 {part}：') != 'RESTORE':
             sys.exit('已取消。')
-        same_device()
-        put(backup, RECOVERY)
-        if remote_sha(RECOVERY) != record['sha256']:
+        # An interrupted restore can leave a partially written partition too.
+        pending.write_text(record.get('installed_sha256') or sums[BOOT])
+        put(backup, recovery_dev)
+        if remote_sha(recovery_dev) != record['sha256']:
             sys.exit('恢复读回失败。请留在 Android。')
         pending.unlink(missing_ok=True)
         print('已恢复并读回校验。Alpha 系统文件仍保存在 osstore。')
         return
 
-    root(f"test -b /dev/block/by-name/osstore; test ! -L {STORE}; "
+    root(f"test -b /dev/block/by-name/osstore || {{ echo '缺少 osstore 分区，当前布局不支持本安装流程。请保留现有分区。' >&2; exit 1; }}; test ! -L {STORE}; "
          f'if test -d {STORE}; then test -z "$(ls -A {STORE})"; else mkdir -m 700 {STORE}; fi')
     mounted = False
     try:
@@ -95,25 +130,31 @@ def main():
         # A separate existing mount might belong to another maintenance session.
         root(f'dev=$(readlink -f /dev/block/by-name/osstore); '
              f'num=$(cat /sys/class/block/${{dev##*/}}/dev); '
-             f'! grep -q "^[^ ]* [^ ]* $num " /proc/self/mountinfo || exit 1; '
-             f'mount -t ext4 -o {opts} /dev/block/by-name/osstore {STORE}')
+             f'if grep -q "^[^ ]* [^ ]* $num " /proc/self/mountinfo; then echo "osstore 已被挂载，请结束其他安装或维护操作。" >&2; exit 1; fi; '
+             f'mount -t ext4 -o {opts} /dev/block/by-name/osstore {STORE} || {{ echo "无法挂载 osstore，请确认其为可读取的 ext4 文件系统。" >&2; exit 1; }}')
         mounted = True
         print(query('df -h ' + STORE))
-        root('test -s /mnt/vendor/persist/qvr/device_calibration.xml; '
-             'test -n "$(find /mnt/vendor/persist/sensors/registry/registry -type f | head -n 1)"')
+        root('test -s /mnt/vendor/persist/qvr/device_calibration.xml || '
+             '{ echo "当前 Android 缺少本机 QVR 标定文件。" >&2; exit 1; }; '
+             'test -n "$(find /mnt/vendor/persist/sensors/registry/registry -type f | head -n 1)" || '
+             '{ echo "当前 Android 缺少传感器注册表。" >&2; exit 1; }')
         if a.action == 'check':
             available = int(query(f'df -k {STORE} | tail -1').split()[-3]) * 1024
             if available < (24 * 1024 + 64) * 1024 * 1024:
                 sys.exit('osstore 可用空间不足 24 GiB + 64 MiB。')
-            print('A081、Android B、root、recovery_b 和 ext4 osstore 已确认。')
+            print(f'A081、当前槽位、root、{part}、本机标定和 ext4 osstore 已确认。')
             return
         image = base / ROOTFS
         recovery = base / BOOT
         for path in (image, recovery):
-            if sha(path) != sums[path.name]:
+            if not path.is_file():
+                sys.exit(f'缺少 {path.name}，请把两份镜像和安装器解压到同一目录。')
+            if sha(path) != sums.get(path.name):
                 sys.exit('下载文件校验失败：' + path.name)
-        if recovery.stat().st_size != int(query('blockdev --getsize64 ' + RECOVERY)):
-            sys.exit('recovery_b 大小不匹配。')
+        if not shutil.which('openssl'):
+            sys.exit('找不到 openssl，安装器需要它为本机用户生成登录密码。')
+        if recovery.stat().st_size != int(query('blockdev --getsize64 ' + recovery_dev)):
+            sys.exit(f'{part} 分区大小与 recovery 镜像不匹配。')
         staging = TARGET + '.installing'
         root(f'test ! -L {STORE}/systems; test ! -L {TARGET}; test ! -L {staging}')
         existing = query(f'if test -d {TARGET}; then echo yes; fi')
@@ -131,9 +172,8 @@ def main():
         if old == sums[BOOT]:
             sys.exit('Alpha recovery 已安装，请保管原设备备份。')
         if a.backup.exists():
-            record = json.loads(recorded.read_text())
-            if (record['serial'] != serial or old != record['sha256']
-                    or sha(backup) != old):
+            record = backup_record()
+            if not backup.is_file() or old != record['sha256'] or sha(backup) != old:
                 sys.exit('现有备份与当前设备或 recovery 不匹配。')
         else:
             a.backup.parent.mkdir(parents=True, exist_ok=True)
@@ -141,12 +181,12 @@ def main():
                 staged = Path(scratch) / 'backup'
                 staged.mkdir(mode=0o700)
                 with (staged / backup.name).open('xb') as stream:
-                    root('cat ' + RECOVERY, stdout=stream)
+                    root('cat ' + recovery_dev, stdout=stream)
                 if sha(staged / backup.name) != old:
                     sys.exit('原 recovery 备份校验失败。')
-                (staged / recorded.name).write_text(json.dumps(dict(serial=serial, sha256=old)) + '\n')
+                (staged / recorded.name).write_text(json.dumps(dict(serial=serial, slot=slot, sha256=old, installed_sha256=sums[BOOT])) + '\n')
                 staged.rename(a.backup)
-        if input('输入 INSTALL 安装到 osstore 并更新 recovery_b：') != 'INSTALL':
+        if input(f'输入 INSTALL 安装到 osstore 并更新 {part}：') != 'INSTALL':
             sys.exit('已取消。')
         password = getpass.getpass('为本机 mix 设置密码：')
         if not password or password != getpass.getpass('再次输入：'):
@@ -160,12 +200,13 @@ def main():
             put(image, staging + '/rootfs.img')
             if remote_sha(staging + '/rootfs.img') != sums[ROOTFS]:
                 sys.exit('系统文件读回失败，原 recovery 仍在位。')
-            # These factory values are copied directly on this headset, never through the host.
-            root(f'''umask 077
-localdir={staging}/local-device
-mkdir -p "$localdir"
-cal=/mnt/vendor/persist/qvr/device_calibration.xml
-if test -s "$cal"; then cp "$cal" "$localdir/"; fi
+        dest = TARGET if ready else staging
+        # Copy from this Android installation. A retry also refreshes any partial import.
+        root(f'''umask 077
+localdir={dest}/local-device
+mkdir -p "$localdir/sensors/registry" "$localdir/socinfo"
+getprop ro.serialno > "$localdir/usb-serial"
+cp /mnt/vendor/persist/qvr/device_calibration.xml "$localdir/device_calibration.xml"
 for name in libsns_low_lat_stream_skel.so fastrpc_shell_2; do
     for dir in /vendor/dsp/sdsp /vendor/dsp/slpi /vendor/lib/rfsa/adsp /system/lib/rfsa/adsp; do
         if test -s "$dir/$name"; then
@@ -173,35 +214,43 @@ for name in libsns_low_lat_stream_skel.so fastrpc_shell_2; do
         fi
     done
 done
-reg=/mnt/vendor/persist/sensors/registry/registry
-if test -d "$reg"; then
-    mkdir -p "$localdir/sensors/registry" "$localdir/socinfo"
-    for file in "$reg"/*; do
-        if test -f "$file" && test ! -L "$file"; then cp "$file" "$localdir/sensors/registry/"; fi
-    done
-    for name in platform_version platform_subtype_id platform_subtype revision hw_platform soc_id; do
-        file=/sys/devices/soc0/$name
-        if test -r "$file"; then cat "$file" > "$localdir/socinfo/$name"; fi
-    done
-fi''')
-        dest = TARGET if ready else staging
+reg=/mnt/vendor/persist/sensors/registry
+for file in "$reg/registry/"*; do
+    if test -f "$file" && test ! -L "$file"; then cp "$file" "$localdir/sensors/registry/"; fi
+done
+if test -s "$reg/sns_reg_version"; then cp "$reg/sns_reg_version" "$localdir/sensors/"; fi
+if test -s /vendor/etc/sensors/sns_reg_config; then cp /vendor/etc/sensors/sns_reg_config "$localdir/sensors/sns_reg.conf"; fi
+if test -d /vendor/etc/sensors/config; then
+    mkdir -p "$localdir/sensors/config"
+    cp -R /vendor/etc/sensors/config/. "$localdir/sensors/config/"
+fi
+for name in platform_version platform_subtype_id platform_subtype revision hw_platform soc_id; do
+    file=/sys/devices/soc0/$name
+    if test -r "$file"; then cat "$file" > "$localdir/socinfo/$name"; fi
+done
+''')
         root(f'test -s {dest}/local-device/device_calibration.xml; '
              f'test -n "$(find {dest}/local-device/sensors/registry -type f | head -n 1)"')
         root(f'umask 077; cat > {dest}/mix-password.sha512', input=hashed + b'\n')
         if not ready:
             root(f'mv {staging} {TARGET}; sync')
-        same_device()
-        if remote_sha(RECOVERY) != old:
+        if remote_sha(recovery_dev) != old:
             sys.exit('安装过程中 recovery 发生变化。')
+        # Bind subsequent restore to this installation, also when reusing a backup.
+        record = backup_record()
+        record.update(slot=slot, installed_sha256=sums[BOOT])
+        with tempfile.NamedTemporaryFile(mode='w', dir=a.backup, delete=False) as updated:
+            json.dump(record, updated)
+            updated.write('\n')
+        os.replace(updated.name, recorded)
         pending.write_text(sums[BOOT])
         try:
-            put(recovery, RECOVERY)
-            if remote_sha(RECOVERY) != sums[BOOT]:
+            put(recovery, recovery_dev)
+            if remote_sha(recovery_dev) != sums[BOOT]:
                 raise ValueError('recovery verification failed')
         except (OSError, subprocess.CalledProcessError, ValueError):
-            same_device()
-            put(backup, RECOVERY)
-            if remote_sha(RECOVERY) != old:
+            put(backup, recovery_dev)
+            if remote_sha(recovery_dev) != old:
                 sys.exit('恢复原 recovery 后仍未通过读回。请留在 Android 并运行 restore。')
             pending.unlink(missing_ok=True)
             sys.exit('已恢复并读回原 recovery。')
@@ -215,4 +264,7 @@ fi''')
 
 if __name__ == '__main__':
     os.umask(0o077)
-    main()
+    try:
+        main()
+    except subprocess.CalledProcessError as error:
+        sys.exit(f'操作中止（命令返回 {error.returncode}）。请查看上方设备提示。')

@@ -9,7 +9,17 @@ vendor=/usr/lib/aarch64-linux-gnu/xr/vendor/a081
 mkdir -p "$seed/tracking/stock-runtime" "$seed/plans" /etc/xr
 cp -a "$vendor/tracking/qcom" "$seed/tracking/stock-runtime/"
 cp /usr/share/xr/session-manager/plans/controller-snpe-dsp.json "$seed/plans/"
-sed '/<SFConfig>/a\    <CvpConfig enable="false" />' /usr/share/xr/a081/tracking/config6.xml >"$seed/tracking/config6-cvp-disabled.xml"
+python3 - <<'PYCONFIG'
+from pathlib import Path
+import re
+
+source = Path('/usr/share/xr/a081/tracking/config6.xml').read_bytes()
+# Keep the vendor XML (including comments and line endings) intact.
+config, count = re.subn(rb'(<SFConfig>)(\r?\n)', rb'\1\2    <CvpConfig enable="false" />\2', source)
+if count != 1:
+    raise ValueError('Expected one SFConfig section in A081 tracking configuration')
+Path('/opt/mix-vr-shell-controller/tracking/config6-cvp-disabled.xml').write_bytes(config)
+PYCONFIG
 python3 - <<'PY'
 import json
 from pathlib import Path
@@ -34,8 +44,11 @@ install -d /etc/systemd/system/a081-sensors-files.service.d /usr/local/libexec
 cat >/etc/systemd/system/a081-sensors-files.service.d/10-mix-alpha.conf <<'UNIT'
 [Unit]
 After=mix-alpha-calibration.service
+ConditionPathExists=
 ConditionPathExists=/usr/share/qcom/sm8250/iqiyi/a081/sensors/registry
 [Service]
+Restart=always
+RestartSec=3
 ExecStart=
 ExecStart=/usr/bin/xr-hexagonrpcd -f /dev/fastrpc-sdsp -s -R /usr/share/qcom/sm8250/iqiyi/a081
 UNIT
@@ -56,9 +69,19 @@ if [ -d "$src/slpi" ]; then
     done
 fi
 if [ -d "$src/sensors/registry" ]; then
-    install -d -m 0755 "$dst/sensors/registry" "$dst/socinfo"
-    cp -a "$src/sensors/registry/." "$dst/sensors/registry/"
-    [ ! -d "$src/socinfo" ] || cp -a "$src/socinfo/." "$dst/socinfo/"
+    # Materialize factory data with Linux ownership even on older osstore installs.
+    cd "$src"
+    for tree in sensors socinfo; do
+        [ -d "$tree" ] && [ ! -L "$tree" ] || continue
+        find "$tree" -type d -exec sh -ec '
+            dst=$1; shift
+            for dir do install -d -o root -g root -m 0755 "$dst/$dir"; done
+        ' sh "$dst" {} +
+        find "$tree" -type f -exec sh -ec '
+            dst=$1; shift
+            for file do install -o root -g root -m 0644 "$file" "$dst/$file"; done
+        ' sh "$dst" {} +
+    done
 fi
 SCRIPT
 chmod 0755 /usr/local/libexec/mix-alpha-calibration
