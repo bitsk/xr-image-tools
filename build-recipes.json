@@ -212,6 +212,11 @@
         "kind": "component-script",
         "script": "applications/rvvr-saberv/build.py"
       }
+    },
+    "files": {
+      "xr-shell": {
+        "kind": "source"
+      }
     }
   }
 }
