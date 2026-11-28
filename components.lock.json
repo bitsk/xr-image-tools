@@ -7,10 +7,10 @@
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "b6fccbe04bcb0684c3efef706bd64da1a9ccb0d6",
+      "commit": "be58c313a0539909e837c87924c9ece6708b1645",
       "public_headers_sha256": {
         "include/xr/device/a081_camera_capture.hpp": "d22e98bfca7b1b0ab9e224eab361192ad835a7d4c9444817c5c4faca0f767f46",
-        "include/xr/device/a081_camera_groups.hpp": "dc4d30a07b9f7e2838da33e4c383c218a344cab4e599085e8b065340da7fa5bf",
+        "include/xr/device/a081_camera_groups.hpp": "f2780f093a71771561d810851d02635e9698de92d140c4b00aade6278ed24630",
         "include/xr/device/a081_camera_metadata.hpp": "5aa27b6c2455a4ea6c07ca85b1516babe805c3ebfef5ca91016bd3ba9cca355c",
         "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
@@ -23,7 +23,7 @@
         "include/xr/device/a081_controller_wire.h": "6556d6a2b033ba6dc490d8c26800d809fb8b8553ab615af726083914db30a352",
         "include/xr/device/a081_radio_clock_reference.h": "0f4489e218b9483292ac01b78ed65f02bbfa5dce44e739268f65c3056d8097f0",
         "include/xr/device/a081_recording.h": "d91a3bac2f47a7ee3057ceb4f1622890a165162ecabc52a2174e6bd5cfa67835",
-        "include/xr/device/abi_reference.hpp": "0bda9a30227391e06c9482840ec015299de51ecb6b112d445171e24af0449bb2",
+        "include/xr/device/abi_reference.hpp": "ac60d57bfda89d478cce30806f63ba25c36d491dbab36fa77e1f17b714abbfbe",
         "include/xr/device/camera-preview.hpp": "b5971529b1ff6a31131285d2d39dd309088e30eb29e9b1c148f79b464e4c2d5c",
         "include/xr/device/passthrough-capture.hpp": "528aa8d2c911c3cab82c41aced3e971d66313a181d3f94282120c16020a770cb",
         "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07",
@@ -32,7 +32,7 @@
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "628cd477165c1f4ae1de5203d67998305a083072",
+      "commit": "84135b551a6223325b128d6c5b563243ef6d9428",
       "public_headers_sha256": {
         "include/xr/head/production-v2/a081_qvr_pose.h": "482983abb888bead7f9b6f4324eb73c1123d9089d9029298a0e30aa5d66b57d2",
         "include/xr/head/production-v2/a081_tracking_client.h": "36869aa710f7d61cddde19c336a06cf4707b9bb2ccd978c6bb666ec6c3d2a3ba",
