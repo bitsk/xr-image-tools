@@ -3,20 +3,20 @@
   "components": {
     "xr-kernel": {
       "repository": "https://github.com/bitsk/xr-kernel",
-      "commit": "d56d9f56e7202f76b2fcb290d9180263f85825d7"
+      "commit": "c8078a037ec68ab8bff12b57d9e71a88100e2f8d"
     },
     "xr-device-io": {
       "repository": "https://github.com/bitsk/xr-device-io",
-      "commit": "be58c313a0539909e837c87924c9ece6708b1645",
+      "commit": "7966d9c0f2677dfa7568cebd6478269be119a13b",
       "public_headers_sha256": {
-        "include/xr/device/a081_camera_capture.hpp": "d22e98bfca7b1b0ab9e224eab361192ad835a7d4c9444817c5c4faca0f767f46",
+        "include/xr/device/a081_camera_capture.hpp": "d7f2b6986b32f90864cdc84082f06d21d1c5fa5d923fcd7c27f65ed85b01c0eb",
         "include/xr/device/a081_camera_groups.hpp": "f2780f093a71771561d810851d02635e9698de92d140c4b00aade6278ed24630",
         "include/xr/device/a081_camera_metadata.hpp": "5aa27b6c2455a4ea6c07ca85b1516babe805c3ebfef5ca91016bd3ba9cca355c",
         "include/xr/device/a081_camera_pattern.hpp": "fb3e9c2dc0f99b67af39286c2b4f06d86a2bba7c8efa0b020e554bdccea558f2",
         "include/xr/device/a081_camera_pixels.hpp": "6588e6a7ec87a261bc470bbe27af401c26b6b0c2990fe92a8567b62c8e6c44ad",
         "include/xr/device/a081_camera_timing.hpp": "9269cb96cb8f8e005b0979e7db7d4efdac7eb7fb037b483ba73e757fbc65ba52",
         "include/xr/device/a081_controller_abi.h": "82638128d8da1aaf56b305b2401c9ac4a1bdfdbc4b4fb3f172ccbace6c7ffe9d",
-        "include/xr/device/a081_controller_frame_export.hpp": "3ab03179a8efa52f1b7d13fe05d34f66b7420bd23578ca37b3c5bbe82357d891",
+        "include/xr/device/a081_controller_frame_export.hpp": "993d6fa3d3d1277a573a972446ef80ee0bd68999b5bb0edf2f240fbb54588d0b",
         "include/xr/device/a081_controller_haptics.h": "830807999dc348a7be467b4c65ec0955d806b75c4507288ce755782e41a34765",
         "include/xr/device/a081_controller_input_wire.h": "c3561141a399eb6cb5a0bebf800b23ea896bc919398edda6bcc041ed2aed50e0",
         "include/xr/device/a081_controller_reference.hpp": "9e9418a287264debeb31ea68fa50a752aa03453ac01d9cc9b097242da8ed799d",
@@ -25,14 +25,14 @@
         "include/xr/device/a081_recording.h": "d91a3bac2f47a7ee3057ceb4f1622890a165162ecabc52a2174e6bd5cfa67835",
         "include/xr/device/abi_reference.hpp": "ac60d57bfda89d478cce30806f63ba25c36d491dbab36fa77e1f17b714abbfbe",
         "include/xr/device/camera-preview.hpp": "b5971529b1ff6a31131285d2d39dd309088e30eb29e9b1c148f79b464e4c2d5c",
-        "include/xr/device/passthrough-capture.hpp": "528aa8d2c911c3cab82c41aced3e971d66313a181d3f94282120c16020a770cb",
-        "include/xr/device/passthrough-export.hpp": "ae91cfdf12cd0c732d4cde8882d5ee9fb9c9d0fa8fb8b0da0c47673798f86c07",
+        "include/xr/device/passthrough-capture.hpp": "cfde8ab052fa3a4266e2f4f642f7f445e59180b2b2988dd3f7045deccbdb53cf",
+        "include/xr/device/passthrough-export.hpp": "9b48d285df40b2639347c3a8985373422c65b098945cf6429df32da8f92a8350",
         "include/xr/device/see_low_latency.hpp": "8b3d171789e0118ccf19d58dc1535f8950230a1e41de5c18013b84a8ad5e25a1"
       }
     },
     "xr-head-tracking": {
       "repository": "https://github.com/bitsk/xr-head-tracking",
-      "commit": "84135b551a6223325b128d6c5b563243ef6d9428",
+      "commit": "d47fd86cb9b6223e27531afb3f4f21ed7bf7627d",
       "public_headers_sha256": {
         "include/xr/head/production-v2/a081_qvr_pose.h": "482983abb888bead7f9b6f4324eb73c1123d9089d9029298a0e30aa5d66b57d2",
         "include/xr/head/production-v2/a081_tracking_client.h": "36869aa710f7d61cddde19c336a06cf4707b9bb2ccd978c6bb666ec6c3d2a3ba",
@@ -52,7 +52,7 @@
     },
     "xr-monado": {
       "repository": "https://github.com/bitsk/xr-monado",
-      "commit": "125ba494f77a8a7631e6f5a34cd95b212050ad13"
+      "commit": "91f56e0a94967647088ee3a01b382800a3be1812"
     },
     "xr-session-manager": {
       "repository": "https://github.com/bitsk/xr-session-manager",
@@ -72,7 +72,7 @@
     },
     "openkylin-xr-integration": {
       "repository": "https://github.com/bitsk/openkylin-xr-integration",
-      "commit": "3639b96426baddfcf33cc10a33c4280a8e5fe358"
+      "commit": "96fb5de4fe495f75582149045f3a0b33cf822551"
     },
     "xr-hand-tracking": {
       "repository": "https://github.com/bitsk/xr-hand-tracking",
@@ -113,7 +113,7 @@
     },
     "xr-cinema": {
       "repository": "https://github.com/bitsk/xr-cinema",
-      "commit": "98f44695a3621f6d729e9a88953b474ae7f25c7c"
+      "commit": "1ba0756410c6648802e1c37398008ade94c807ab"
     },
     "xr-files": {
       "repository": "https://github.com/bitsk/xr-files",
