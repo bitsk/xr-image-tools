@@ -205,7 +205,7 @@ done
         print('已恢复并读回校验。Alpha 系统文件仍保存在 osstore。')
         return
 
-    root(f"test -b /dev/block/by-name/osstore || {{ echo '缺少 osstore 分区，当前布局不支持本安装流程。请保留现有分区。' >&2; exit 1; }}; test ! -L {STORE}; "
+    root(f"test -b /dev/block/by-name/osstore || {{ echo '缺少 osstore 分区。请先按安装指南的「创建 osstore 分区」准备存储，再运行 check。' >&2; exit 1; }}; test ! -L {STORE}; "
          f'if test -d {STORE}; then test -z "$(ls -A {STORE})"; else mkdir -m 700 {STORE}; fi')
     mounted = False
     try:
